@@ -1,0 +1,147 @@
+# ChainShield Docker Compose
+# Local development environment with all services
+
+version: "3.9"
+
+services:
+  # ===========================================================================
+  # PostgreSQL Database
+  # ===========================================================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: chainshield-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: chainshield
+      POSTGRES_PASSWORD: chainshield_dev
+      POSTGRES_DB: chainshield
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U chainshield -d chainshield"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - chainshield-network
+
+  # ===========================================================================
+  # Redis Cache & Rate Limiting
+  # ===========================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: chainshield-redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --maxmemory 256mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_data:/data
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - chainshield-network
+
+  # ===========================================================================
+  # ChainShield Backend API
+  # ===========================================================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: chainshield-backend
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      # Application
+      APP_NAME: chainshield
+      APP_ENV: development
+      DEBUG: "true"
+      SECRET_KEY: dev-secret-key-change-in-production
+      API_V1_PREFIX: /api/v1
+      
+      # Server
+      HOST: 0.0.0.0
+      PORT: 8000
+      WORKERS: 1
+      RELOAD: "true"
+      
+      # Database
+      DATABASE_URL: postgresql+asyncpg://chainshield:chainshield_dev@postgres:5432/chainshield
+      DATABASE_POOL_SIZE: 5
+      DATABASE_MAX_OVERFLOW: 10
+      DATABASE_POOL_TIMEOUT: 30
+      
+      # Redis
+      REDIS_URL: redis://redis:6379/0
+      REDIS_CACHE_TTL: 3600
+      REDIS_RATE_LIMIT_PREFIX: "rl:"
+      
+      # Security
+      JWT_SECRET_KEY: dev-jwt-secret-change-in-production
+      JWT_ALGORITHM: HS256
+      JWT_ACCESS_TOKEN_EXPIRE_MINUTES: 30
+      JWT_REFRESH_TOKEN_EXPIRE_DAYS: 7
+      API_KEY_HEADER: X-API-Key
+      API_KEY_PREFIX: "cs_"
+      CORS_ORIGINS: '["http://localhost:3000", "http://localhost:5173"]'
+      
+      # Rate Limiting
+      RATE_LIMIT_ENABLED: "true"
+      RATE_LIMIT_REQUESTS_PER_MINUTE: 60
+      RATE_LIMIT_REQUESTS_PER_HOUR: 1000
+      RATE_LIMIT_WALLET_ANALYZE: 100
+      RATE_LIMIT_TX_ANALYZE: 200
+      RATE_LIMIT_AI_EXPLAIN: 50
+      
+      # Logging
+      LOG_LEVEL: DEBUG
+      LOG_FORMAT: json
+      
+      # Features
+      FEATURE_AI_EXPLANATIONS: "true"
+      FEATURE_GRAPH_ANALYSIS: "true"
+      FEATURE_REAL_TIME_ALERTS: "true"
+      
+      # Risk Engine
+      RISK_HIGH_THRESHOLD: 70
+      RISK_MEDIUM_THRESHOLD: 40
+    ports:
+      - "8000:8000"
+    # Volume mount disabled for initial testing - can re-enable for hot reload in dev
+    # volumes:
+    #   - ./backend/app:/app/app:ro
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 10s
+      retries: 3
+    networks:
+      - chainshield-network
+
+# =============================================================================
+# Volumes
+# =============================================================================
+volumes:
+  postgres_data:
+    name: chainshield-postgres-data
+  redis_data:
+    name: chainshield-redis-data
+
+# =============================================================================
+# Networks
+# =============================================================================
+networks:
+  chainshield-network:
+    name: chainshield-network
+    driver: bridge
