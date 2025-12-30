@@ -20,7 +20,10 @@ class Settings(BaseSettings):
     app_name: str = Field(default="chainshield", description="Application name")
     app_env: str = Field(default="development", description="Environment")
     debug: bool = Field(default=False, description="Debug mode")
-    secret_key: str = Field(..., description="Secret key for signing")
+    secret_key: str = Field(
+        default="dev-secret-key-change-in-production",
+        description="Secret key for signing"
+    )
     api_v1_prefix: str = Field(default="/api/v1", description="API prefix")
     
     # -------------------------------------------------------------------------
@@ -34,7 +37,10 @@ class Settings(BaseSettings):
     # -------------------------------------------------------------------------
     # Database
     # -------------------------------------------------------------------------
-    database_url: str = Field(..., description="PostgreSQL connection URL")
+    database_url: str = Field(
+        default="postgresql+asyncpg://chainshield:chainshield_dev@localhost:5432/chainshield",
+        description="PostgreSQL connection URL"
+    )
     database_pool_size: int = Field(default=10, description="Connection pool size")
     database_max_overflow: int = Field(default=20, description="Max overflow connections")
     database_pool_timeout: int = Field(default=30, description="Pool timeout in seconds")
@@ -95,7 +101,10 @@ class Settings(BaseSettings):
     # -------------------------------------------------------------------------
     # Security
     # -------------------------------------------------------------------------
-    jwt_secret_key: str = Field(..., description="JWT signing key")
+    jwt_secret_key: str = Field(
+        default="dev-jwt-secret-key-change-in-production",
+        description="JWT signing key"
+    )
     jwt_algorithm: str = Field(default="HS256", description="JWT algorithm")
     jwt_access_token_expire_minutes: int = Field(default=30, description="Access token TTL")
     jwt_refresh_token_expire_days: int = Field(default=7, description="Refresh token TTL")
