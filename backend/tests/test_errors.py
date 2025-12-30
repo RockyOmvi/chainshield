@@ -5,8 +5,6 @@ Tests for custom error classes and exception handlers.
 """
 
 import pytest
-from fastapi import FastAPI
-from fastapi.testclient import TestClient
 
 from app.core.errors import (
     ChainShieldError,
@@ -16,9 +14,11 @@ from app.core.errors import (
     ForbiddenError,
     RateLimitError,
     BlockchainError,
-    AIServiceError,
+    AIProviderError,
+    DatabaseError,
+    ServiceUnavailableError,
     ErrorCode,
-    error_response,
+    ErrorResponse,
 )
 
 
@@ -28,8 +28,8 @@ class TestErrorClasses:
     def test_chainshield_error_base(self):
         """Test base ChainShieldError."""
         error = ChainShieldError(
-            message="Test error",
-            code=ErrorCode.INTERNAL_ERROR
+            code=ErrorCode.INTERNAL_ERROR,
+            message="Test error"
         )
         
         assert str(error) == "Test error"
@@ -45,10 +45,11 @@ class TestErrorClasses:
     
     def test_not_found_error(self):
         """Test NotFoundError."""
-        error = NotFoundError("Wallet not found")
+        error = NotFoundError("Wallet", "0x123")
         
         assert error.status_code == 404
         assert error.code == ErrorCode.NOT_FOUND
+        assert "Wallet" in str(error)
     
     def test_unauthorized_error(self):
         """Test UnauthorizedError."""
@@ -66,42 +67,59 @@ class TestErrorClasses:
     
     def test_rate_limit_error(self):
         """Test RateLimitError with retry_after."""
-        error = RateLimitError("Too many requests", retry_after=60)
+        error = RateLimitError(limit=100, window="minute", retry_after=60)
         
         assert error.status_code == 429
-        assert error.code == ErrorCode.RATE_LIMIT_EXCEEDED
-        assert error.retry_after == 60
+        assert error.code == ErrorCode.RATE_LIMITED
+        assert error.details["retry_after"] == 60
     
     def test_blockchain_error(self):
         """Test BlockchainError."""
-        error = BlockchainError("RPC failed")
+        error = BlockchainError(message="RPC failed")
         
         assert error.status_code == 503
-        assert error.code == ErrorCode.BLOCKCHAIN_ERROR
+        assert error.code == ErrorCode.BLOCKCHAIN_CONNECTION_FAILED
     
-    def test_ai_service_error(self):
-        """Test AIServiceError."""
-        error = AIServiceError("LLM timeout")
+    def test_ai_provider_error(self):
+        """Test AIProviderError."""
+        error = AIProviderError(message="LLM timeout")
         
         assert error.status_code == 503
-        assert error.code == ErrorCode.AI_SERVICE_ERROR
+        assert error.code == ErrorCode.AI_PROVIDER_ERROR
+    
+    def test_database_error(self):
+        """Test DatabaseError."""
+        error = DatabaseError(message="Connection lost")
+        
+        assert error.status_code == 503
+        assert error.code == ErrorCode.DATABASE_ERROR
+    
+    def test_service_unavailable_error(self):
+        """Test ServiceUnavailableError."""
+        error = ServiceUnavailableError(service="redis", retry_after=30)
+        
+        assert error.status_code == 503
+        assert error.code == ErrorCode.SERVICE_UNAVAILABLE
+        assert error.details["retry_after"] == 30
 
 
 class TestErrorResponse:
     """Test error response formatting."""
     
-    def test_error_response_format(self):
-        """Test error_response creates proper format."""
-        response = error_response(
+    def test_error_response_create(self):
+        """Test ErrorResponse.create creates proper format."""
+        response = ErrorResponse.create(
             code=ErrorCode.VALIDATION_ERROR,
             message="Invalid address format",
-            details={"field": "address"}
+            field="address",
+            correlation_id="test-123"
         )
         
-        assert response["success"] is False
-        assert response["error"]["code"] == "VALIDATION_ERROR"
-        assert response["error"]["message"] == "Invalid address format"
-        assert response["error"]["details"]["field"] == "address"
+        assert response.success is False
+        assert response.error.code == "E1001"
+        assert response.error.message == "Invalid address format"
+        assert response.error.field == "address"
+        assert response.meta["correlation_id"] == "test-123"
 
 
 class TestErrorCodes:
@@ -115,9 +133,9 @@ class TestErrorCodes:
             ErrorCode.NOT_FOUND,
             ErrorCode.UNAUTHORIZED,
             ErrorCode.FORBIDDEN,
-            ErrorCode.RATE_LIMIT_EXCEEDED,
-            ErrorCode.BLOCKCHAIN_ERROR,
-            ErrorCode.AI_SERVICE_ERROR,
+            ErrorCode.RATE_LIMITED,
+            ErrorCode.BLOCKCHAIN_CONNECTION_FAILED,
+            ErrorCode.AI_PROVIDER_ERROR,
         ]
         
         for code in codes:

@@ -5,10 +5,9 @@ Tests for rate limiting functionality.
 """
 
 import pytest
-import asyncio
 from unittest.mock import AsyncMock, patch
 
-from app.core.rate_limit import RateLimiter, RateLimitConfig
+from app.core.rate_limit import RateLimiter, RateLimitRule
 
 
 class TestRateLimiter:
@@ -87,22 +86,29 @@ class TestRateLimiter:
         assert len(rate_limiter._local_cache) <= 100
 
 
-class TestRateLimitConfig:
-    """Test rate limit configuration."""
+class TestRateLimitRule:
+    """Test rate limit rule configuration."""
     
-    def test_default_config(self):
-        """Test default rate limit config."""
-        config = RateLimitConfig()
-        
-        assert config.requests_per_minute > 0
-        assert config.requests_per_hour > 0
-    
-    def test_custom_config(self):
-        """Test custom rate limit config."""
-        config = RateLimitConfig(
-            requests_per_minute=30,
-            requests_per_hour=500
+    def test_default_rule(self):
+        """Test default rate limit rule."""
+        rule = RateLimitRule(
+            requests=100,
+            window=60,
+            key_type="ip"
         )
         
-        assert config.requests_per_minute == 30
-        assert config.requests_per_hour == 500
+        assert rule.requests == 100
+        assert rule.window == 60
+        assert rule.key_type == "ip"
+    
+    def test_custom_rule(self):
+        """Test custom rate limit rule."""
+        rule = RateLimitRule(
+            requests=30,
+            window=3600,
+            key_type="api_key"
+        )
+        
+        assert rule.requests == 30
+        assert rule.window == 3600
+        assert rule.key_type == "api_key"
