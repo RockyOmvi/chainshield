@@ -15,12 +15,13 @@ from sqlalchemy import (
     DateTime,
     Index,
     Integer,
+    JSON,
     String,
     Text,
     func,
     text,
 )
-from sqlalchemy.dialects.postgresql import JSONB
+# Note: Using JSON instead of JSONB for SQLite test compatibility
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.database import Base
@@ -102,7 +103,7 @@ class Alert(Base):
     
     # Additional data (renamed from 'metadata' to avoid SQLAlchemy conflict)
     extra_data: Mapped[Optional[dict]] = mapped_column(
-        JSONB,
+        JSON,
         nullable=True
     )
     
@@ -198,14 +199,14 @@ class AlertRule(Base):
     
     # Conditions (JSON for flexibility)
     conditions: Mapped[dict] = mapped_column(
-        JSONB,
+        JSON,
         nullable=False
         # Example: {"risk_score": {"gte": 80}, "chain": "ethereum"}
     )
     
     # Actions
     actions: Mapped[dict] = mapped_column(
-        JSONB,
+        JSON,
         nullable=False
         # Example: {"notify": ["email", "webhook"], "auto_block": true}
     )
@@ -280,7 +281,7 @@ class AuditLog(Base):
     
     # Details
     details: Mapped[Optional[dict]] = mapped_column(
-        JSONB,
+        JSON,
         nullable=True
     )
     

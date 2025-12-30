@@ -16,10 +16,11 @@ from sqlalchemy import (
     DateTime,
     Index,
     Integer,
+    JSON,
     String,
     func,
 )
-from sqlalchemy.dialects.postgresql import JSONB
+# Note: Using JSON instead of JSONB for SQLite test compatibility
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.database import Base
@@ -62,7 +63,7 @@ class User(Base):
         default="user"  # user, admin, enterprise
     )
     permissions: Mapped[Optional[dict]] = mapped_column(
-        JSONB,
+        JSON,
         nullable=True,
         default=dict
     )
@@ -179,7 +180,7 @@ class APIKey(Base):
     
     # Permissions
     scopes: Mapped[Optional[dict]] = mapped_column(
-        JSONB,
+        JSON,
         nullable=True,
         default=list  # ["read:wallet", "write:alert", etc.]
     )

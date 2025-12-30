@@ -16,12 +16,13 @@ from sqlalchemy import (
     Float,
     Index,
     Integer,
+    JSON,
     String,
     Text,
     func,
     text,
 )
-from sqlalchemy.dialects.postgresql import JSONB
+# Note: Using JSON instead of JSONB for SQLite test compatibility
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.database import Base
@@ -75,7 +76,7 @@ class Wallet(Base):
     
     # Risk tags (e.g., ["mixer", "scam", "phishing"])
     risk_tags: Mapped[Optional[dict]] = mapped_column(
-        JSONB,
+        JSON,
         nullable=True,
         default=list
     )
@@ -147,13 +148,13 @@ class Wallet(Base):
     
     # Labels (e.g., {"entity": "Binance", "category": "exchange"})
     labels: Mapped[Optional[dict]] = mapped_column(
-        JSONB,
+        JSON,
         nullable=True
     )
     
     # Raw features for ML (cached)
     ml_features: Mapped[Optional[dict]] = mapped_column(
-        JSONB,
+        JSON,
         nullable=True
     )
     

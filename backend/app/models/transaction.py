@@ -16,11 +16,12 @@ from sqlalchemy import (
     Float,
     Index,
     Integer,
+    JSON,
     String,
     func,
     text,
 )
-from sqlalchemy.dialects.postgresql import JSONB
+# Note: Using JSON instead of JSONB for SQLite test compatibility
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.core.database import Base
@@ -130,7 +131,7 @@ class Transaction(Base):
         default=0
     )
     risk_flags: Mapped[Optional[dict]] = mapped_column(
-        JSONB,
+        JSON,
         nullable=True,
         default=list
     )
@@ -154,7 +155,7 @@ class Transaction(Base):
     
     # Raw data (for debugging/reprocessing)
     raw_data: Mapped[Optional[dict]] = mapped_column(
-        JSONB,
+        JSON,
         nullable=True
     )
     
