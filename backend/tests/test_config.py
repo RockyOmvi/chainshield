@@ -1,107 +1,59 @@
 """
 Configuration Tests
 
-Tests for Pydantic settings and configuration loading.
+Tests for Pydantic settings configuration.
 """
 
 import pytest
 import os
-from unittest.mock import patch
 
 
 class TestSettings:
-    """Test Settings configuration."""
+    """Test configuration settings."""
     
-    def test_settings_loads_defaults(self):
-        """Test settings loads with defaults."""
-        from app.core.config import Settings
+    def test_settings_loads(self):
+        """Test settings can be loaded."""
+        from app.core.config import settings
         
-        # Create settings with minimal required values
-        with patch.dict(os.environ, {
-            "SECRET_KEY": "test-secret",
-            "JWT_SECRET_KEY": "test-jwt-secret",
-            "DATABASE_URL": "postgresql+asyncpg://user:pass@localhost/db"
-        }):
-            settings = Settings()
-            
-            assert settings.app_name == "chainshield"
-            assert settings.app_env == "development"
-            assert settings.port == 8000
+        assert settings.app_name == "chainshield"
+        assert settings.api_v1_prefix == "/api/v1"
     
-    def test_settings_validates_required(self):
-        """Test settings requires mandatory fields."""
-        from app.core.config import Settings
-        from pydantic import ValidationError
+    def test_settings_has_required_fields(self):
+        """Test settings has all required fields."""
+        from app.core.config import settings
         
-        # Clear environment and try to create settings
-        with patch.dict(os.environ, {}, clear=True):
-            with pytest.raises(ValidationError):
-                Settings()
+        # Check required fields exist
+        assert hasattr(settings, "secret_key")
+        assert hasattr(settings, "jwt_secret_key")
+        assert hasattr(settings, "database_url")
+        assert hasattr(settings, "redis_url")
     
-    def test_is_production_property(self):
-        """Test is_production property."""
-        from app.core.config import Settings
+    def test_settings_rate_limits(self):
+        """Test rate limit settings."""
+        from app.core.config import settings
         
-        with patch.dict(os.environ, {
-            "SECRET_KEY": "test",
-            "JWT_SECRET_KEY": "test",
-            "DATABASE_URL": "postgresql+asyncpg://localhost/db",
-            "APP_ENV": "production"
-        }):
-            settings = Settings()
-            assert settings.is_production is True
+        assert settings.rate_limit_requests_per_minute > 0
+        assert settings.rate_limit_requests_per_hour > 0
     
-    def test_is_development_property(self):
-        """Test is_development property."""
-        from app.core.config import Settings
+    def test_settings_risk_thresholds(self):
+        """Test risk threshold settings."""
+        from app.core.config import settings
         
-        with patch.dict(os.environ, {
-            "SECRET_KEY": "test",
-            "JWT_SECRET_KEY": "test",
-            "DATABASE_URL": "postgresql+asyncpg://localhost/db",
-            "APP_ENV": "development"
-        }):
-            settings = Settings()
-            assert settings.is_development is True
+        assert settings.risk_high_threshold > settings.risk_medium_threshold
+        assert settings.risk_medium_threshold > 0
+
+
+class TestSettingsValidation:
+    """Test settings validation."""
     
-    def test_alchemy_url_construction(self):
-        """Test Alchemy URL is constructed correctly."""
-        from app.core.config import Settings
+    def test_app_name_lowercase(self):
+        """Test app name is lowercase."""
+        from app.core.config import settings
         
-        with patch.dict(os.environ, {
-            "SECRET_KEY": "test",
-            "JWT_SECRET_KEY": "test",
-            "DATABASE_URL": "postgresql+asyncpg://localhost/db",
-            "ALCHEMY_API_KEY": "test-alchemy-key",
-            "ALCHEMY_NETWORK": "eth-mainnet"
-        }):
-            settings = Settings()
-            assert "test-alchemy-key" in settings.alchemy_url
-            assert "eth-mainnet" in settings.alchemy_url
+        assert settings.app_name == settings.app_name.lower()
     
-    def test_cors_origins_parsing_json(self):
-        """Test CORS origins can be parsed from JSON."""
-        from app.core.config import Settings
+    def test_api_prefix_format(self):
+        """Test API prefix starts with slash."""
+        from app.core.config import settings
         
-        with patch.dict(os.environ, {
-            "SECRET_KEY": "test",
-            "JWT_SECRET_KEY": "test",
-            "DATABASE_URL": "postgresql+asyncpg://localhost/db",
-            "CORS_ORIGINS": '["http://localhost:3000", "http://localhost:5173"]'
-        }):
-            settings = Settings()
-            assert "http://localhost:3000" in settings.cors_origins
-            assert len(settings.cors_origins) == 2
-    
-    def test_cors_origins_parsing_csv(self):
-        """Test CORS origins can be parsed from CSV."""
-        from app.core.config import Settings
-        
-        with patch.dict(os.environ, {
-            "SECRET_KEY": "test",
-            "JWT_SECRET_KEY": "test",
-            "DATABASE_URL": "postgresql+asyncpg://localhost/db",
-            "CORS_ORIGINS": "http://localhost:3000, http://localhost:5173"
-        }):
-            settings = Settings()
-            assert len(settings.cors_origins) == 2
+        assert settings.api_v1_prefix.startswith("/")

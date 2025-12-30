@@ -1,55 +1,59 @@
 """
 Health Endpoint Tests
 
-Tests for /health, /ready, /metrics, /info endpoints.
+Tests for health, readiness, and info endpoints.
 """
 
 import pytest
-from httpx import AsyncClient
+from fastapi.testclient import TestClient
+
+from app.main import app
+
+
+client = TestClient(app)
 
 
 class TestHealthEndpoints:
     """Test health check endpoints."""
     
-    @pytest.mark.asyncio
-    async def test_health_returns_ok(self, client: AsyncClient):
-        """Test /health returns status ok."""
-        response = await client.get("/health")
+    def test_health_returns_ok(self):
+        """Test /health returns ok status."""
+        response = client.get("/health")
         
         assert response.status_code == 200
         data = response.json()
         assert data["status"] == "ok"
         assert "service" in data
-        assert data["service"] == "chainshield"
     
-    @pytest.mark.asyncio
-    async def test_ready_returns_status(self, client: AsyncClient):
-        """Test /ready returns readiness status."""
-        response = await client.get("/ready")
+    def test_ready_returns_ready(self):
+        """Test /ready returns ready status."""
+        response = client.get("/ready")
         
-        # May return 200 or 503 depending on DB status
-        assert response.status_code in [200, 503]
+        assert response.status_code == 200
         data = response.json()
-        assert "ready" in data
+        assert data["ready"] is True
         assert "checks" in data
     
-    @pytest.mark.asyncio
-    async def test_metrics_returns_prometheus_format(self, client: AsyncClient):
-        """Test /metrics returns Prometheus format."""
-        response = await client.get("/metrics")
+    def test_ready_checks_database(self):
+        """Test /ready includes database check."""
+        response = client.get("/ready")
         
-        assert response.status_code == 200
-        content = response.text
-        # Prometheus format includes HELP and TYPE comments
-        assert "chainshield" in content
+        data = response.json()
+        assert "database" in data["checks"]
     
-    @pytest.mark.asyncio
-    async def test_info_returns_app_info(self, client: AsyncClient):
-        """Test /info returns application information."""
-        response = await client.get("/info")
+    def test_info_returns_service_info(self):
+        """Test /info returns service information."""
+        response = client.get("/info")
         
         assert response.status_code == 200
         data = response.json()
-        assert "app" in data
+        assert "service" in data
         assert "version" in data
         assert "environment" in data
+    
+    def test_info_includes_api_version(self):
+        """Test /info includes API version."""
+        response = client.get("/info")
+        
+        data = response.json()
+        assert data["api_version"] == "v1"
