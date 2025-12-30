@@ -182,9 +182,6 @@ def generate_api_key() -> Tuple[str, str, str]:
     # Hash for storage
     key_hash = hash_api_key(full_key)
     
-    # Key prefix for display (first 12 chars)
-    key_prefix = full_key[:12]
-    
     return full_key, key_hash, key_id
 
 

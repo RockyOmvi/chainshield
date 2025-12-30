@@ -10,10 +10,10 @@ Robust retry logic with:
 import asyncio
 import random
 import time
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from enum import Enum
 from functools import wraps
-from typing import Any, Callable, Optional, Set, Type, TypeVar, Union
+from typing import Callable, Optional, Type, TypeVar
 
 from app.core.logging import get_logger
 
@@ -283,7 +283,7 @@ def with_retry(
                     
                     return result
                     
-                except retry_config.non_retryable_exceptions as e:
+                except retry_config.non_retryable_exceptions:
                     # Don't retry these
                     raise
                     

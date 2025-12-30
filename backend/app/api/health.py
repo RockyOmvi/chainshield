@@ -66,7 +66,6 @@ async def ready():
     
     # Redis check
     try:
-        from fastapi import Request
         # Get Redis from app state (set in lifespan)
         # We need to access it via a workaround since we're not in a request context
         from app.utils.cache import cache

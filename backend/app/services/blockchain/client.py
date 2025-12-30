@@ -15,13 +15,12 @@ from dataclasses import dataclass
 from datetime import datetime
 from decimal import Decimal
 from typing import Any, Dict, List, Optional, Union
-import asyncio
 
 import httpx
 
 from app.core.config import settings
 from app.core.logging import get_logger
-from app.utils.retry import with_retry, CircuitBreaker
+from app.utils.retry import CircuitBreaker
 from app.utils.cache import cached
 
 logger = get_logger(__name__)

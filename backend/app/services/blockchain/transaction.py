@@ -16,7 +16,6 @@ from app.core.logging import get_logger
 from app.services.blockchain.client import (
     blockchain_client,
     TransactionData,
-    TransactionReceipt,
 )
 from app.schemas import (
     TransactionAnalyzeRequest,

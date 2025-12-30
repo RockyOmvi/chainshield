@@ -5,11 +5,10 @@ Wallet analysis and risk scoring endpoints.
 Connected to real blockchain data via service layer.
 """
 
-from datetime import datetime
 from fastapi import APIRouter, Depends, Query, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_db, get_current_user_optional, get_api_key_user
+from app.api.deps import get_db, get_api_key_user
 from app.core.logging import get_logger
 from app.schemas import (
     WalletAnalyzeRequest,
@@ -18,7 +17,6 @@ from app.schemas import (
     WalletProfile,
     BaseResponse,
     ResponseMeta,
-    RiskLevel,
     Chain,
 )
 from app.schemas.base import validate_ethereum_address

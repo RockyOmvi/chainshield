@@ -13,9 +13,8 @@ import hashlib
 import json
 import time
 from functools import wraps
-from typing import Any, Callable, Optional, TypeVar, Union
+from typing import Any, Callable, Optional, TypeVar
 
-from app.core.config import settings
 from app.core.logging import get_logger
 
 logger = get_logger(__name__)

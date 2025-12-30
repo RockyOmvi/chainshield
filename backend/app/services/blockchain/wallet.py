@@ -9,10 +9,10 @@ Business logic for wallet analysis including:
 """
 
 from datetime import datetime
-from decimal import Decimal
-from typing import Optional, Dict, Any, List
+from typing import Optional, List
 
 from app.core.logging import get_logger
+from app.core.config import settings
 from app.services.blockchain.client import (
     blockchain_client,
     WalletBalance,
@@ -307,9 +307,6 @@ class WalletService:
         
         return "\n".join(parts)
 
-
-# Import settings for risk thresholds
-from app.core.config import settings
 
 # Global service instance
 wallet_service = WalletService()

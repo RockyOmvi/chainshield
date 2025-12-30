@@ -4,7 +4,6 @@ ChainShield Transaction API Endpoints
 Transaction analysis endpoints connected to real blockchain data.
 """
 
-from datetime import datetime
 from fastapi import APIRouter, Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
@@ -14,11 +13,8 @@ from app.schemas import (
     TransactionAnalyzeRequest,
     TransactionAnalyzeResponse,
     TransactionSummary,
-    TransactionRiskScore,
     BaseResponse,
     ResponseMeta,
-    RiskLevel,
-    Chain,
 )
 from app.schemas.base import validate_tx_hash
 from app.services.blockchain import transaction_service

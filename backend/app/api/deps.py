@@ -15,7 +15,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.core.config import settings
 from app.core.database import get_db
-from app.core.security import verify_token, verify_api_key, hash_api_key
+from app.core.security import verify_token, hash_api_key
 from app.core.errors import UnauthorizedError, ForbiddenError
 from app.core.logging import get_logger
 

@@ -11,7 +11,7 @@ Multi-layer rate limiting with:
 import time
 from dataclasses import dataclass
 from typing import Optional
-from fastapi import Request, HTTPException
+from fastapi import Request
 from starlette.middleware.base import BaseHTTPMiddleware
 
 from app.core.config import settings

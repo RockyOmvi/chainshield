@@ -8,7 +8,6 @@ Structured logging with:
 - Error context preservation
 """
 
-import sys
 import time
 from contextvars import ContextVar
 from typing import Any, Dict, Optional

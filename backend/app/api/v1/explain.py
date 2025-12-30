@@ -10,7 +10,6 @@ from fastapi import APIRouter, Depends, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import get_db, get_api_key_user
-from app.core.config import settings
 from app.core.logging import get_logger
 from app.schemas import (
     ExplainRequest,
