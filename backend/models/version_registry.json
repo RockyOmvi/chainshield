@@ -1,0 +1,40 @@
+{
+  "current_version": "2.0.0",
+  "last_updated": "2025-12-31T16:43:51.990611",
+  "versions": [
+    {
+      "version": "2.0.0",
+      "model_type": "classifier",
+      "trained_at": "2025-12-31T16:43:27.518899",
+      "file_path": "models/risk_classifier_v2.pkl",
+      "n_samples": 478796,
+      "fraud_ratio": 0.22,
+      "accuracy": 0.9038,
+      "precision": 0,
+      "recall": 0,
+      "f1_score": 0.85,
+      "roc_auc": 0.998,
+      "is_active": true,
+      "is_shadow": false,
+      "notes": "Trained on real Kaggle data",
+      "feature_names": []
+    },
+    {
+      "version": "2.0.0",
+      "model_type": "classifier",
+      "trained_at": "2025-12-31T16:43:51.989867",
+      "file_path": "models/risk_classifier_v2.pkl",
+      "n_samples": 478796,
+      "fraud_ratio": 0.22,
+      "accuracy": 0.9038,
+      "precision": 0,
+      "recall": 0,
+      "f1_score": 0.85,
+      "roc_auc": 0.998,
+      "is_active": false,
+      "is_shadow": false,
+      "notes": "Trained on real Kaggle data",
+      "feature_names": []
+    }
+  ]
+}
