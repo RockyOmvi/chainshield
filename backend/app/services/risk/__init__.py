@@ -13,7 +13,7 @@ All components are designed for:
 - Graceful degradation
 """
 
-from app.services.risk.engine import RiskEngine
+from app.services.risk.engine import RiskEngine, get_risk_engine, RiskAssessment
 from app.services.risk.features import (
     WalletFeatureExtractor,
     TransactionFeatureExtractor,
@@ -23,6 +23,8 @@ from app.services.risk.config import RiskConfig
 
 __all__ = [
     "RiskEngine",
+    "get_risk_engine",
+    "RiskAssessment",
     "WalletFeatureExtractor",
     "TransactionFeatureExtractor",
     "FeatureVector",

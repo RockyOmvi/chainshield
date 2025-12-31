@@ -21,6 +21,30 @@ class RuleSeverity(str, Enum):
     MEDIUM = "medium"      # Moderate concern
     LOW = "low"            # Minor flag
     INFO = "info"          # Informational only
+    
+    @property
+    def weight(self) -> int:
+        """Numeric weight for proper severity comparison."""
+        weights = {
+            "critical": 5,
+            "high": 4,
+            "medium": 3,
+            "low": 2,
+            "info": 1
+        }
+        return weights[self.value]
+    
+    def __gt__(self, other: "RuleSeverity") -> bool:
+        return self.weight > other.weight
+    
+    def __ge__(self, other: "RuleSeverity") -> bool:
+        return self.weight >= other.weight
+    
+    def __lt__(self, other: "RuleSeverity") -> bool:
+        return self.weight < other.weight
+    
+    def __le__(self, other: "RuleSeverity") -> bool:
+        return self.weight <= other.weight
 
 
 @dataclass

@@ -28,9 +28,8 @@ Architecture:
 """
 
 from dataclasses import dataclass, field
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Any, Dict, List, Optional, Tuple
-import asyncio
 import structlog
 
 from app.services.risk.config import RiskConfig, risk_config
@@ -179,11 +178,12 @@ class RiskEngine:
             layers_evaluated.append("rules")
             
             # Add rule factors
-            for factor in rule_result.get("factors", []):
+            rule_factors = rule_result.get("factors") or []
+            for factor in rule_factors:
                 risk_factors.append(RiskFactor(
                     name="rule_match",
                     description=factor,
-                    score_contribution=rule_score / max(len(rule_result["factors"]), 1),
+                    score_contribution=rule_score / max(len(rule_factors), 1),
                     source="rule"
                 ))
             
@@ -476,5 +476,13 @@ class RiskEngine:
         }
 
 
-# Global engine instance
-risk_engine = RiskEngine()
+# Lazy initialization to avoid import-time model loading
+_risk_engine: Optional[RiskEngine] = None
+
+
+def get_risk_engine() -> RiskEngine:
+    """Get the global risk engine instance (lazy initialization)."""
+    global _risk_engine
+    if _risk_engine is None:
+        _risk_engine = RiskEngine()
+    return _risk_engine
