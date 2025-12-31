@@ -1,0 +1,137 @@
+{
+  "version": "1.0.0",
+  "trained_at": "2025-12-31T15:44:03.151040",
+  "feature_names": [
+    "age_hours",
+    "age_days",
+    "balance_eth",
+    "balance_log",
+    "tx_count_total",
+    "total_received_eth",
+    "total_sent_eth",
+    "total_received_log",
+    "total_sent_log",
+    "avg_tx_value_eth",
+    "max_tx_value_eth",
+    "volume_24h_eth",
+    "volume_7d_eth",
+    "tx_per_hour_avg",
+    "tx_per_hour_max",
+    "tx_per_day_avg",
+    "time_between_tx_avg_hours",
+    "time_between_tx_min_hours",
+    "in_out_ratio",
+    "self_transfer_ratio",
+    "contract_interaction_ratio",
+    "failed_tx_ratio",
+    "avg_gas_price_gwei",
+    "gas_price_variance",
+    "unique_senders",
+    "unique_receivers",
+    "counterparty_concentration",
+    "new_counterparty_ratio",
+    "active_hours_entropy",
+    "weekend_tx_ratio",
+    "night_tx_ratio",
+    "burst_score",
+    "mixer_interaction_count",
+    "new_contract_interaction_count",
+    "round_number_tx_ratio",
+    "dust_tx_ratio"
+  ],
+  "n_features": 36,
+  "classifier": {
+    "type": "RandomForestClassifier",
+    "n_estimators": 100,
+    "max_depth": 15
+  },
+  "anomaly_detector": {
+    "type": "IsolationForest",
+    "n_estimators": 100
+  },
+  "metrics": {
+    "classifier": {
+      "accuracy": 1.0,
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1_score": 1.0,
+      "roc_auc": 1.0,
+      "confusion_matrix": [
+        [
+          1455,
+          0
+        ],
+        [
+          0,
+          545
+        ]
+      ]
+    },
+    "feature_importance": [
+      [
+        "age_days",
+        0.23036977695691796
+      ],
+      [
+        "age_hours",
+        0.1501706091558895
+      ],
+      [
+        "total_received_log",
+        0.14828189679482803
+      ],
+      [
+        "total_sent_log",
+        0.13344454053463012
+      ],
+      [
+        "tx_per_hour_avg",
+        0.10396877274417075
+      ],
+      [
+        "dust_tx_ratio",
+        0.05585795457225812
+      ],
+      [
+        "tx_per_day_avg",
+        0.05255029017688478
+      ],
+      [
+        "active_hours_entropy",
+        0.03932150640580587
+      ],
+      [
+        "failed_tx_ratio",
+        0.03142343933050107
+      ],
+      [
+        "unique_receivers",
+        0.01379835214139303
+      ],
+      [
+        "round_number_tx_ratio",
+        0.010164892571071692
+      ],
+      [
+        "new_contract_interaction_count",
+        0.007781290518664977
+      ],
+      [
+        "tx_count_total",
+        0.006085900065461153
+      ],
+      [
+        "burst_score",
+        0.003396221020339779
+      ],
+      [
+        "self_transfer_ratio",
+        0.003233571150244524
+      ]
+    ],
+    "anomaly_detector": {
+      "n_estimators": 100,
+      "contamination": 0.1
+    }
+  }
+}

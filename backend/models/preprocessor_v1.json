@@ -1,0 +1,259 @@
+{
+  "feature_names": [
+    "age_hours",
+    "age_days",
+    "balance_eth",
+    "balance_log",
+    "tx_count_total",
+    "total_received_eth",
+    "total_sent_eth",
+    "total_received_log",
+    "total_sent_log",
+    "avg_tx_value_eth",
+    "max_tx_value_eth",
+    "volume_24h_eth",
+    "volume_7d_eth",
+    "tx_per_hour_avg",
+    "tx_per_hour_max",
+    "tx_per_day_avg",
+    "time_between_tx_avg_hours",
+    "time_between_tx_min_hours",
+    "in_out_ratio",
+    "self_transfer_ratio",
+    "contract_interaction_ratio",
+    "failed_tx_ratio",
+    "avg_gas_price_gwei",
+    "gas_price_variance",
+    "unique_senders",
+    "unique_receivers",
+    "counterparty_concentration",
+    "new_counterparty_ratio",
+    "active_hours_entropy",
+    "weekend_tx_ratio",
+    "night_tx_ratio",
+    "burst_score",
+    "mixer_interaction_count",
+    "new_contract_interaction_count",
+    "round_number_tx_ratio",
+    "dust_tx_ratio"
+  ],
+  "scaler_stats": {
+    "age_hours": {
+      "mean": 6389.256400192126,
+      "std": 5746.961492246498,
+      "min_val": 1.0306178790912823,
+      "max_val": 17519.042291903916
+    },
+    "age_days": {
+      "mean": 266.21901667467193,
+      "std": 239.45672884360408,
+      "min_val": 0.04294241162880343,
+      "max_val": 729.9600954959965
+    },
+    "balance_eth": {
+      "mean": 1.6867372135519487,
+      "std": 1.323755398896574,
+      "min_val": 0.001374929603415907,
+      "max_val": 7.277136473994213
+    },
+    "balance_log": {
+      "mean": 1.6130568868704704,
+      "std": 1.3353848246590962,
+      "min_val": 0.001374929603415907,
+      "max_val": 7.277136473994213
+    },
+    "tx_count_total": {
+      "mean": 236.53920904217892,
+      "std": 189.11065840569597,
+      "min_val": 3.0,
+      "max_val": 500.0
+    },
+    "total_received_eth": {
+      "mean": 2.7673926071982615,
+      "std": 1.786225932702112,
+      "min_val": 0.007378950499677678,
+      "max_val": 8.424611632230443
+    },
+    "total_sent_eth": {
+      "mean": 2.284509074984902,
+      "std": 1.7634476979360032,
+      "min_val": 0.00018915842881360922,
+      "max_val": 8.186109451195138
+    },
+    "total_received_log": {
+      "mean": 1.686626360866512,
+      "std": 1.7585679481963306,
+      "min_val": 0.0,
+      "max_val": 8.2301950566704
+    },
+    "total_sent_log": {
+      "mean": 1.440650685965248,
+      "std": 1.6356128516317883,
+      "min_val": 0.0,
+      "max_val": 8.015149077635355
+    },
+    "avg_tx_value_eth": {
+      "mean": 0.0,
+      "std": 1.0,
+      "min_val": 0.0,
+      "max_val": 0.0
+    },
+    "max_tx_value_eth": {
+      "mean": 1.54616073052603,
+      "std": 1.3613630884087886,
+      "min_val": 0.003003552366670067,
+      "max_val": 7.8985071940229465
+    },
+    "volume_24h_eth": {
+      "mean": 0.8082689122708204,
+      "std": 1.1258175987066426,
+      "min_val": 1.4804782164272057e-05,
+      "max_val": 7.05876718422796
+    },
+    "volume_7d_eth": {
+      "mean": 1.0996518374590287,
+      "std": 1.2387050877195924,
+      "min_val": 8.963325177983545e-06,
+      "max_val": 7.721242473658164
+    },
+    "tx_per_hour_avg": {
+      "mean": 3.42598640852724,
+      "std": 9.173835309965641,
+      "min_val": 0.0038437432285435866,
+      "max_val": 82.20877434798625
+    },
+    "tx_per_hour_max": {
+      "mean": 2.1280356857509655,
+      "std": 1.0393764385996294,
+      "min_val": 0.5005942311499127,
+      "max_val": 4.999289269967745
+    },
+    "tx_per_day_avg": {
+      "mean": 2.29466449848903,
+      "std": 2.5944155298021236,
+      "min_val": 0.09224983748504609,
+      "max_val": 9.999071903541559
+    },
+    "time_between_tx_avg_hours": {
+      "mean": 0.0,
+      "std": 1.0,
+      "min_val": 0.0,
+      "max_val": 0.0
+    },
+    "time_between_tx_min_hours": {
+      "mean": 0.0,
+      "std": 1.0,
+      "min_val": 0.0,
+      "max_val": 0.0
+    },
+    "in_out_ratio": {
+      "mean": 0.5158752560297596,
+      "std": 0.16381615545846226,
+      "min_val": 0.010582058093576048,
+      "max_val": 0.9895370228436025
+    },
+    "self_transfer_ratio": {
+      "mean": 0.0322957189298082,
+      "std": 0.02302294318183016,
+      "min_val": 2.606837825330777e-06,
+      "max_val": 0.09995297913828644
+    },
+    "contract_interaction_ratio": {
+      "mean": 0.284049286905002,
+      "std": 0.1728436282114496,
+      "min_val": 2.7945861686473616e-05,
+      "max_val": 0.9499138494136575
+    },
+    "failed_tx_ratio": {
+      "mean": 0.06476060517200731,
+      "std": 0.10477020263023436,
+      "min_val": 1.894006949720861e-05,
+      "max_val": 0.699556247195343
+    },
+    "avg_gas_price_gwei": {
+      "mean": 0.0,
+      "std": 1.0,
+      "min_val": 0.0,
+      "max_val": 0.0
+    },
+    "gas_price_variance": {
+      "mean": 0.0,
+      "std": 1.0,
+      "min_val": 0.0,
+      "max_val": 0.0
+    },
+    "unique_senders": {
+      "mean": 47.754125,
+      "std": 80.39256135044072,
+      "min_val": 1,
+      "max_val": 497
+    },
+    "unique_receivers": {
+      "mean": 20.553625,
+      "std": 14.84865732513802,
+      "min_val": 1,
+      "max_val": 50
+    },
+    "counterparty_concentration": {
+      "mean": 0.30781003445606425,
+      "std": 0.1816845985618808,
+      "min_val": 0.10001545545299179,
+      "max_val": 0.9498833534551689
+    },
+    "new_counterparty_ratio": {
+      "mean": 0.0,
+      "std": 1.0,
+      "min_val": 0.0,
+      "max_val": 0.0
+    },
+    "active_hours_entropy": {
+      "mean": 0.5454489741251778,
+      "std": 0.20346250148285314,
+      "min_val": 0.05004401577901317,
+      "max_val": 0.7999276198544742
+    },
+    "weekend_tx_ratio": {
+      "mean": 0.27516870646336633,
+      "std": 0.0542409740503422,
+      "min_val": 0.150082655844789,
+      "max_val": 0.3999804832044514
+    },
+    "night_tx_ratio": {
+      "mean": 0.21490929658007202,
+      "std": 0.0711940203277941,
+      "min_val": 0.10001858238444583,
+      "max_val": 0.3999313112753824
+    },
+    "burst_score": {
+      "mean": 0.2129814634397664,
+      "std": 0.184308261592841,
+      "min_val": 1.5845002596392988e-05,
+      "max_val": 0.9495859473787389
+    },
+    "mixer_interaction_count": {
+      "mean": 0.389625,
+      "std": 1.6083585916626304,
+      "min_val": 0,
+      "max_val": 10
+    },
+    "new_contract_interaction_count": {
+      "mean": 6.385625,
+      "std": 14.400882554877494,
+      "min_val": 0,
+      "max_val": 100
+    },
+    "round_number_tx_ratio": {
+      "mean": 0.14858255247887758,
+      "std": 0.14156855850097916,
+      "min_val": 0.0008103861302908855,
+      "max_val": 0.7993519748026132
+    },
+    "dust_tx_ratio": {
+      "mean": 0.05002056433372043,
+      "std": 0.1213711738279294,
+      "min_val": 5.648521421819375e-07,
+      "max_val": 0.6997664844018187
+    }
+  },
+  "is_fitted": true
+}

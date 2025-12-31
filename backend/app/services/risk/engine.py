@@ -41,6 +41,7 @@ from app.services.risk.features import (
 from app.services.risk.rules import rule_registry
 from app.services.risk.ml.model import RiskClassifier
 from app.services.risk.ml.anomaly import AnomalyDetector
+from app.services.risk.heuristics import HeuristicsAggregator
 
 logger = structlog.get_logger()
 
@@ -144,6 +145,9 @@ class RiskEngine:
         self.classifier = RiskClassifier()
         self.anomaly_detector = AnomalyDetector()
         
+        # Initialize heuristics aggregator (Layer 2)
+        self.heuristics = HeuristicsAggregator()
+        
         self.logger.info("risk_engine_initialized")
     
     async def assess_wallet(
@@ -193,7 +197,20 @@ class RiskEngine:
                     rule_result, features, start_time, layers_evaluated
                 )
             
-            # Step 3: ML prediction (Layer 3)
+            # Step 3: Heuristics evaluation (Layer 2)
+            heuristic_result = self.heuristics.evaluate_all(features.features)
+            heuristic_score = heuristic_result["combined_score"]
+            layers_evaluated.append("heuristics")
+            
+            for factor in heuristic_result.get("factors", []):
+                risk_factors.append(RiskFactor(
+                    name="heuristic_match",
+                    description=factor,
+                    score_contribution=heuristic_score / max(len(heuristic_result.get("factors", [])), 1),
+                    source="heuristic"
+                ))
+            
+            # Step 4: ML prediction (Layer 3)
             ml_score, ml_factors = self.classifier.predict(features)
             layers_evaluated.append("ml")
             
@@ -205,7 +222,7 @@ class RiskEngine:
                     source="ml"
                 ))
             
-            # Step 4: Anomaly detection
+            # Step 5: Anomaly detection
             anomaly_score, anomaly_severity, anomaly_factors = self.anomaly_detector.detect(
                 features
             )
@@ -219,10 +236,10 @@ class RiskEngine:
                     source="ml"
                 ))
             
-            # Step 5: Aggregate scores
+            # Step 6: Aggregate scores
             final_score, confidence = self._aggregate_scores(
                 rule_score=rule_score,
-                heuristic_score=0.0,  # TODO: Add heuristics layer
+                heuristic_score=heuristic_score,
                 ml_score=ml_score,
                 anomaly_score=anomaly_score
             )
@@ -249,7 +266,7 @@ class RiskEngine:
                 )[:self.config.max_risk_factors],
                 summary=summary,
                 rule_score=rule_score,
-                heuristic_score=0.0,
+                heuristic_score=heuristic_score,
                 ml_score=ml_score,
                 anomaly_score=anomaly_score,
                 processing_time_ms=processing_time,
