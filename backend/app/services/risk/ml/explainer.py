@@ -12,9 +12,7 @@ Why SHAP:
 """
 
 from dataclasses import dataclass
-from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
-import json
 import structlog
 
 logger = structlog.get_logger()
@@ -107,7 +105,6 @@ class SHAPExplainer:
         top_n: int
     ) -> PredictionExplanation:
         """Explain using SHAP values."""
-        import shap
         import numpy as np
         
         # Convert to array

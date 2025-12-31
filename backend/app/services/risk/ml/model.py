@@ -207,7 +207,6 @@ class RiskClassifier:
         
         result = []
         for name, importance in sorted_features[:top_n]:
-            value = features.get(name, 0)
             # Score contribution = importance * normalized value
             contribution = importance * 100
             result.append((name, round(contribution, 2)))

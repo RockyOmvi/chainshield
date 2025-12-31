@@ -5,12 +5,11 @@ Detects known malicious transaction patterns.
 This catches phishing, honeypots, and exploit signatures.
 """
 
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, Optional
 import re
 import structlog
 
 from app.services.risk.rules.base import RiskRule, RuleResult, RuleSeverity
-from app.services.risk.config import risk_config
 
 logger = structlog.get_logger()
 

@@ -5,7 +5,7 @@ Manages all rules and executes them in the correct order.
 Provides aggregation of rule results.
 """
 
-from typing import Any, Dict, List, Optional, Type
+from typing import Any, Dict, List, Optional
 import structlog
 
 from app.services.risk.rules.base import RiskRule, RuleResult, RuleSeverity
