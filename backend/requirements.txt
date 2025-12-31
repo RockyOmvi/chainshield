@@ -29,12 +29,13 @@ structlog>=24.1.0
 # Blockchain
 web3>=6.15.0
 
-# ML/AI (will be used in Phase 3-4)
-# numpy>=1.26.0
-# pandas>=2.2.0
-# scikit-learn>=1.4.0
-# xgboost>=2.0.0
-# networkx>=3.2.0
+# ML/AI (Phase 3 - Risk Engine)
+numpy>=1.26.0
+scikit-learn>=1.4.0
+joblib>=1.3.0
+
+# Graph Analysis (Phase 3)
+# networkx>=3.2.0  # Enable when needed
 
 # OpenAI (will be used in Phase 4)
 # openai>=1.10.0
