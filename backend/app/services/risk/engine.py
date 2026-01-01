@@ -277,7 +277,6 @@ class RiskEngine:
             # Step 7: Cross-Chain Analysis
             crosschain_score = 0.0
             try:
-                from app.blockchain.crosschain_resolver import get_crosschain_resolver
                 from app.blockchain.bridges import get_bridge_registry
                 
                 transactions = wallet_data.get("transactions", [])
