@@ -7,8 +7,7 @@ Improves fraud recall by addressing class imbalance.
 
 import numpy as np
 import pandas as pd
-from pathlib import Path
-from typing import Any, Dict, Optional, Tuple
+from typing import Any, Dict, Tuple
 import structlog
 
 logger = structlog.get_logger()
@@ -54,7 +53,7 @@ class SMOTETrainer:
         from sklearn.ensemble import RandomForestClassifier, VotingClassifier
         from sklearn.metrics import (
             accuracy_score, precision_score, recall_score,
-            f1_score, roc_auc_score, classification_report
+            f1_score, roc_auc_score
         )
         
         self.logger.info(

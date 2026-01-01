@@ -6,7 +6,7 @@ Makes risk decisions understandable for analysts and compliance.
 """
 
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 import structlog
 
 logger = structlog.get_logger()

@@ -7,7 +7,6 @@ Adds 15+ new features for better fraud detection.
 
 from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
-import math
 import structlog
 
 logger = structlog.get_logger()

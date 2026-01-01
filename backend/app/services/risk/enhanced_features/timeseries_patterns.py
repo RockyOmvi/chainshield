@@ -8,7 +8,7 @@ Identifies suspicious timing patterns that indicate fraud.
 import numpy as np
 from collections import Counter
 from datetime import datetime, timedelta
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 import structlog
 
 logger = structlog.get_logger()

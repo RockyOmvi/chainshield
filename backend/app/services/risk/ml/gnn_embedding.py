@@ -6,7 +6,7 @@ Learns structural patterns in transaction graphs.
 """
 
 import numpy as np
-from typing import Any, Dict, List, Optional, Tuple
+from typing import Any, Dict, List, Optional
 import structlog
 
 logger = structlog.get_logger()
