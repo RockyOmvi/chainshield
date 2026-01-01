@@ -7,7 +7,8 @@ Tests for the ML Risk Engine (Phase 3).
 import pytest
 from datetime import datetime, timedelta
 
-from app.services.risk import RiskEngine, WalletFeatureExtractor, FeatureVector
+from app.services.risk.engine import RiskEngine
+from app.services.risk.features import WalletFeatureExtractor, FeatureVector
 from app.services.risk.rules import BlacklistRule, VelocityRule, PatternRule
 from app.services.risk.rules.base import RuleResult, RuleSeverity
 from app.services.risk.ml.model import RiskClassifier
