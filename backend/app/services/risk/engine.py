@@ -239,18 +239,18 @@ class RiskEngine:
             # Step 6: Graph Analysis (if transactions available)
             graph_score = 0.0
             try:
-                from app.services.risk.graph.metrics import GraphFeatureExtractor
+                from app.services.risk.graph.metrics import GraphMetricsExtractor
                 from app.services.risk.graph.builder import TransactionGraphBuilder
                 
                 transactions = wallet_data.get("transactions", [])
                 if transactions and len(transactions) >= 3:
                     # Build transaction graph
                     builder = TransactionGraphBuilder()
-                    graph = builder.build_from_transactions(transactions)
+                    builder.build_from_transactions(transactions)
                     
                     # Extract graph features
-                    extractor = GraphFeatureExtractor(graph)
-                    graph_features = extractor.extract_features(wallet_data.get("address", ""))
+                    extractor = GraphMetricsExtractor()
+                    graph_features = extractor.extract_metrics(builder, wallet_data.get("address", ""))
                     
                     # Calculate graph risk score
                     if graph_features:
