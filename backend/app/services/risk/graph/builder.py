@@ -34,13 +34,32 @@ class TransactionGraphBuilder:
     - Nodes = wallet addresses
     - Edges = value transfers
     - Edge weights = total value transferred
+    
+    Memory Protection:
+    - MAX_NODES: 10,000 nodes limit
+    - MAX_EDGES: 50,000 edges limit
     """
     
-    def __init__(self):
-        """Initialize graph builder."""
+    # Memory protection limits
+    MAX_NODES = 10_000
+    MAX_EDGES = 50_000
+    
+    def __init__(self, max_nodes: int = None, max_edges: int = None):
+        """
+        Initialize graph builder with optional custom limits.
+        
+        Args:
+            max_nodes: Maximum number of nodes (default: 10,000)
+            max_edges: Maximum number of edges (default: 50,000)
+        """
         self.logger = logger.bind(module="graph_builder")
         self.nodes: Set[str] = set()
         self.edges: Dict[str, GraphEdge] = {}  # "from->to" -> edge
+        
+        # Apply limits
+        self.max_nodes = max_nodes or self.MAX_NODES
+        self.max_edges = max_edges or self.MAX_EDGES
+        self.limit_reached = False
         
         try:
             import networkx as nx
@@ -58,7 +77,7 @@ class TransactionGraphBuilder:
         to_address: str,
         value: float,
         timestamp: Optional[str] = None
-    ) -> None:
+    ) -> bool:
         """
         Add a transaction to the graph.
         
@@ -67,16 +86,44 @@ class TransactionGraphBuilder:
             to_address: Receiver address
             value: Transaction value
             timestamp: Optional timestamp
+            
+        Returns:
+            True if added, False if limit reached
         """
+        # Check limits before adding
+        if len(self.edges) >= self.max_edges:
+            if not self.limit_reached:
+                self.logger.warning(
+                    "graph_edge_limit_reached",
+                    max_edges=self.max_edges
+                )
+                self.limit_reached = True
+            return False
+        
         from_addr = from_address.lower()
         to_addr = to_address.lower()
+        
+        # Check node limit for new nodes
+        edge_key = f"{from_addr}->{to_addr}"
+        new_nodes_needed = sum([
+            from_addr not in self.nodes,
+            to_addr not in self.nodes
+        ])
+        
+        if len(self.nodes) + new_nodes_needed > self.max_nodes:
+            if not self.limit_reached:
+                self.logger.warning(
+                    "graph_node_limit_reached",
+                    max_nodes=self.max_nodes
+                )
+                self.limit_reached = True
+            return False
         
         # Add nodes
         self.nodes.add(from_addr)
         self.nodes.add(to_addr)
         
         # Add or update edge
-        edge_key = f"{from_addr}->{to_addr}"
         if edge_key in self.edges:
             edge = self.edges[edge_key]
             edge.value += value
@@ -102,6 +149,8 @@ class TransactionGraphBuilder:
                     weight=value,
                     count=1
                 )
+        
+        return True
     
     def build_from_transactions(
         self,
