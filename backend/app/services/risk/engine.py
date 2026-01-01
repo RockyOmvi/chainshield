@@ -236,12 +236,88 @@ class RiskEngine:
                     source="ml"
                 ))
             
-            # Step 6: Aggregate scores
+            # Step 6: Graph Analysis (if transactions available)
+            graph_score = 0.0
+            try:
+                from app.services.risk.graph.metrics import GraphFeatureExtractor
+                from app.services.risk.graph.builder import TransactionGraphBuilder
+                
+                transactions = wallet_data.get("transactions", [])
+                if transactions and len(transactions) >= 3:
+                    # Build transaction graph
+                    builder = TransactionGraphBuilder()
+                    graph = builder.build_from_transactions(transactions)
+                    
+                    # Extract graph features
+                    extractor = GraphFeatureExtractor(graph)
+                    graph_features = extractor.extract_features(wallet_data.get("address", ""))
+                    
+                    # Calculate graph risk score
+                    if graph_features:
+                        # High centrality = potential hub = higher risk
+                        centrality = graph_features.get("degree_centrality", 0)
+                        clustering = graph_features.get("clustering_coefficient", 0)
+                        
+                        # High centrality with low clustering = suspicious
+                        if centrality > 0.5 and clustering < 0.2:
+                            graph_score = 20.0
+                            risk_factors.append(RiskFactor(
+                                name="high_centrality_hub",
+                                description=f"Hub wallet with {centrality:.1%} centrality",
+                                score_contribution=graph_score,
+                                source="graph"
+                            ))
+                        
+                        layers_evaluated.append("graph")
+            except ImportError:
+                pass  # Graph modules optional
+            except Exception as e:
+                self.logger.debug("graph_analysis_skipped", reason=str(e))
+            
+            # Step 7: Cross-Chain Analysis
+            crosschain_score = 0.0
+            try:
+                from app.blockchain.crosschain_resolver import get_crosschain_resolver
+                from app.blockchain.bridges import get_bridge_registry
+                
+                transactions = wallet_data.get("transactions", [])
+                
+                # Check bridge interactions
+                bridge_registry = get_bridge_registry()
+                bridge_txs = 0
+                high_risk_bridges = 0
+                
+                for tx in transactions:
+                    to_addr = tx.get("to", "")
+                    is_bridge, bridge_name, risk_level = bridge_registry.is_bridge_transaction(to_addr)
+                    if is_bridge:
+                        bridge_txs += 1
+                        if risk_level == "high":
+                            high_risk_bridges += 1
+                
+                if bridge_txs > 0:
+                    # Bridge usage adds risk
+                    crosschain_score = min(bridge_txs * 2 + high_risk_bridges * 10, 30.0)
+                    risk_factors.append(RiskFactor(
+                        name="bridge_usage",
+                        description=f"{bridge_txs} bridge transactions ({high_risk_bridges} high-risk)",
+                        score_contribution=crosschain_score,
+                        source="crosschain"
+                    ))
+                    layers_evaluated.append("crosschain")
+            except ImportError:
+                pass  # Cross-chain modules optional
+            except Exception as e:
+                self.logger.debug("crosschain_analysis_skipped", reason=str(e))
+            
+            # Step 8: Aggregate scores (including new layers)
             final_score, confidence = self._aggregate_scores(
                 rule_score=rule_score,
                 heuristic_score=heuristic_score,
                 ml_score=ml_score,
-                anomaly_score=anomaly_score
+                anomaly_score=anomaly_score,
+                graph_score=graph_score,
+                crosschain_score=crosschain_score
             )
             
             # Step 6: Determine risk level
@@ -361,7 +437,9 @@ class RiskEngine:
         rule_score: float,
         heuristic_score: float,
         ml_score: float,
-        anomaly_score: float
+        anomaly_score: float,
+        graph_score: float = 0.0,
+        crosschain_score: float = 0.0
     ) -> Tuple[float, float]:
         """
         Aggregate layer scores into final score.
@@ -390,12 +468,18 @@ class RiskEngine:
         # Anomaly adds on top (not averaged in)
         anomaly_boost = min(anomaly_score * 0.3, 20)  # Max 20 point boost
         
+        # Graph score adds on top
+        graph_boost = min(graph_score, 20)  # Max 20 point boost
+        
+        # Cross-chain score adds on top
+        crosschain_boost = min(crosschain_score, 30)  # Max 30 point boost
+        
         if total_weight > 0:
             base_score = weighted_sum / total_weight
         else:
             base_score = (rule_score + ml_score) / 2
         
-        final_score = min(base_score + anomaly_boost, 100)
+        final_score = min(base_score + anomaly_boost + graph_boost + crosschain_boost, 100)
         
         # Confidence based on agreement between layers
         scores = [s for s in [rule_score, ml_score, anomaly_score] if s > 0]
