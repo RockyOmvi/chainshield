@@ -107,13 +107,78 @@ def create_app() -> FastAPI:
     
     Creates and configures the FastAPI application.
     """
+    
+    # OpenAPI metadata for Swagger documentation
+    openapi_tags = [
+        {
+            "name": "Health",
+            "description": "System health and readiness checks",
+        },
+        {
+            "name": "Risk Assessment",
+            "description": "AI-powered wallet and transaction risk scoring",
+        },
+        {
+            "name": "Wallets",
+            "description": "Wallet analysis and profiling",
+        },
+        {
+            "name": "Transactions",
+            "description": "Transaction monitoring and analysis",
+        },
+        {
+            "name": "Auth",
+            "description": "Authentication and API key management",
+        },
+    ]
+    
     app = FastAPI(
         title="ChainShield API",
-        description="AI-Powered Crypto Security & Transaction Intelligence Platform",
-        version="0.1.0",
+        description="""
+# ChainShield - AI-Powered Crypto Security Platform
+
+## Overview
+ChainShield provides enterprise-grade blockchain security through:
+- 🔒 **Risk Assessment**: Real-time wallet and transaction risk scoring
+- 🤖 **ML Models**: Ensemble of Random Forest + XGBoost trained on 478K samples
+- 📊 **3-Layer Defense**: Rules → Heuristics → Machine Learning
+- 🔍 **Explainability**: SHAP-based feature contribution analysis
+
+## Authentication
+All endpoints require an API key passed in the `X-API-Key` header.
+
+```bash
+curl -H "X-API-Key: your_api_key" https://api.chainshield.io/api/v1/risk/assess/wallet
+```
+
+## Rate Limits
+- Standard tier: 100 requests/minute
+- Premium tier: 1000 requests/minute
+
+## Response Format
+All responses follow the structure:
+```json
+{
+    "success": true,
+    "data": { ... },
+    "error": null
+}
+```
+        """,
+        version="2.0.0",
         docs_url=f"{settings.api_v1_prefix}/docs",
         redoc_url=f"{settings.api_v1_prefix}/redoc",
         openapi_url=f"{settings.api_v1_prefix}/openapi.json",
+        openapi_tags=openapi_tags,
+        contact={
+            "name": "ChainShield Support",
+            "email": "support@chainshield.io",
+            "url": "https://chainshield.io",
+        },
+        license_info={
+            "name": "MIT",
+            "url": "https://opensource.org/licenses/MIT",
+        },
         lifespan=lifespan,
     )
     
