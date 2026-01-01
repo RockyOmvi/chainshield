@@ -197,8 +197,12 @@ class WalletFeatureExtractor:
         transactions = data.get("transactions", [])
         address = data.get("address", "").lower()
         
-        if not transactions:
-            # Default values for empty transaction list
+        # Check for pre-calculated totals (from blockchain API)
+        pre_total_received = data.get("total_received", 0)
+        pre_total_sent = data.get("total_sent", 0)
+        
+        if not transactions and not pre_total_received and not pre_total_sent:
+            # No data at all - use defaults
             for name in ["total_received_eth", "total_sent_eth", "total_received_log",
                         "total_sent_log", "avg_tx_value_eth", "max_tx_value_eth",
                         "volume_24h_eth", "volume_7d_eth"]:
@@ -206,7 +210,24 @@ class WalletFeatureExtractor:
                 missing.append(name)
             return features
         
-        # Calculate totals
+        # Use pre-calculated values if available (from blockchain API)
+        if pre_total_received > 0 or pre_total_sent > 0:
+            features["total_received_eth"] = float(pre_total_received)
+            features["total_sent_eth"] = float(pre_total_sent)
+            features["total_received_log"] = math.log1p(pre_total_received)
+            features["total_sent_log"] = math.log1p(pre_total_sent)
+            
+            # Estimate averages from tx_count_total
+            tx_count = data.get("tx_count_total", 1) or 1
+            total_volume = pre_total_received + pre_total_sent
+            features["avg_tx_value_eth"] = total_volume / tx_count
+            features["max_tx_value_eth"] = total_volume / 10  # Estimate
+            features["volume_24h_eth"] = 0.0  # Can't calculate without tx timestamps
+            features["volume_7d_eth"] = 0.0
+            
+            return features
+        
+        # Calculate from transactions if available
         total_in = 0.0
         total_out = 0.0
         values = []

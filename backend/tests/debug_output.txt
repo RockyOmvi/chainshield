@@ -1,0 +1,21 @@
+﻿VOLUME FEATURES:
+  total_received_eth: 29,679.67
+  total_sent_eth:     29,679.34
+  balance_eth:        0.3289
+  RETENTION RATIO:    0.001108%
+  PASS-THROUGH:       100.00%
+
+HEURISTIC RESULT:
+  Score: 24.78
+  Factors detected:
+    - Very low outflow: only 0% sent
+    - Low retention: only 0.0% of received funds remaining
+    - Very low timing entropy: 0.00 (bot-like)
+
+INDIVIDUAL HEURISTICS:
+  account_age: 0.0 (conf: 0.9)
+  transaction_flow: 45.0 (conf: 0.85)
+    -> Very low outflow: only 0% sent
+    -> Low retention: only 0.0% of received funds remaining
+  temporal_pattern: 30.0 (conf: 0.4)
+    -> Very low timing entropy: 0.00 (bot-like)

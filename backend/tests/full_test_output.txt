@@ -1,7 +1,7 @@
 ﻿======================================================================
   CHAINSHIELD FULL FEATURE TEST
   Address: 1F1tAaz5x1HUXrCNLbtMDqcw6o5GNn4xqX
-  Date: 2026-01-01 22:08:18
+  Date: 2026-01-01 22:13:27
 ======================================================================
 
 [1] BITCOIN CLIENT - Fetching Real Data
@@ -10,13 +10,13 @@
   TX Count:       3,512
   Total Received: 29679.6690 BTC
   Total Sent:     29679.3401 BTC
-  Fetch Time:     1536ms
+  Fetch Time:     1494ms
 
 [2] FEATURE EXTRACTION
 --------------------------------------------------
   Features extracted: 36
   Sample features:
-    - age_hours: 103792.6389
+    - age_hours: 103792.7247
     - age_days: 4324.0000
     - balance_eth: 0.3289
     - balance_log: 0.2844
@@ -24,39 +24,39 @@
 
 [3] ML CLASSIFIER
 --------------------------------------------------
-2026-01-01T16:38:19.942742+00:00 [warning  ] model_file_not_found           app=chainshield env=development module=risk_classifier path=app/services/risk/models/risk_classifier_v1.pkl using_fallback=True
-2026-01-01T16:38:19.942909+00:00 [info     ] fallback_model_initialized     app=chainshield env=development module=risk_classifier
+2026-01-01T16:43:29.054991+00:00 [warning  ] model_file_not_found           app=chainshield env=development module=risk_classifier path=app/services/risk/models/risk_classifier_v1.pkl using_fallback=True
+2026-01-01T16:43:29.055146+00:00 [info     ] fallback_model_initialized     app=chainshield env=development module=risk_classifier
   ML Risk Score: 65.0/100
   Top Factors:
     - ('active_hours_entropy', 15.0)
 
 [4] ANOMALY DETECTOR
 --------------------------------------------------
-2026-01-01T16:38:19.943072+00:00 [warning  ] anomaly_model_not_found        app=chainshield env=development module=anomaly_detector path=app/services/risk/models/isolation_forest_v1.pkl using_fallback=True
+2026-01-01T16:43:29.055297+00:00 [warning  ] anomaly_model_not_found        app=chainshield env=development module=anomaly_detector path=app/services/risk/models/isolation_forest_v1.pkl using_fallback=True
   Anomaly Score: 15.0
   Severity: LOW
   Anomalies: ['Low time entropy: 0.00 (bot-like)']
 
 [5] RULES ENGINE
 --------------------------------------------------
-2026-01-01T16:38:19.946107+00:00 [info     ] blacklist_initialized          address_count=6 app=chainshield env=development rule=blacklist_check
-2026-01-01T16:38:19.946334+00:00 [info     ] rule_registered                app=chainshield enabled=True env=development module=rule_registry rule=blacklist_check
-2026-01-01T16:38:19.946432+00:00 [info     ] rule_registered                app=chainshield enabled=True env=development module=rule_registry rule=velocity_check
-2026-01-01T16:38:19.946535+00:00 [info     ] rule_registered                app=chainshield enabled=True env=development module=rule_registry rule=pattern_check
-2026-01-01T16:38:19.946621+00:00 [info     ] rule_registered                app=chainshield enabled=True env=development module=rule_registry rule=honeypot_check
-2026-01-01T16:38:19.946714+00:00 [info     ] default_rules_initialized      app=chainshield env=development module=rule_registry rule_count=4
+2026-01-01T16:43:29.058550+00:00 [info     ] blacklist_initialized          address_count=6 app=chainshield env=development rule=blacklist_check
+2026-01-01T16:43:29.058747+00:00 [info     ] rule_registered                app=chainshield enabled=True env=development module=rule_registry rule=blacklist_check
+2026-01-01T16:43:29.058843+00:00 [info     ] rule_registered                app=chainshield enabled=True env=development module=rule_registry rule=velocity_check
+2026-01-01T16:43:29.058937+00:00 [info     ] rule_registered                app=chainshield enabled=True env=development module=rule_registry rule=pattern_check
+2026-01-01T16:43:29.059022+00:00 [info     ] rule_registered                app=chainshield enabled=True env=development module=rule_registry rule=honeypot_check
+2026-01-01T16:43:29.059105+00:00 [info     ] default_rules_initialized      app=chainshield env=development module=rule_registry rule_count=4
   Rules Evaluated: 4
   Rule Score: 0.0
   Blocked: False
 
 [6] HEURISTICS AGGREGATOR
 --------------------------------------------------
-  Heuristic Score: 5.3
-  Factors: 1
+  Heuristic Score: 24.8
+  Factors: 3
 
 [7] BRIDGE DETECTION
 --------------------------------------------------
-2026-01-01T16:38:19.951602+00:00 [info     ] bridges_loaded                 app=chainshield count=5 env=development module=bridge_registry
+2026-01-01T16:43:29.064015+00:00 [info     ] bridges_loaded                 app=chainshield count=5 env=development module=bridge_registry
   Known Bridges: 5
   Is Bridge: False
 
@@ -67,12 +67,12 @@
 
 [9] FULL RISK ENGINE
 --------------------------------------------------
-2026-01-01T16:38:19.953485+00:00 [warning  ] model_file_not_found           app=chainshield env=development module=risk_classifier path=app/services/risk/models/risk_classifier_v1.pkl using_fallback=True
-2026-01-01T16:38:19.953616+00:00 [info     ] fallback_model_initialized     app=chainshield env=development module=risk_classifier
-2026-01-01T16:38:19.953725+00:00 [warning  ] anomaly_model_not_found        app=chainshield env=development module=anomaly_detector path=app/services/risk/models/isolation_forest_v1.pkl using_fallback=True
-2026-01-01T16:38:19.953831+00:00 [info     ] risk_engine_initialized        app=chainshield env=development module=risk_engine
-  Risk Score:    39.6/100
-  Risk Level:    LOW
+2026-01-01T16:43:29.065811+00:00 [warning  ] model_file_not_found           app=chainshield env=development module=risk_classifier path=app/services/risk/models/risk_classifier_v1.pkl using_fallback=True
+2026-01-01T16:43:29.065941+00:00 [info     ] fallback_model_initialized     app=chainshield env=development module=risk_classifier
+2026-01-01T16:43:29.066052+00:00 [warning  ] anomaly_model_not_found        app=chainshield env=development module=anomaly_detector path=app/services/risk/models/isolation_forest_v1.pkl using_fallback=True
+2026-01-01T16:43:29.066158+00:00 [info     ] risk_engine_initialized        app=chainshield env=development module=risk_engine
+  Risk Score:    49.4/100
+  Risk Level:    MEDIUM
   Confidence:    50%
   Layers:        rules, heuristics, ml, anomaly
   ML Score:      65.0
