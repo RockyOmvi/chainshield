@@ -13,20 +13,28 @@ All components are designed for:
 - Graceful degradation
 """
 
-from app.services.risk.engine import RiskEngine, get_risk_engine, RiskAssessment
-from app.services.risk.features import (
-    WalletFeatureExtractor,
-    TransactionFeatureExtractor,
-    FeatureVector,
-)
-from app.services.risk.config import RiskConfig
+
+def get_risk_engine():
+    """Get risk engine singleton (lazy import)."""
+    from app.services.risk.engine import get_risk_engine as _get
+    return _get()
+
+
+def get_feature_extractor():
+    """Get feature extractor (lazy import)."""
+    from app.services.risk.features import WalletFeatureExtractor
+    return WalletFeatureExtractor()
+
+
+def get_config():
+    """Get risk config (lazy import)."""
+    from app.services.risk.config import RiskConfig
+    return RiskConfig()
+
 
 __all__ = [
-    "RiskEngine",
     "get_risk_engine",
-    "RiskAssessment",
-    "WalletFeatureExtractor",
-    "TransactionFeatureExtractor",
-    "FeatureVector",
-    "RiskConfig",
+    "get_feature_extractor",
+    "get_config",
 ]
+
