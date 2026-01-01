@@ -193,7 +193,73 @@ class NaturalLanguageExplainer:
         balance = float(wallet_data.get("balance", 0))
         tx_count = len(wallet_data.get("transactions", []))
         
-        # Build summary based on risk level
+        # Extract additional data for narrative
+        tx_count_total = wallet_data.get("tx_count_total", tx_count)
+        total_received = wallet_data.get("total_received", 0)
+        total_sent = wallet_data.get("total_sent", 0)
+        
+        # Build narrative summary based on behavior patterns
+        narrative_parts = []
+        
+        # 1. Transaction Volume Analysis
+        if tx_count_total > 10000:
+            narrative_parts.append(
+                f"This wallet shows extremely high activity with {tx_count_total:,} transactions, "
+                "which is unusual for a personal wallet and may indicate automated trading, "
+                "exchange operations, or potential laundering activity"
+            )
+        elif tx_count_total > 1000:
+            narrative_parts.append(
+                f"This wallet has processed {tx_count_total:,} transactions, "
+                "indicating significant activity that warrants monitoring"
+            )
+        
+        # 2. Fund Flow Analysis
+        if total_received > 0 and total_sent > 0:
+            pass_through_ratio = total_sent / max(total_received, 0.001)
+            if pass_through_ratio > 0.95 and balance < total_received * 0.05:
+                narrative_parts.append(
+                    f"The wallet received {total_received:.2f} units but only {balance:.4f} remains. "
+                    f"Over 95% of funds were moved out, which is a classic pass-through/laundering pattern"
+                )
+        
+        # 3. Check for bridge/cross-chain patterns from risk factors
+        bridge_detected = False
+        mixer_detected = False
+        graph_hub = False
+        
+        if risk_factors:
+            for factor in risk_factors:
+                factor_name = str(factor.get("name", "")).lower()
+                factor_source = str(factor.get("source", "")).lower()
+                
+                if "bridge" in factor_name or factor_source == "crosschain":
+                    bridge_detected = True
+                if "mixer" in factor_name or "tornado" in factor_name:
+                    mixer_detected = True
+                if "hub" in factor_name or "centrality" in factor_name:
+                    graph_hub = True
+        
+        if bridge_detected:
+            narrative_parts.append(
+                "This wallet has interacted with cross-chain bridge protocols, "
+                "which can be used to move funds across different blockchains "
+                "and obscure the transaction trail"
+            )
+        
+        if mixer_detected:
+            narrative_parts.append(
+                "⚠️ CRITICAL: This wallet has interacted with known mixer/tumbler services "
+                "(like Tornado Cash), which are commonly used for money laundering"
+            )
+        
+        if graph_hub:
+            narrative_parts.append(
+                "Graph analysis shows this wallet acts as a hub, connecting many other wallets. "
+                "This could indicate a collection point for funds from multiple sources"
+            )
+        
+        # Build final summary
         if risk_level == "low":
             summary = (
                 f"Wallet {address} shows normal activity patterns. "
@@ -203,30 +269,39 @@ class NaturalLanguageExplainer:
             confidence = "High"
         
         elif risk_level == "medium":
-            summary = (
-                f"Wallet {address} has some concerning indicators. "
-                f"Risk score: {risk_score:.0f}/100. "
-                f"Enhanced monitoring recommended."
-            )
+            if narrative_parts:
+                summary = f"Wallet {address} has concerning indicators. " + ". ".join(narrative_parts[:2]) + "."
+            else:
+                summary = (
+                    f"Wallet {address} has some concerning indicators. "
+                    f"Risk score: {risk_score:.0f}/100. "
+                    f"Enhanced monitoring recommended."
+                )
             confidence = "Medium"
         
         elif risk_level == "high":
-            summary = (
-                f"Wallet {address} shows multiple high-risk patterns. "
-                f"Risk score: {risk_score:.0f}/100. "
-                f"Manual review strongly recommended."
-            )
+            if narrative_parts:
+                summary = f"⚠️ HIGH RISK: Wallet {address} - " + ". ".join(narrative_parts[:3]) + "."
+            else:
+                summary = (
+                    f"Wallet {address} shows multiple high-risk patterns. "
+                    f"Risk score: {risk_score:.0f}/100. "
+                    f"Manual review strongly recommended."
+                )
             confidence = "High"
         
         else:  # critical
-            summary = (
-                f"ALERT: Wallet {address} has critical risk indicators. "
-                f"Risk score: {risk_score:.0f}/100. "
-                f"Immediate action required."
-            )
+            if narrative_parts:
+                summary = f"🚨 CRITICAL ALERT: Wallet {address} - " + ". ".join(narrative_parts) + "."
+            else:
+                summary = (
+                    f"ALERT: Wallet {address} has critical risk indicators. "
+                    f"Risk score: {risk_score:.0f}/100. "
+                    f"Immediate action required."
+                )
             confidence = "High"
         
-        # Extract key factors
+        # Extract key factors with better narratives
         key_factors = []
         
         # Check wallet data for specific patterns
@@ -248,11 +323,22 @@ class NaturalLanguageExplainer:
                 self.RISK_FACTOR_TEMPLATES["low_balance"].format(balance=balance)
             )
         
+        # Add cross-chain narrative factors
+        if bridge_detected:
+            key_factors.append(
+                "Cross-chain bridge usage detected - funds may be moving between blockchains"
+            )
+        
+        if mixer_detected:
+            key_factors.append(
+                "Connected to mixer/tumbler services - high probability of laundering"
+            )
+        
         # Add from risk_factors if provided
         if risk_factors:
             for factor in risk_factors[:3]:
                 factor_name = factor.get("factor_name", factor.get("name", ""))
-                score = factor.get("score", 0)
+                score = factor.get("score", factor.get("score_contribution", 0))
                 if score > 20:
                     desc = factor.get("description", factor_name.replace("_", " "))
                     key_factors.append(f"{desc} (impact: {score:.0f})")
