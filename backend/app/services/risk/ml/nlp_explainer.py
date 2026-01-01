@@ -365,45 +365,195 @@ class NaturalLanguageExplainer:
         risk_factors: List[Dict[str, Any]] = None
     ) -> str:
         """
-        Generate a full explanation for analysts.
+        Generate a comprehensive explanation report for analysts.
+        
+        Includes:
+        - Summary narrative with proper grammar
+        - Data tables with wallet information
+        - Risk factors breakdown
+        - SHAP feature impact
+        - Recommendations
         
         Returns:
-            Multi-line explanation string
+            Multi-line formatted explanation string
         """
         explanation = self.generate_summary(
             risk_score, risk_level, wallet_data, risk_factors
         )
         
+        # Extract wallet data for tables
+        address = wallet_data.get("address", "Unknown")
+        balance = float(wallet_data.get("balance", 0))
+        tx_count = wallet_data.get("tx_count_total", len(wallet_data.get("transactions", [])))
+        total_received = wallet_data.get("total_received", 0)
+        total_sent = wallet_data.get("total_sent", 0)
+        age_hours = wallet_data.get("age_hours", 0)
+        chain = wallet_data.get("chain", "ethereum")
+        
+        # Build the report
         lines = [
-            "="*50,
-            "RISK ASSESSMENT EXPLANATION",
-            "="*50,
+            "╔" + "═" * 68 + "╗",
+            "║" + " CHAINSHIELD RISK ASSESSMENT REPORT ".center(68) + "║",
+            "╚" + "═" * 68 + "╝",
             "",
-            f"📊 SUMMARY: {explanation.summary}",
-            "",
-            f"⚠️ RISK LEVEL: {explanation.risk_level.upper()}",
-            f"📈 CONFIDENCE: {explanation.confidence}",
-            "",
-            "🔍 KEY FACTORS:",
         ]
         
-        for i, factor in enumerate(explanation.key_factors, 1):
-            lines.append(f"   {i}. {factor}")
+        # Section 1: Overview
+        lines.extend([
+            "┌" + "─" * 68 + "┐",
+            "│ 📊 OVERVIEW" + " " * 56 + "│",
+            "├" + "─" * 68 + "┤",
+        ])
         
-        if shap_values:
-            lines.append("")
-            lines.append("📉 FEATURE IMPACT (SHAP):")
-            shap_explanations = self.explain_shap_values(shap_values, top_k=3)
-            for exp in shap_explanations:
-                lines.append(f"   • {exp}")
+        # Risk level with color indicator
+        risk_indicator = {
+            "low": "🟢 LOW",
+            "medium": "🟡 MEDIUM", 
+            "high": "🟠 HIGH",
+            "critical": "🔴 CRITICAL"
+        }.get(risk_level, risk_level.upper())
         
         lines.extend([
+            f"│  Risk Score:      {risk_score:.1f} / 100" + " " * (48 - len(f"{risk_score:.1f}")) + "│",
+            f"│  Risk Level:      {risk_indicator}" + " " * (52 - len(risk_indicator)) + "│",
+            f"│  Confidence:      {explanation.confidence}" + " " * (49 - len(explanation.confidence)) + "│",
+            "└" + "─" * 68 + "┘",
             "",
-            f"💡 RECOMMENDATION: {explanation.recommendation}",
-            "="*50,
+        ])
+        
+        # Section 2: Wallet Data Table
+        lines.extend([
+            "┌" + "─" * 68 + "┐",
+            "│ 📁 WALLET DATA" + " " * 53 + "│",
+            "├" + "─" * 34 + "┬" + "─" * 33 + "┤",
+            "│  Field" + " " * 27 + "│  Value" + " " * 26 + "│",
+            "├" + "─" * 34 + "┼" + "─" * 33 + "┤",
+        ])
+        
+        # Format address (truncate if needed)
+        addr_display = address[:20] + "..." if len(address) > 23 else address
+        lines.append(f"│  Address" + " " * 25 + f"│  {addr_display}" + " " * (31 - len(addr_display)) + "│")
+        lines.append(f"│  Chain" + " " * 27 + f"│  {chain.capitalize()}" + " " * (31 - len(chain)) + "│")
+        lines.append(f"│  Current Balance" + " " * 17 + f"│  {balance:,.4f}" + " " * (31 - len(f"{balance:,.4f}")) + "│")
+        lines.append(f"│  Total Transactions" + " " * 14 + f"│  {tx_count:,}" + " " * (31 - len(f"{tx_count:,}")) + "│")
+        
+        if total_received > 0:
+            lines.append(f"│  Total Received" + " " * 18 + f"│  {total_received:,.4f}" + " " * (31 - len(f"{total_received:,.4f}")) + "│")
+        if total_sent > 0:
+            lines.append(f"│  Total Sent" + " " * 22 + f"│  {total_sent:,.4f}" + " " * (31 - len(f"{total_sent:,.4f}")) + "│")
+        if age_hours > 0:
+            age_display = f"{age_hours:.0f} hours" if age_hours < 48 else f"{age_hours/24:.0f} days"
+            lines.append(f"│  Account Age" + " " * 21 + f"│  {age_display}" + " " * (31 - len(age_display)) + "│")
+        
+        lines.extend([
+            "└" + "─" * 34 + "┴" + "─" * 33 + "┘",
+            "",
+        ])
+        
+        # Section 3: Narrative Summary
+        lines.extend([
+            "┌" + "─" * 68 + "┐",
+            "│ 📝 ANALYSIS SUMMARY" + " " * 48 + "│",
+            "├" + "─" * 68 + "┤",
+        ])
+        
+        # Wrap summary text properly
+        summary_text = explanation.summary
+        wrapped_lines = self._wrap_text(summary_text, 66)
+        for line in wrapped_lines:
+            lines.append(f"│ {line}" + " " * (67 - len(line)) + "│")
+        
+        lines.extend([
+            "└" + "─" * 68 + "┘",
+            "",
+        ])
+        
+        # Section 4: Risk Factors Table
+        lines.extend([
+            "┌" + "─" * 68 + "┐",
+            "│ 🔍 KEY RISK FACTORS" + " " * 48 + "│",
+            "├" + "─" * 68 + "┤",
+        ])
+        
+        for i, factor in enumerate(explanation.key_factors, 1):
+            # Wrap long factors
+            factor_wrapped = self._wrap_text(f"{i}. {factor}", 66)
+            for j, line in enumerate(factor_wrapped):
+                prefix = "│ " if j == 0 else "│   "
+                lines.append(prefix + line + " " * (68 - len(prefix) - len(line)) + "│")
+        
+        lines.extend([
+            "└" + "─" * 68 + "┘",
+            "",
+        ])
+        
+        # Section 5: SHAP Feature Impact (if available)
+        if shap_values:
+            lines.extend([
+                "┌" + "─" * 68 + "┐",
+                "│ 📉 FEATURE IMPACT ANALYSIS (SHAP)" + " " * 33 + "│",
+                "├" + "─" * 40 + "┬" + "─" * 12 + "┬" + "─" * 14 + "┤",
+                "│  Feature" + " " * 31 + "│  Impact" + " " * 4 + "│  Direction" + " " * 3 + "│",
+                "├" + "─" * 40 + "┼" + "─" * 12 + "┼" + "─" * 14 + "┤",
+            ])
+            
+            sorted_shap = sorted(shap_values.items(), key=lambda x: abs(x[1]), reverse=True)[:5]
+            for feature, value in sorted_shap:
+                if abs(value) < 0.01:
+                    continue
+                desc = self._get_feature_description(feature)[:36]
+                direction = "↑ Higher" if value > 0 else "↓ Lower"
+                impact_str = f"{abs(value):.3f}"
+                lines.append(
+                    f"│  {desc}" + " " * (38 - len(desc)) + 
+                    f"│  {impact_str}" + " " * (10 - len(impact_str)) + 
+                    f"│  {direction}" + " " * (12 - len(direction)) + "│"
+                )
+            
+            lines.extend([
+                "└" + "─" * 40 + "┴" + "─" * 12 + "┴" + "─" * 14 + "┘",
+                "",
+            ])
+        
+        # Section 6: Recommendation
+        lines.extend([
+            "┌" + "─" * 68 + "┐",
+            "│ 💡 RECOMMENDATION" + " " * 50 + "│",
+            "├" + "─" * 68 + "┤",
+        ])
+        
+        rec_wrapped = self._wrap_text(explanation.recommendation, 66)
+        for line in rec_wrapped:
+            lines.append(f"│ {line}" + " " * (67 - len(line)) + "│")
+        
+        lines.extend([
+            "└" + "─" * 68 + "┘",
+            "",
+            "═" * 70,
+            "  Report generated by ChainShield Risk Engine",
+            "═" * 70,
         ])
         
         return "\n".join(lines)
+    
+    def _wrap_text(self, text: str, max_width: int) -> List[str]:
+        """Wrap text to fit within max_width, respecting word boundaries."""
+        words = text.split()
+        lines = []
+        current_line = ""
+        
+        for word in words:
+            if len(current_line) + len(word) + 1 <= max_width:
+                current_line = f"{current_line} {word}".strip()
+            else:
+                if current_line:
+                    lines.append(current_line)
+                current_line = word
+        
+        if current_line:
+            lines.append(current_line)
+        
+        return lines if lines else [""]
 
 
 # Singleton
