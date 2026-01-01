@@ -245,20 +245,18 @@ class MultiChainProvider:
         address: str
     ) -> Dict[str, Any]:
         """
-        Make actual RPC call.
+        Make actual RPC call using BlockchainRPCClient.
         
-        In production, this would use httpx/aiohttp.
-        For now, returns mock data.
+        Uses real JSON-RPC calls to blockchain nodes.
         """
-        # Simulate network call (in production: actual RPC request)
-        # await asyncio.sleep(0.1)  # Simulated latency
+        from app.blockchain.rpc_client import BlockchainRPCClient
         
-        return {
-            "address": address,
-            "has_activity": False,
-            "tx_count": 0,
-            "balance": 0.0,
-        }
+        client = BlockchainRPCClient(rpc_url, timeout=self.timeout)
+        try:
+            result = await client.get_address_activity(address)
+            return result
+        finally:
+            await client.close()
     
     async def get_address_activity(
         self,
