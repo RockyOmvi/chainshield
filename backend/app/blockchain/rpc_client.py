@@ -157,15 +157,17 @@ class BlockchainRPCClient:
         Get comprehensive activity for an address.
         
         Returns:
-            Dict with balance, tx_count, and activity status
+            Dict with balance_eth, transaction_count, and is_contract
         """
         balance = await self.get_balance(address)
         tx_count = await self.get_transaction_count(address)
+        is_contract = await self.is_contract(address)
         
         return {
             "address": address,
-            "balance": balance or 0.0,
-            "tx_count": tx_count or 0,
+            "balance_eth": balance or 0.0,
+            "transaction_count": tx_count or 0,
+            "is_contract": is_contract,
             "has_activity": (tx_count or 0) > 0,
         }
     
