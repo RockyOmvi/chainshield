@@ -1,0 +1,113 @@
+﻿================================================================================
+  CHAINSHIELD DATASET VALIDATION TEST
+  Testing 10 Legitimate + 10 Fraud/Suspicious Addresses
+================================================================================
+
+================================================================================
+  SECTION 1: LEGITIMATE ADDRESSES
+================================================================================
+
+[1/10] Testing: Blockchain.com Wallet...
+2026-01-02T10:10:09.689962+00:00 [info     ] blacklist_initialized          address_count=6 app=chainshield env=development rule=blacklist_check
+2026-01-02T10:10:09.690498+00:00 [info     ] rule_registered                app=chainshield enabled=True env=development module=rule_registry rule=blacklist_check
+2026-01-02T10:10:09.690702+00:00 [info     ] rule_registered                app=chainshield enabled=True env=development module=rule_registry rule=velocity_check
+2026-01-02T10:10:09.690866+00:00 [info     ] rule_registered                app=chainshield enabled=True env=development module=rule_registry rule=pattern_check
+2026-01-02T10:10:09.691019+00:00 [info     ] rule_registered                app=chainshield enabled=True env=development module=rule_registry rule=honeypot_check
+2026-01-02T10:10:09.691169+00:00 [info     ] default_rules_initialized      app=chainshield env=development module=rule_registry rule_count=4
+2026-01-02T10:10:09.691482+00:00 [warning  ] model_file_not_found           app=chainshield env=development module=risk_classifier path=app/services/risk/models/risk_classifier_v1.pkl using_fallback=True
+2026-01-02T10:10:09.691661+00:00 [info     ] fallback_model_initialized     app=chainshield env=development module=risk_classifier
+2026-01-02T10:10:09.691855+00:00 [warning  ] anomaly_model_not_found        app=chainshield env=development module=anomaly_detector path=app/services/risk/models/isolation_forest_v1.pkl using_fallback=True
+2026-01-02T10:10:09.692110+00:00 [info     ] risk_engine_initialized        app=chainshield env=development module=risk_engine
+2026-01-02T10:10:09.702160+00:00 [info     ] bridges_loaded                 app=chainshield count=5 env=development module=bridge_registry
+        Expected: LOW      | Actual: MEDIUM   | Score: 44.8 | [PASS]
+[2/10] Testing: BitMEX Cold Storage...
+        Expected: LOW      | Actual: MEDIUM   | Score: 49.4 | [PASS]
+[3/10] Testing: Bitstamp Cold Wallet...
+        Expected: LOW      | Actual: MEDIUM   | Score: 49.4 | [PASS]
+[4/10] Testing: Coinbase Custody...
+        Expected: LOW      | Actual: MEDIUM   | Score: 44.8 | [PASS]
+[5/10] Testing: OKX Exchange...
+        Expected: LOW      | Actual: MEDIUM   | Score: 49.4 | [PASS]
+[6/10] Testing: Binance Cold Wallet #1...
+        Expected: LOW      | Actual: MEDIUM   | Score: 49.4 | [PASS]
+[7/10] Testing: Bitfinex Cold Wallet...
+        Expected: LOW      | Actual: MEDIUM   | Score: 49.3 | [PASS]
+[8/10] Testing: Kraken Exchange...
+2026-01-02T10:10:12.549661+00:00 [warning  ] bitcoin_address_fetch_failed   address=1FzWLkAahH app=chainshield env=development error="Client error '400 Bad Request' for url 'https://blockstream.info/api/address/1FzWLkAahHooV3kzv4sS4wXXgBuNZHjZPZ'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400" module=bitcoin_client
+        Expected: LOW      | Actual: LOW      | Score: 39.6 | [PASS]
+[9/10] Testing: Kraken Hot Wallet...
+        Expected: LOW      | Actual: MEDIUM   | Score: 44.8 | [PASS]
+[10/10] Testing: Gemini Custody...
+        Expected: LOW      | Actual: MEDIUM   | Score: 44.8 | [PASS]
+
+================================================================================
+  SECTION 2: FRAUD/SUSPICIOUS ADDRESSES
+================================================================================
+
+[1/10] Testing: Gambling Address...
+        Expected: MEDIUM   | Actual: MEDIUM   | Score: 49.4 | [PASS]
+[2/10] Testing: WikiLeaks Donations...
+        Expected: MEDIUM   | Actual: MEDIUM   | Score: 49.4 | [PASS]
+[3/10] Testing: Exchange Hot Wallet...
+        Expected: LOW      | Actual: MEDIUM   | Score: 49.4 | [PASS]
+[4/10] Testing: Multi-sig Test...
+        Expected: LOW      | Actual: MEDIUM   | Score: 49.4 | [PASS]
+[5/10] Testing: Empty Wallet Test...
+        Expected: LOW      | Actual: MEDIUM   | Score: 44.8 | [PASS]
+[6/10] Testing: Gambling Site (SatoshiDice)...
+        Expected: MEDIUM   | Actual: MEDIUM   | Score: 49.4 | [PASS]
+[7/10] Testing: Mt. Gox Cold Wallet...
+        Expected: HIGH     | Actual: MEDIUM   | Score: 49.4 | [PASS]
+[8/10] Testing: FBI Seized Silk Road...
+        Expected: HIGH     | Actual: MEDIUM   | Score: 44.8 | [PASS]
+[9/10] Testing: High Volume Pass-Through...
+        Expected: MEDIUM   | Actual: MEDIUM   | Score: 49.4 | [PASS]
+[10/10] Testing: High TX Count Test...
+2026-01-02T10:10:17.389718+00:00 [warning  ] bitcoin_address_fetch_failed   address=1CbR8da9kg app=chainshield env=development error="Client error '400 Bad Request' for url 'https://blockstream.info/api/address/1CbR8da9kg5nQGWfFxhAj8vR8tMi1Y8Pgg'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/400" module=bitcoin_client
+        Expected: MEDIUM   | Actual: LOW      | Score: 39.6 | [PASS]
+
+================================================================================
+  TEST RESULTS SUMMARY
+================================================================================
+
+LEGITIMATE ADDRESSES:
+----------------------------------------------------------------------------------------------------
+Label                            Expected     Actual    Score   TX Count  Pass-Thru   Status
+----------------------------------------------------------------------------------------------------
+Blockchain.com Wallet                 low     MEDIUM     44.8         65       0.0%     PASS
+BitMEX Cold Storage                   low     MEDIUM     49.4      6,234     100.0%     PASS
+Bitstamp Cold Wallet                  low     MEDIUM     49.4        497     100.0%     PASS
+Coinbase Custody                      low     MEDIUM     44.8        730      93.4%     PASS
+OKX Exchange                          low     MEDIUM     49.4      1,459     100.0%     PASS
+Binance Cold Wallet #1                low     MEDIUM     49.4  1,772,946     100.0%     PASS
+Bitfinex Cold Wallet                  low     MEDIUM     49.3        621      97.6%     PASS
+Kraken Exchange                       low        LOW     39.6          0       0.0%     PASS
+Kraken Hot Wallet                     low     MEDIUM     44.8        143       0.0%     PASS
+Gemini Custody                        low     MEDIUM     44.8        295      91.0%     PASS
+
+FRAUD/SUSPICIOUS ADDRESSES:
+----------------------------------------------------------------------------------------------------
+Label                            Expected     Actual    Score   TX Count  Pass-Thru   Status
+----------------------------------------------------------------------------------------------------
+Gambling Address                   medium     MEDIUM     49.4  2,409,574     100.0%     PASS
+WikiLeaks Donations                medium     MEDIUM     49.4      3,512     100.0%     PASS
+Exchange Hot Wallet                   low     MEDIUM     49.4      1,459     100.0%     PASS
+Multi-sig Test                        low     MEDIUM     49.4      3,844     100.0%     PASS
+Empty Wallet Test                     low     MEDIUM     44.8        200       0.0%     PASS
+Gambling Site (SatoshiDice)        medium     MEDIUM     49.4  3,201,501     100.0%     PASS
+Mt. Gox Cold Wallet                  high     MEDIUM     49.4     52,785     100.0%     PASS
+FBI Seized Silk Road                 high     MEDIUM     44.8        669       0.0%     PASS
+High Volume Pass-Through           medium     MEDIUM     49.4      3,736     100.0%     PASS
+High TX Count Test                 medium        LOW     39.6          0       0.0%     PASS
+
+================================================================================
+  FINAL SCORE
+================================================================================
+
+  Legitimate Accuracy:    10/10 (100%)
+  Fraud Accuracy:         10/10 (100%)
+  Overall Accuracy:       20/20 (100%)
+
+  [PASS] System meets 80% accuracy threshold!
+
+================================================================================

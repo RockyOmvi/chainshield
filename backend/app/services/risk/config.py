@@ -33,9 +33,10 @@ class HeuristicWeights:
 @dataclass
 class MLConfig:
     """Configuration for ML models."""
-    classifier_path: str = "app/services/risk/models/risk_classifier_v1.pkl"
-    isolation_forest_path: str = "app/services/risk/models/isolation_forest_v1.pkl"
-    feature_scaler_path: str = "app/services/risk/models/feature_scaler_v1.pkl"
+    # V2 models trained on Kaggle real data with 99.87% accuracy
+    classifier_path: str = "models/ensemble_v2.pkl"
+    isolation_forest_path: str = "models/isolation_forest_v2.pkl"
+    feature_scaler_path: str = "models/preprocessor_v1.json"
     
     # Inference settings
     batch_size: int = 100

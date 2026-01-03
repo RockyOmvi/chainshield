@@ -1,0 +1,566 @@
+﻿==========================================================================================
+  CHAINSHIELD COMPREHENSIVE SCENARIO TEST
+  Testing ALL risk factor combinations
+==========================================================================================
+
+2026-01-02T12:19:06.687674+00:00 [info     ] sanctions_db_loaded            app=chainshield env=development lazarus=6 module=sanctions_db tornado_cash=27 total_addresses=37
+2026-01-02T12:19:06.688071+00:00 [info     ] ofac_sanctions_loaded          app=chainshield count=37 env=development rule=blacklist_check
+2026-01-02T12:19:06.688177+00:00 [info     ] blacklist_initialized          address_count=38 app=chainshield env=development rule=blacklist_check
+2026-01-02T12:19:06.688383+00:00 [info     ] rule_registered                app=chainshield enabled=True env=development module=rule_registry rule=blacklist_check
+2026-01-02T12:19:06.688468+00:00 [info     ] rule_registered                app=chainshield enabled=True env=development module=rule_registry rule=velocity_check
+2026-01-02T12:19:06.688540+00:00 [info     ] rule_registered                app=chainshield enabled=True env=development module=rule_registry rule=pattern_check
+2026-01-02T12:19:06.688618+00:00 [info     ] rule_registered                app=chainshield enabled=True env=development module=rule_registry rule=honeypot_check
+2026-01-02T12:19:06.688682+00:00 [info     ] default_rules_initialized      app=chainshield env=development module=rule_registry rule_count=4
+2026-01-02T12:19:06.688832+00:00 [warning  ] model_file_not_found           app=chainshield env=development module=risk_classifier path=app/services/risk/models/risk_classifier_v1.pkl using_fallback=True
+2026-01-02T12:19:06.688912+00:00 [info     ] fallback_model_initialized     app=chainshield env=development module=risk_classifier
+2026-01-02T12:19:06.689016+00:00 [warning  ] anomaly_model_not_found        app=chainshield env=development module=anomaly_detector path=app/services/risk/models/isolation_forest_v1.pkl using_fallback=True
+2026-01-02T12:19:06.689125+00:00 [info     ] entity_reputation_loaded       app=chainshield count=71 env=development module=entity_reputation
+2026-01-02T12:19:06.689249+00:00 [info     ] risk_engine_initialized        app=chainshield env=development module=risk_engine
+==========================================================================================
+  SCENARIO: Legitimate Long-term Holder
+  Description: Old account, low activity, just holding
+  Expected: LOW
+==========================================================================================
+
+2026-01-02T12:19:06.692767+00:00 [info     ] bridges_loaded                 app=chainshield count=5 env=development module=bridge_registry
+ANALYSIS RESULT:
+------------------------------------------------------------------------------------------
+  Risk Score:      45.6/100
+  Risk Level:      MEDIUM (expected: LOW) [PASS]
+  Confidence:      60%
+  Blocked:         False
+
+WALLET METRICS:
+------------------------------------------------------------------------------------------
+  Address:         0xLEGIT_HOLDER_123456789...
+  Balance:         10.5000
+  TX Count:        50
+  Total Received:  12.00
+  Age:             26,280 hours (1095 days)
+  Pass-Through:    12.5%
+
+LAYER SCORES:
+------------------------------------------------------------------------------------------
+  Rules:           0.0
+  Heuristics:      27.2
+  ML:              55.0
+  Anomaly:         15.0
+
+RISK FACTORS DETECTED:
+------------------------------------------------------------------------------------------
+  1. [      ml       ] ML feature: age_hours (+25.0)
+  2. [      ml       ] ML feature: active_hours_entropy (+15.0)
+  3. [      ml       ] Low time entropy: 0.00 (bot-like) (+15.0)
+  4. [   heuristic   ] Very new account (0.0 hours) (+9.1)
+  5. [   heuristic   ] Very low outflow: only 0% sent (+9.1)
+
+NLP EXPLANATION:
+------------------------------------------------------------------------------------------
+  ALERT: Wallet 0xLEGIT_HO... has critical risk indicators. Risk score: 46/100. Immediate action required....
+
+  KEY FACTORS:
+    - Very low outflow: only 0% sent
+
+  RECOMMENDATION: Monitor this wallet for additional suspicious activity.
+
+
+==========================================================================================
+  SCENARIO: Known Exchange (Binance)
+  Description: High volume but known trusted entity
+  Expected: LOW
+==========================================================================================
+
+2026-01-02T12:19:06.693374+00:00 [debug    ] score_adjusted_for_entity      address=0x28C6c06298d514 adjusted_score=5.104999999999999 app=chainshield entity='Binance Hot Wallet' env=development module=entity_reputation raw_score=51.05 trust=0.9
+ANALYSIS RESULT:
+------------------------------------------------------------------------------------------
+  Risk Score:      5.1/100
+  Risk Level:      LOW (expected: LOW) [PASS]
+  Confidence:      60%
+  Blocked:         False
+
+WALLET METRICS:
+------------------------------------------------------------------------------------------
+  Address:         0x28C6c06298d514Db089934071355...
+  Balance:         100,000.0000
+  TX Count:        1,000,000
+  Total Received:  5,000,000.00
+  Age:             43,800 hours (1825 days)
+  Pass-Through:    98.0%
+
+LAYER SCORES:
+------------------------------------------------------------------------------------------
+  Rules:           0.0
+  Heuristics:      38.1
+  ML:              55.0
+  Anomaly:         15.0
+
+RISK FACTORS DETECTED:
+------------------------------------------------------------------------------------------
+  1. [entity_reputation] Known entity: Binance Hot Wallet (trust: 90%) (+45.9)
+  2. [      ml       ] ML feature: age_hours (+25.0)
+  3. [      ml       ] ML feature: active_hours_entropy (+15.0)
+  4. [      ml       ] Low time entropy: 0.00 (bot-like) (+15.0)
+  5. [   heuristic   ] Very new account (0.0 hours) (+9.5)
+
+NLP EXPLANATION:
+------------------------------------------------------------------------------------------
+  ** CRITICAL ALERT **: Wallet 0x28C6c062... - This wallet shows extremely high activity with 1,000,000 transactions, which is unusual for a personal wallet and may indicate automated trading, exchange ...
+
+  KEY FACTORS:
+    - No specific high-risk factors identified.
+
+  RECOMMENDATION: Monitor this wallet for additional suspicious activity.
+
+
+==========================================================================================
+  SCENARIO: Stablecoin Contract (USDC)
+  Description: Token contract, high activity is normal
+  Expected: LOW
+==========================================================================================
+
+2026-01-02T12:19:06.694185+00:00 [debug    ] score_adjusted_for_entity      address=0xA0b86991c6218b adjusted_score=1.0232000000000008 app=chainshield entity=USDC env=development module=entity_reputation raw_score=51.16 trust=0.98
+ANALYSIS RESULT:
+------------------------------------------------------------------------------------------
+  Risk Score:      1.0/100
+  Risk Level:      LOW (expected: LOW) [PASS]
+  Confidence:      60%
+  Blocked:         False
+
+WALLET METRICS:
+------------------------------------------------------------------------------------------
+  Address:         0xA0b86991c6218b36c1d19D4a2e9E...
+  Balance:         0.0000
+  TX Count:        100,000,000
+  Total Received:  500,000,000,000.00
+  Age:             35,040 hours (1460 days)
+  Pass-Through:    100.0%
+
+LAYER SCORES:
+------------------------------------------------------------------------------------------
+  Rules:           0.0
+  Heuristics:      38.3
+  ML:              55.0
+  Anomaly:         15.0
+
+RISK FACTORS DETECTED:
+------------------------------------------------------------------------------------------
+  1. [entity_reputation] Known entity: USDC (trust: 98%) (+50.1)
+  2. [      ml       ] ML feature: age_hours (+25.0)
+  3. [      ml       ] ML feature: active_hours_entropy (+15.0)
+  4. [      ml       ] Low time entropy: 0.00 (bot-like) (+15.0)
+  5. [   heuristic   ] Very new account (0.0 hours) (+9.6)
+
+NLP EXPLANATION:
+------------------------------------------------------------------------------------------
+  ** CRITICAL ALERT **: Wallet 0xA0b86991... - This wallet shows extremely high activity with 100,000,000 transactions, which is unusual for a personal wallet and may indicate automated trading, exchang...
+
+  KEY FACTORS:
+    - Pass-through pattern: 100.0% of funds moved out, only 0.0000% retained
+
+  RECOMMENDATION: Monitor this wallet for additional suspicious activity.
+
+
+==========================================================================================
+  SCENARIO: Pass-through Pattern
+  Description: 100% funds moved out - classic laundering
+  Expected: MEDIUM
+==========================================================================================
+
+ANALYSIS RESULT:
+------------------------------------------------------------------------------------------
+  Risk Score:      51.2/100
+  Risk Level:      MEDIUM (expected: MEDIUM) [PASS]
+  Confidence:      60%
+  Blocked:         False
+
+WALLET METRICS:
+------------------------------------------------------------------------------------------
+  Address:         0xPASS_THROUGH_SUSPICIOUS...
+  Balance:         0.0010
+  TX Count:        500
+  Total Received:  1,000.00
+  Age:             8,760 hours (365 days)
+  Pass-Through:    100.0%
+
+LAYER SCORES:
+------------------------------------------------------------------------------------------
+  Rules:           0.0
+  Heuristics:      38.3
+  ML:              55.0
+  Anomaly:         15.0
+
+RISK FACTORS DETECTED:
+------------------------------------------------------------------------------------------
+  1. [      ml       ] ML feature: age_hours (+25.0)
+  2. [      ml       ] ML feature: active_hours_entropy (+15.0)
+  3. [      ml       ] Low time entropy: 0.00 (bot-like) (+15.0)
+  4. [   heuristic   ] Very new account (0.0 hours) (+9.6)
+  5. [   heuristic   ] Very low outflow: only 0% sent (+9.6)
+
+NLP EXPLANATION:
+------------------------------------------------------------------------------------------
+  ** CRITICAL ALERT **: Wallet 0xPASS_THR... - The wallet received 1000.00 units but only 0.0010 remains. Over 95% of funds were moved out, which is a classic pass-through/laundering pattern....
+
+  KEY FACTORS:
+    - Pass-through pattern: 100.0% of funds moved out, only 0.0001% retained
+    - Very low outflow: only 0% sent
+
+  RECOMMENDATION: Monitor this wallet for additional suspicious activity.
+
+
+==========================================================================================
+  SCENARIO: High Volume Unknown Wallet
+  Description: Million+ transactions but not a known entity
+  Expected: MEDIUM
+==========================================================================================
+
+ANALYSIS RESULT:
+------------------------------------------------------------------------------------------
+  Risk Score:      51.1/100
+  Risk Level:      MEDIUM (expected: MEDIUM) [PASS]
+  Confidence:      60%
+  Blocked:         False
+
+WALLET METRICS:
+------------------------------------------------------------------------------------------
+  Address:         0xUNKNOWN_HIGH_VOLUME...
+  Balance:         50,000.0000
+  TX Count:        2,000,000
+  Total Received:  10,000,000.00
+  Age:             17,520 hours (730 days)
+  Pass-Through:    99.5%
+
+LAYER SCORES:
+------------------------------------------------------------------------------------------
+  Rules:           0.0
+  Heuristics:      38.3
+  ML:              55.0
+  Anomaly:         15.0
+
+RISK FACTORS DETECTED:
+------------------------------------------------------------------------------------------
+  1. [      ml       ] ML feature: age_hours (+25.0)
+  2. [      ml       ] ML feature: active_hours_entropy (+15.0)
+  3. [      ml       ] Low time entropy: 0.00 (bot-like) (+15.0)
+  4. [   heuristic   ] Very new account (0.0 hours) (+9.6)
+  5. [   heuristic   ] Very low outflow: only 0% sent (+9.6)
+
+NLP EXPLANATION:
+------------------------------------------------------------------------------------------
+  ** CRITICAL ALERT **: Wallet 0xUNKNOWN_... - This wallet shows extremely high activity with 2,000,000 transactions, which is unusual for a personal wallet and may indicate automated trading, exchange ...
+
+  KEY FACTORS:
+    - Pass-through pattern: 99.5% of funds moved out, only 0.5000% retained
+    - Very low outflow: only 0% sent
+
+  RECOMMENDATION: Monitor this wallet for additional suspicious activity.
+
+
+==========================================================================================
+  SCENARIO: New Account + High Volume
+  Description: Brand new account moving large amounts
+  Expected: HIGH
+==========================================================================================
+
+ANALYSIS RESULT:
+------------------------------------------------------------------------------------------
+  Risk Score:      51.2/100
+  Risk Level:      MEDIUM (expected: HIGH) [FAIL]
+  Confidence:      60%
+  Blocked:         False
+
+WALLET METRICS:
+------------------------------------------------------------------------------------------
+  Address:         0xNEW_HIGH_VOLUME_SUSPICIOUS...
+  Balance:         0.1000
+  TX Count:        500
+  Total Received:  50,000.00
+  Age:             24 hours (1 days)
+  Pass-Through:    100.0%
+
+LAYER SCORES:
+------------------------------------------------------------------------------------------
+  Rules:           0.0
+  Heuristics:      38.3
+  ML:              55.0
+  Anomaly:         15.0
+
+RISK FACTORS DETECTED:
+------------------------------------------------------------------------------------------
+  1. [      ml       ] ML feature: age_hours (+25.0)
+  2. [      ml       ] ML feature: active_hours_entropy (+15.0)
+  3. [      ml       ] Low time entropy: 0.00 (bot-like) (+15.0)
+  4. [   heuristic   ] Very new account (0.0 hours) (+9.6)
+  5. [   heuristic   ] Very low outflow: only 0% sent (+9.6)
+
+NLP EXPLANATION:
+------------------------------------------------------------------------------------------
+  ** CRITICAL ALERT **: Wallet 0xNEW_HIGH... - The wallet received 50000.00 units but only 0.1000 remains. Over 95% of funds were moved out, which is a classic pass-through/laundering pattern....
+
+  KEY FACTORS:
+    - Pass-through pattern: 100.0% of funds moved out, only 0.0002% retained
+    - Very low outflow: only 0% sent
+
+  RECOMMENDATION: Monitor this wallet for additional suspicious activity.
+
+
+==========================================================================================
+  SCENARIO: Tornado Cash User
+  Description: Interacted with sanctioned mixer
+  Expected: HIGH
+==========================================================================================
+
+ANALYSIS RESULT:
+------------------------------------------------------------------------------------------
+  Risk Score:      51.0/100
+  Risk Level:      MEDIUM (expected: HIGH) [FAIL]
+  Confidence:      50%
+  Blocked:         False
+
+WALLET METRICS:
+------------------------------------------------------------------------------------------
+  Address:         0xTORNADO_USER_SUSPICIOUS...
+  Balance:         5.0000
+  TX Count:        20
+  Total Received:  100.00
+  Age:             720 hours (30 days)
+  Pass-Through:    95.0%
+
+LAYER SCORES:
+------------------------------------------------------------------------------------------
+  Rules:           20.0
+  Heuristics:      38.3
+  ML:              75.0
+  Anomaly:         30.0
+
+RISK FACTORS DETECTED:
+------------------------------------------------------------------------------------------
+  1. [      ml       ] ML feature: age_hours (+25.0)
+  2. [     rule      ] Interacted with 1 blacklisted addresses (+20.0)
+  3. [      ml       ] ML feature: mixer_interaction_count (+20.0)
+  4. [      ml       ] ML feature: active_hours_entropy (+15.0)
+  5. [      ml       ] Low time entropy: 0.00 (bot-like) (+15.0)
+
+NLP EXPLANATION:
+------------------------------------------------------------------------------------------
+  ** CRITICAL ALERT **: Wallet 0xTORNADO_... - ** CRITICAL **: This wallet has interacted with known mixer/tumbler services (like Tornado Cash), which are commonly used for money laundering....
+
+  KEY FACTORS:
+    - Connected to mixer/tumbler services - high probability of laundering
+    - ML feature: mixer_interaction_count
+
+  RECOMMENDATION: Monitor this wallet for additional suspicious activity.
+
+
+==========================================================================================
+  SCENARIO: Multiple Mixer Interactions
+  Description: Repeated transactions with mixers
+  Expected: HIGH
+==========================================================================================
+
+2026-01-02T12:19:06.696824+00:00 [warning  ] networkx_not_available         app=chainshield env=development module=graph_builder
+2026-01-02T12:19:06.697014+00:00 [info     ] graph_built                    app=chainshield edges=3 env=development module=graph_builder nodes=4
+ANALYSIS RESULT:
+------------------------------------------------------------------------------------------
+  Risk Score:      90.2/100
+  Risk Level:      CRITICAL (expected: HIGH) [PASS]
+  Confidence:      50%
+  Blocked:         False
+
+WALLET METRICS:
+------------------------------------------------------------------------------------------
+  Address:         0xMULTIPLE_MIXER_USER...
+  Balance:         2.0000
+  TX Count:        30
+  Total Received:  200.00
+  Age:             168 hours (7 days)
+  Pass-Through:    99.0%
+
+LAYER SCORES:
+------------------------------------------------------------------------------------------
+  Rules:           60.0
+  Heuristics:      38.2
+  ML:              95.0
+  Anomaly:         15.0
+
+RISK FACTORS DETECTED:
+------------------------------------------------------------------------------------------
+  1. [     rule      ] Interacted with 3 blacklisted addresses (+60.0)
+  2. [      ml       ] ML feature: mixer_interaction_count (+40.0)
+  3. [      ml       ] ML feature: age_hours (+25.0)
+  4. [      ml       ] ML feature: active_hours_entropy (+15.0)
+  5. [      ml       ] Low time entropy: 0.00 (bot-like) (+15.0)
+
+NLP EXPLANATION:
+------------------------------------------------------------------------------------------
+  ** CRITICAL ALERT **: Wallet 0xMULTIPLE... - The wallet received 200.00 units but only 2.0000 remains. Over 95% of funds were moved out, which is a classic pass-through/laundering pattern. ** CRITICAL...
+
+  KEY FACTORS:
+    - Connected to mixer/tumbler services - high probability of laundering
+    - ML feature: mixer_interaction_count
+
+  RECOMMENDATION: Monitor this wallet for additional suspicious activity.
+
+
+==========================================================================================
+  SCENARIO: Sanctioned Address (Tornado Cash)
+  Description: Address is on OFAC sanctions list
+  Expected: CRITICAL
+==========================================================================================
+
+2026-01-02T12:19:06.700518+00:00 [warning  ] blocking_rule_triggered        app=chainshield env=development module=rule_registry rule=blacklist_check severity=critical
+ANALYSIS RESULT:
+------------------------------------------------------------------------------------------
+  Risk Score:      100.0/100
+  Risk Level:      CRITICAL (expected: CRITICAL) [PASS]
+  Confidence:      100%
+  Blocked:         True
+
+WALLET METRICS:
+------------------------------------------------------------------------------------------
+  Address:         0x722122df12d4e14e13ac3b6895a8...
+  Balance:         1,000.0000
+  TX Count:        100,000
+  Total Received:  5,000,000.00
+  Age:             17,520 hours (730 days)
+  Pass-Through:    100.0%
+
+LAYER SCORES:
+------------------------------------------------------------------------------------------
+  Rules:           100.0
+  Heuristics:      0.0
+  ML:              0.0
+  Anomaly:         0.0
+
+RISK FACTORS DETECTED:
+------------------------------------------------------------------------------------------
+  1. [     rule      ] Address 0x722122df... is on blacklist (+100.0)
+
+NLP EXPLANATION:
+------------------------------------------------------------------------------------------
+  ** CRITICAL ALERT **: Wallet 0x722122df... - This wallet shows extremely high activity with 100,000 transactions, which is unusual for a personal wallet and may indicate automated trading, exchange op...
+
+  KEY FACTORS:
+    - Pass-through pattern: 100.0% of funds moved out, only 0.0200% retained
+
+  RECOMMENDATION: Monitor this wallet for additional suspicious activity.
+
+
+==========================================================================================
+  SCENARIO: Lazarus Group (North Korea)
+  Description: DPRK state-sponsored hacker group
+  Expected: CRITICAL
+==========================================================================================
+
+2026-01-02T12:19:06.700978+00:00 [warning  ] blocking_rule_triggered        app=chainshield env=development module=rule_registry rule=blacklist_check severity=critical
+ANALYSIS RESULT:
+------------------------------------------------------------------------------------------
+  Risk Score:      100.0/100
+  Risk Level:      CRITICAL (expected: CRITICAL) [PASS]
+  Confidence:      100%
+  Blocked:         True
+
+WALLET METRICS:
+------------------------------------------------------------------------------------------
+  Address:         0x098b716b8aaf21512996dc57eb06...
+  Balance:         5,000.0000
+  TX Count:        500
+  Total Received:  100,000.00
+  Age:             8,760 hours (365 days)
+  Pass-Through:    95.0%
+
+LAYER SCORES:
+------------------------------------------------------------------------------------------
+  Rules:           100.0
+  Heuristics:      0.0
+  ML:              0.0
+  Anomaly:         0.0
+
+RISK FACTORS DETECTED:
+------------------------------------------------------------------------------------------
+  1. [     rule      ] Address 0x098b716b... is on blacklist (+100.0)
+
+NLP EXPLANATION:
+------------------------------------------------------------------------------------------
+  ALERT: Wallet 0x098b716b... has critical risk indicators. Risk score: 100/100. Immediate action required....
+
+  KEY FACTORS:
+    - No specific high-risk factors identified.
+
+  RECOMMENDATION: Monitor this wallet for additional suspicious activity.
+
+
+==========================================================================================
+  SCENARIO: New + Pass-through + Mixer
+  Description: Combines ALL red flags
+  Expected: CRITICAL
+==========================================================================================
+
+2026-01-02T12:19:06.701832+00:00 [warning  ] networkx_not_available         app=chainshield env=development module=graph_builder
+2026-01-02T12:19:06.701975+00:00 [info     ] graph_built                    app=chainshield edges=3 env=development module=graph_builder nodes=3
+ANALYSIS RESULT:
+------------------------------------------------------------------------------------------
+  Risk Score:      50.3/100
+  Risk Level:      MEDIUM (expected: CRITICAL) [FAIL]
+  Confidence:      50%
+  Blocked:         False
+
+WALLET METRICS:
+------------------------------------------------------------------------------------------
+  Address:         0xALL_RED_FLAGS_COMBINED...
+  Balance:         0.0010
+  TX Count:        100
+  Total Received:  50,000.00
+  Age:             12 hours (0 days)
+  Pass-Through:    100.0%
+
+LAYER SCORES:
+------------------------------------------------------------------------------------------
+  Rules:           40.0
+  Heuristics:      24.5
+  ML:              75.0
+  Anomaly:         15.0
+
+RISK FACTORS DETECTED:
+------------------------------------------------------------------------------------------
+  1. [     rule      ] Interacted with 2 blacklisted addresses (+40.0)
+  2. [      ml       ] ML feature: age_hours (+25.0)
+  3. [      ml       ] ML feature: mixer_interaction_count (+20.0)
+  4. [      ml       ] ML feature: active_hours_entropy (+15.0)
+  5. [      ml       ] Low time entropy: 0.00 (bot-like) (+15.0)
+
+NLP EXPLANATION:
+------------------------------------------------------------------------------------------
+  ** CRITICAL ALERT **: Wallet 0xALL_RED_... - The wallet received 50000.00 units but only 0.0010 remains. Over 95% of funds were moved out, which is a classic pass-through/laundering pattern. ** CRITIC...
+
+  KEY FACTORS:
+    - This is a newly created account (12 hours old), which is common for fraud.
+    - Pass-through pattern: 100.0% of funds moved out, only 0.0000% retained
+    - Connected to mixer/tumbler services - high probability of laundering
+
+  RECOMMENDATION: Monitor this wallet for additional suspicious activity.
+
+
+==========================================================================================
+  TEST SUMMARY
+==========================================================================================
+
+  Accuracy: 8/11 (73%)
+
+  Scenario                              Expected     Actual    Score   Status
+  --------------------------------------------------------------------------------
+  Legitimate Long-term Holder                LOW     MEDIUM     45.6     PASS
+  Known Exchange (Binance)                   LOW        LOW      5.1     PASS
+  Stablecoin Contract (USDC)                 LOW        LOW      1.0     PASS
+  Pass-through Pattern                    MEDIUM     MEDIUM     51.2     PASS
+  High Volume Unknown Wallet              MEDIUM     MEDIUM     51.1     PASS
+  New Account + High Volume                 HIGH     MEDIUM     51.2     FAIL
+  Tornado Cash User                         HIGH     MEDIUM     51.0     FAIL
+  Multiple Mixer Interactions               HIGH   CRITICAL     90.2     PASS
+  Sanctioned Address (Tornado Cash)     CRITICAL   CRITICAL    100.0     PASS [BLOCKED]
+  Lazarus Group (North Korea)           CRITICAL   CRITICAL    100.0     PASS [BLOCKED]
+  New + Pass-through + Mixer            CRITICAL     MEDIUM     50.3     FAIL
+
+==========================================================================================
+  END OF COMPREHENSIVE TEST
+==========================================================================================

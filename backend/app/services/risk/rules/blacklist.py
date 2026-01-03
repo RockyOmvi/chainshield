@@ -101,9 +101,21 @@ class BlacklistRule(RiskRule):
         for addr in risk_config.known_patterns.mixer_contracts:
             self._add_address(addr, "mixer")
         
-        # Add sanctioned addresses if available
+        # Add sanctioned addresses from config
         for addr in risk_config.known_patterns.sanctioned_addresses:
             self._add_address(addr, "sanctioned")
+        
+        # Add OFAC sanctions database (Tornado Cash, Lazarus, etc.)
+        try:
+            from app.services.risk.sanctions import get_sanctions_database
+            sanctions_db = get_sanctions_database()
+            for addr in sanctions_db.get_all_addresses():
+                self._add_address(addr, "ofac_sanctioned")
+            self.logger.info("ofac_sanctions_loaded", count=len(sanctions_db.get_all_addresses()))
+        except ImportError:
+            pass  # Sanctions module optional
+        except Exception as e:
+            self.logger.warning("ofac_sanctions_load_failed", error=str(e))
         
         # Add any additional addresses
         if additional_addresses:
@@ -175,13 +187,11 @@ class BlacklistRule(RiskRule):
             details["blacklisted_counterparties"] = blacklisted_counterparties[:5]
             total_matches += count
             
-            # Severity based on number of interactions
-            if count >= 5:
+            # ANY mixer/blacklist interaction = HIGH minimum
+            if count >= 3:
                 severity = max(severity, RuleSeverity.CRITICAL)
-            elif count >= 2:
-                severity = max(severity, RuleSeverity.HIGH)
             else:
-                severity = max(severity, RuleSeverity.MEDIUM)
+                severity = max(severity, RuleSeverity.HIGH)
         
         # Calculate score
         if total_matches == 0:
@@ -191,7 +201,7 @@ class BlacklistRule(RiskRule):
         if details.get("direct_match"):
             score = 100.0  # Direct blacklist = max score
         else:
-            score = min(20 * total_matches, 80)  # Cap at 80 for indirect
+            score = min(40 * total_matches, 90)  # 40 per interaction, cap at 90
         
         return self._make_result(
             triggered=True,

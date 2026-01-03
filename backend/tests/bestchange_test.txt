@@ -1,0 +1,20 @@
+﻿python :   File "<string>", line 21
+At line:1 char:36
++ cd 
+d:\project\chainshield\backend; 
+python -c "
++                                   
+ ~~~~~~~~~~~
+    + CategoryInfo          : NotSp 
+   ecified: (  File "<string>", li  
+  ne 21:String) [], RemoteExcepti   
+ on
+    + FullyQualifiedErrorId : Nativ 
+   eCommandError
+ 
+    print(f'  Balance:        
+{activity.get(" balance_native\,
+                                    
+        ^
+SyntaxError: unterminated string 
+literal (detected at line 21)

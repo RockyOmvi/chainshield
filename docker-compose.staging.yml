@@ -1,0 +1,116 @@
+# ChainShield - Staging Environment
+# Deploy with: docker-compose -f docker-compose.staging.yml up -d
+
+version: "3.9"
+
+services:
+  # ===========================================================================
+  # PostgreSQL Database (Staging)
+  # ===========================================================================
+  postgres:
+    image: postgres:16-alpine
+    container_name: chainshield-staging-postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-chainshield}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB:-chainshield_staging}
+    volumes:
+      - postgres_staging_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U chainshield"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - chainshield-staging
+
+  # ===========================================================================
+  # Redis Cache (Staging)
+  # ===========================================================================
+  redis:
+    image: redis:7-alpine
+    container_name: chainshield-staging-redis
+    restart: always
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis_staging_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - chainshield-staging
+
+  # ===========================================================================
+  # ChainShield Backend API (Staging)
+  # ===========================================================================
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: chainshield-staging-api
+    restart: always
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      # Application
+      APP_NAME: chainshield
+      APP_ENV: staging
+      DEBUG: "false"
+      
+      # Server
+      HOST: 0.0.0.0
+      PORT: 8000
+      WORKERS: 4
+      
+      # Database
+      DATABASE_URL: postgresql+asyncpg://${POSTGRES_USER:-chainshield}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-chainshield_staging}
+      
+      # Redis
+      REDIS_URL: redis://redis:6379/0
+      
+      # Security (REQUIRED - set in .env)
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY:?Set JWT_SECRET_KEY}
+      JWT_ALGORITHM: HS256
+      JWT_ACCESS_TOKEN_EXPIRE_MINUTES: 30
+      
+      # CORS
+      CORS_ORIGINS: ${CORS_ORIGINS:-["https://staging.chainshield.io"]}
+      
+      # Rate Limiting
+      RATE_LIMIT_ENABLED: "true"
+      RATE_LIMIT_REQUESTS_PER_MINUTE: 100
+      
+      # Features
+      FEATURE_AI_EXPLANATIONS: "true"
+      FEATURE_GRAPH_ANALYSIS: "true"
+      
+      # Logging
+      LOG_LEVEL: INFO
+      LOG_FORMAT: json
+    ports:
+      - "8000:8000"
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      start_period: 15s
+      retries: 3
+    networks:
+      - chainshield-staging
+
+volumes:
+  postgres_staging_data:
+    name: chainshield-staging-postgres
+  redis_staging_data:
+    name: chainshield-staging-redis
+
+networks:
+  chainshield-staging:
+    name: chainshield-staging
+    driver: bridge

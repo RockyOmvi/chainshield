@@ -1,0 +1,68 @@
+CHAINSHIELD INTEGRATION TEST REPORT
+==================================================
+Date: 2026-01-03 23:04:43
+Passed: 60
+Failed: 1
+
+[PASS] Risk engine loads
+[PASS] ML classifier available
+[PASS] Rules loaded (4 rules)
+[PASS] EVM chains count (9)
+[PASS] Chain: ethereum
+[PASS] Chain: polygon
+[PASS] Chain: arbitrum
+[PASS] Chain: bsc
+[PASS] Chain: optimism
+[PASS] Chain: base
+[PASS] Chain: avalanche
+[PASS] Chain: fantom
+[PASS] Chain: zksync
+[PASS] Bitcoin client
+[PASS] Solana client
+[PASS] Sanctioned addresses (0)
+[PASS] Mixer contracts (6)
+[PASS] Tornado Cash detected
+[PASS] Clean address passes
+[PASS] Entities loaded (71)
+[PASS] Binance entity found
+[PASS] Entity category correct
+[PASS] Password hashing works
+[FAIL] Authentication system
+       Error: cannot access local variable 'hashed' where it is not associated with a value
+[PASS] Free tier defined
+[PASS] Pro tier defined
+[PASS] Enterprise tier defined
+[PASS] Quota check works
+[PASS] Usage recording
+[PASS] Usage summary
+[PASS] Request metric recorded
+[PASS] Assessment metric recorded
+[PASS] Counter increment
+[PASS] Gauge set
+[PASS] Prometheus export
+[PASS] Metrics summary
+[PASS] Uptime SLA tracking
+[PASS] Response time SLA tracking
+[PASS] Error rate SLA tracking
+[PASS] SLA summary
+[PASS] Webhook registration
+[PASS] Webhook listing
+[PASS] Alert creation for high risk
+[PASS] No alert for low risk
+[PASS] Assessment logging
+[PASS] Sanctions hit logging
+[PASS] Hash chain enabled
+[PASS] Audit stats
+[PASS] Email service initialized
+[PASS] Verification template
+[PASS] Password reset template
+[PASS] Risk alert template
+[PASS] Usage warning template
+[PASS] Tornado Cash blocked
+[PASS] New whale flagged
+[PASS] Known exchange low risk
+[PASS] Normal wallet acceptable
+[PASS] All services initialized
+[PASS] Quota check in flow
+[PASS] Full E2E flow completed
+[PASS] E2E response time (78ms)

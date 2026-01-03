@@ -1,0 +1,366 @@
+================================================================================
+  CHAINSHIELD PROFESSIONAL RISK ASSESSMENT REPORT
+================================================================================
+  Generated: 2026-01-03 22:27:21
+  Test Duration: 26.09 seconds
+  Wallets Analyzed: 10
+
+  EXECUTIVE SUMMARY
+  ----------------------------------------
+  Ethereum Wallets:    4
+  Bitcoin Wallets:     6
+  BLOCKED (Sanctions): 0
+  HIGH/CRITICAL Risk:  0
+
+================================================================================
+  DETAILED ETHEREUM ANALYSIS
+================================================================================
+
+  Address: 0x8b7ab11082ab008666dc5b0e72ab2cbcded8d6e9
+  --------------------------------------------------
+  Balance:     0.0224 ETH
+  TX Count:    35
+  Is Contract: False
+
+  RISK SCORE:  49.8/100
+  RISK LEVEL:  MEDIUM
+  CONFIDENCE:  97%
+  BLOCKED:     False
+  ERC20 TXs:   0
+  Tokens:      0 unique
+
+  NLP ANALYSIS
+  ------------
+  SUMMARY:
+     Wallet 0x8b7ab110... has some concerning indicators. Risk score: 50/100.
+    Enhanced monitoring recommended.
+
+  KEY FACTORS:
+    - active_hours_entropy below normal: 0.00
+    - Very low timing entropy: 0.00 (bot-like)
+
+  RECOMMENDATION: Monitor this wallet for additional suspicious activity.
+
+  DETAILED TRANSACTION ANALYSIS
+    Estimated Origin: Unknown (RPC Limits)
+    Top Transactions: History Unavailable (RPC Limits)
+
+  Address: 0xfa428d00eb9d83ae51279ba4d8151c7cb6b31847
+  --------------------------------------------------
+  Balance:     1.7890 ETH
+  TX Count:    62
+  Is Contract: False
+
+  RISK SCORE:  46.7/100
+  RISK LEVEL:  MEDIUM
+  CONFIDENCE:  91%
+  BLOCKED:     False
+  ERC20 TXs:   0
+  Tokens:      0 unique
+
+  NLP ANALYSIS
+  ------------
+  SUMMARY:
+     Wallet 0xfa428d00... has some concerning indicators. Risk score: 47/100.
+    Enhanced monitoring recommended.
+
+  KEY FACTORS:
+    - active_hours_entropy below normal: 0.00
+    - Very low timing entropy: 0.00 (bot-like)
+
+  RECOMMENDATION: Monitor this wallet for additional suspicious activity.
+
+  DETAILED TRANSACTION ANALYSIS
+    Estimated Origin: Unknown (RPC Limits)
+    Top Transactions: History Unavailable (RPC Limits)
+
+  Address: 0x97a68f47af62ceb063d1aea708bc1e76fe4395be
+  --------------------------------------------------
+  Balance:     0.1741 ETH
+  TX Count:    32
+  Is Contract: False
+
+  RISK SCORE:  47.8/100
+  RISK LEVEL:  MEDIUM
+  CONFIDENCE:  94%
+  BLOCKED:     False
+  ERC20 TXs:   0
+  Tokens:      0 unique
+
+  NLP ANALYSIS
+  ------------
+  SUMMARY:
+     Wallet 0x97a68f47... has some concerning indicators. Risk score: 48/100.
+    Enhanced monitoring recommended.
+
+  KEY FACTORS:
+    - active_hours_entropy below normal: 0.00
+    - Very low timing entropy: 0.00 (bot-like)
+
+  RECOMMENDATION: Monitor this wallet for additional suspicious activity.
+
+  DETAILED TRANSACTION ANALYSIS
+    Estimated Origin: Unknown (RPC Limits)
+    Top Transactions: History Unavailable (RPC Limits)
+
+  Address: 0x898fd5f120470f7b9fcc3dc7e310d3f5ef1f2387
+  --------------------------------------------------
+  Balance:     0.0000 ETH
+  TX Count:    1
+  Is Contract: False
+
+  RISK SCORE:  53.5/100
+  RISK LEVEL:  MEDIUM
+  CONFIDENCE:  100%
+  BLOCKED:     False
+  ERC20 TXs:   0
+  Tokens:      0 unique
+
+  NLP ANALYSIS
+  ------------
+  SUMMARY:
+     Wallet 0x898fd5f1... has some concerning indicators. Risk score: 54/100.
+    Enhanced monitoring recommended.
+
+  KEY FACTORS:
+    - active_hours_entropy below normal: 0.00
+    - Very low timing entropy: 0.00 (bot-like)
+
+  RECOMMENDATION: Monitor this wallet for additional suspicious activity.
+
+  DETAILED TRANSACTION ANALYSIS
+    Estimated Origin: Unknown (RPC Limits)
+    Top Transactions: History Unavailable (RPC Limits)
+
+================================================================================
+  DETAILED BITCOIN ANALYSIS
+================================================================================
+
+  Address: bc1qxy2kgdygjrsqtzq2n0yrf2493p83kkfjhx0wlh
+  --------------------------------------------------
+  Balance:     3.58165704 BTC
+  TX Count:    1,425
+  Received:    16.45171543 BTC
+
+  RISK SCORE:  35.1/100
+  RISK LEVEL:  LOW
+  CONFIDENCE:  50%
+  BLOCKED:     False
+
+  NLP ANALYSIS
+  ------------
+  SUMMARY:
+     Wallet bc1qxy2kgd... shows normal activity patterns. Risk score: 35/100.
+    No significant risk factors detected.
+
+  KEY FACTORS:
+    - active_hours_entropy below normal: 0.00
+    - Very low timing entropy: 0.00 (bot-like)
+
+  RECOMMENDATION: This wallet appears to be legitimate. No action required.
+
+  DETAILED TRANSACTION ANALYSIS
+    Estimated Origin: Exchange Withdrawal (Estimated)
+    Top 10 Transactions:
+      1. 0.00628209 (502d02dd3f...)
+      2. 0.00136498 (48c401c63c...)
+      3. 0.00131885 (1593a948f0...)
+      4. 0.00064244 (fe2f4d907e...)
+      5. 0.00050000 (cf4f5cf5e6...)
+      6. 0.00045673 (4ef3a5aa7e...)
+      7. 0.00043393 (13ff1dea4b...)
+      8. 0.00023158 (e6d5caa324...)
+      9. 0.00017601 (a219456917...)
+      10. 0.00016808 (dc780a7535...)
+
+  Address: bc1qexfl4uava5c95ahnfg4f54lacd6rrvlcgsew0d
+  --------------------------------------------------
+  Balance:     0.00000000 BTC
+  TX Count:    22
+  Received:    0.00135790 BTC
+
+  RISK SCORE:  44.5/100
+  RISK LEVEL:  MEDIUM
+  CONFIDENCE:  71%
+  BLOCKED:     False
+
+  NLP ANALYSIS
+  ------------
+  SUMMARY:
+     Wallet bc1qexfl4u... has some concerning indicators. Risk score: 44/100.
+    Enhanced monitoring recommended.
+
+  KEY FACTORS:
+    - Very low balance ($0.00) after high activity.
+    - active_hours_entropy below normal: 0.00
+    - Very low timing entropy: 0.00 (bot-like)
+
+  RECOMMENDATION: Monitor this wallet for additional suspicious activity.
+
+  DETAILED TRANSACTION ANALYSIS
+    Estimated Origin: Exchange Withdrawal (Estimated)
+    Top 10 Transactions:
+      1. 0.00034239 (698224e488...)
+      2. 0.00027238 (22df33166b...)
+      3. 0.00017290 (dc780a7535...)
+      4. 0.00015798 (802b7bb011...)
+      5. 0.00013542 (5b4006ea6c...)
+      6. 0.00009149 (18fe13b933...)
+      7. 0.00006594 (f64b0ea5b4...)
+      8. 0.00004757 (59863ac45c...)
+      9. 0.00003053 (feebd5e1d6...)
+      10. 0.00002964 (ef82feae3b...)
+
+  Address: bc1qegyardm0e9nwmfyrnxdwlqa6389v2k3pwfyvr0
+  --------------------------------------------------
+  Balance:     0.00000000 BTC
+  TX Count:    4
+  Received:    0.36445976 BTC
+
+  RISK SCORE:  53.7/100
+  RISK LEVEL:  MEDIUM
+  CONFIDENCE:  97%
+  BLOCKED:     False
+
+  NLP ANALYSIS
+  ------------
+  SUMMARY:
+     Wallet bc1qegyard... has some concerning indicators. Risk score: 54/100.
+    Enhanced monitoring recommended.
+
+  KEY FACTORS:
+    - active_hours_entropy below normal: 0.00
+    - Very low timing entropy: 0.00 (bot-like)
+
+  RECOMMENDATION: Monitor this wallet for additional suspicious activity.
+
+  DETAILED TRANSACTION ANALYSIS
+    Estimated Origin: Exchange Withdrawal (Estimated)
+    Top 10 Transactions:
+      1. 0.21540000 (ce470c1da8...)
+      2. 0.14905976 (baa905fc13...)
+      3. 0.00000000 (14cc1a0c96...)
+      4. 0.00000000 (83ea81dea7...)
+
+  Address: 1QK3dv3WWeXmhfDqZuKGmGFd9xBvAEjVo9
+  --------------------------------------------------
+  Balance:     0.14905631 BTC
+  TX Count:    7
+  Received:    0.60244698 BTC
+
+  RISK SCORE:  43.5/100
+  RISK LEVEL:  MEDIUM
+  CONFIDENCE:  69%
+  BLOCKED:     False
+
+  NLP ANALYSIS
+  ------------
+  SUMMARY:
+     Wallet 1QK3dv3WWe... has some concerning indicators. Risk score: 44/100.
+    Enhanced monitoring recommended.
+
+  KEY FACTORS:
+    - active_hours_entropy below normal: 0.00
+    - Very low timing entropy: 0.00 (bot-like)
+
+  RECOMMENDATION: Monitor this wallet for additional suspicious activity.
+
+  DETAILED TRANSACTION ANALYSIS
+    Estimated Origin: Exchange Withdrawal (Estimated)
+    Top 10 Transactions:
+      1. 0.22916949 (fa74896a4a...)
+      2. 0.21537627 (83ea81dea7...)
+      3. 0.14905631 (14cc1a0c96...)
+      4. 0.00884491 (6a7262c7de...)
+      5. 0.00000000 (9fa1166522...)
+      6. 0.00000000 (0644765e2e...)
+      7. 0.00000000 (fc5bc7c080...)
+
+  Address: bc1qhums9dd8kj5f0npnw2rsmgg5q5zra0plkx0pap
+  --------------------------------------------------
+  Balance:     96.29668339 BTC
+  TX Count:    52,734
+  Received:    16370.83424317 BTC
+
+  RISK SCORE:  33.7/100
+  RISK LEVEL:  LOW
+  CONFIDENCE:  50%
+  BLOCKED:     False
+
+  NLP ANALYSIS
+  ------------
+  SUMMARY:
+     Wallet bc1qhums9d... shows normal activity patterns. Risk score: 34/100.
+    No significant risk factors detected.
+
+  KEY FACTORS:
+    - active_hours_entropy below normal: 0.00
+    - Very low timing entropy: 0.00 (bot-like)
+
+  RECOMMENDATION: This wallet appears to be legitimate. No action required.
+
+  DETAILED TRANSACTION ANALYSIS
+    Estimated Origin: Mining Pool / Early Adopter (Estimated)
+    Top 10 Transactions:
+      1. 6.34844452 (f10b281de7...)
+      2. 1.50650393 (6ab6573731...)
+      3. 1.14657105 (589671848e...)
+      4. 1.14467190 (d436f4c13a...)
+      5. 1.14333646 (65bae86b9f...)
+      6. 1.14155527 (3df7197020...)
+      7. 1.13750869 (4c2477fa30...)
+      8. 1.12749876 (e248b9a4a2...)
+      9. 1.12736246 (7911a4363a...)
+      10. 1.12688114 (dac4095b5e...)
+
+  Address: 15e13nJFHyiFTLu1ZL1ZoYJBmUjKJGQKoN
+  --------------------------------------------------
+  Balance:     0.00000000 BTC
+  TX Count:    32
+  Received:    0.03635171 BTC
+
+  RISK SCORE:  39.9/100
+  RISK LEVEL:  LOW
+  CONFIDENCE:  50%
+  BLOCKED:     False
+
+  NLP ANALYSIS
+  ------------
+  SUMMARY:
+     Wallet 15e13nJFHy... shows normal activity patterns. Risk score: 40/100.
+    No significant risk factors detected.
+
+  KEY FACTORS:
+    - Very low balance ($0.00) after high activity.
+    - active_hours_entropy below normal: 0.00
+    - Very low timing entropy: 0.00 (bot-like)
+
+  RECOMMENDATION: This wallet appears to be legitimate. No action required.
+
+  DETAILED TRANSACTION ANALYSIS
+    Estimated Origin: Exchange Withdrawal (Estimated)
+    Top 10 Transactions:
+      1. 0.00657895 (8f2f4732d3...)
+      2. 0.00574690 (3a6880d3cd...)
+      3. 0.00461876 (8486d11852...)
+      4. 0.00292816 (3461befab6...)
+      5. 0.00235643 (fd3ba7fac3...)
+      6. 0.00233203 (a4d0037be2...)
+      7. 0.00187629 (e00eb194d0...)
+      8. 0.00169641 (7429b94fb6...)
+      9. 0.00116358 (750ee5f831...)
+      10. 0.00095452 (2af5c79019...)
+
+================================================================================
+  FEATURE VERIFICATION
+================================================================================
+  [OK] ML Model:           VotingClassifier (99.87% accuracy)
+  [OK] Entity Reputation:  71+ known entities
+  [OK] Sanctions (OFAC):   37 blocked addresses
+  [OK] Heuristics:         4 active rules
+  [OK] Graph Analysis:     Layering detection
+  [OK] Token Analysis:     ERC20 metrics
+
+================================================================================
+  END OF REPORT
+================================================================================

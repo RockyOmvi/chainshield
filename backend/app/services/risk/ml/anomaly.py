@@ -107,11 +107,25 @@ class AnomalyDetector:
             return self._detect_fallback(features)
         
         try:
+            # Get expected feature count from model
+            n_features_model = getattr(self.model, 'n_features_in_', None)
+            
             # Prepare features
             if preprocessor:
                 X = [preprocessor.transform(features.features)]
             else:
-                X = [list(features.features.values())]
+                # Check if we need Kaggle adapter (model expects 45 features)
+                if n_features_model == 45:
+                    from app.services.risk.ml.kaggle_adapter import get_kaggle_adapter
+                    adapter = get_kaggle_adapter()
+                    X = [adapter.transform(features.features)]
+                    self.logger.debug("using_kaggle_adapter", 
+                                     input_features=len(features.features),
+                                     output_features=45)
+                else:
+                    X = [list(features.features.values())]
+            
+            n_features_input = len(X[0])
             
             # Get anomaly score
             # Isolation Forest returns negative scores for outliers

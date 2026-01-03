@@ -1,0 +1,341 @@
+﻿================================================================================
+  CHAINSHIELD FULL EXPLANATION DEMO
+  Showing complete NLP explanations for risk decisions
+================================================================================
+
+2026-01-02T12:05:23.060614+00:00 [info     ] sanctions_db_loaded            app=chainshield env=development lazarus=6 module=sanctions_db tornado_cash=27 total_addresses=37
+2026-01-02T12:05:23.060963+00:00 [info     ] ofac_sanctions_loaded          app=chainshield count=37 env=development rule=blacklist_check
+2026-01-02T12:05:23.061068+00:00 [info     ] blacklist_initialized          address_count=38 app=chainshield env=development rule=blacklist_check
+2026-01-02T12:05:23.061269+00:00 [info     ] rule_registered                app=chainshield enabled=True env=development module=rule_registry rule=blacklist_check
+2026-01-02T12:05:23.061371+00:00 [info     ] rule_registered                app=chainshield enabled=True env=development module=rule_registry rule=velocity_check
+2026-01-02T12:05:23.061479+00:00 [info     ] rule_registered                app=chainshield enabled=True env=development module=rule_registry rule=pattern_check
+2026-01-02T12:05:23.061581+00:00 [info     ] rule_registered                app=chainshield enabled=True env=development module=rule_registry rule=honeypot_check
+2026-01-02T12:05:23.061691+00:00 [info     ] default_rules_initialized      app=chainshield env=development module=rule_registry rule_count=4
+2026-01-02T12:05:23.061843+00:00 [warning  ] model_file_not_found           app=chainshield env=development module=risk_classifier path=app/services/risk/models/risk_classifier_v1.pkl using_fallback=True
+2026-01-02T12:05:23.061947+00:00 [info     ] fallback_model_initialized     app=chainshield env=development module=risk_classifier
+2026-01-02T12:05:23.062036+00:00 [warning  ] anomaly_model_not_found        app=chainshield env=development module=anomaly_detector path=app/services/risk/models/isolation_forest_v1.pkl using_fallback=True
+2026-01-02T12:05:23.062145+00:00 [info     ] entity_reputation_loaded       app=chainshield count=71 env=development module=entity_reputation
+2026-01-02T12:05:23.062240+00:00 [info     ] risk_engine_initialized        app=chainshield env=development module=risk_engine
+================================================================================
+  ADDRESS: Binance Hot Wallet
+  Chain: ETHEREUM
+  Address: 0x28C6c06298d514Db089934071355...
+================================================================================
+
+2026-01-02T12:05:53.673123+00:00 [warning  ] rpc_call_failed                app=chainshield env=development error= method=eth_getBalance module=rpc_client
+2026-01-02T12:05:56.238262+00:00 [info     ] bridges_loaded                 app=chainshield count=5 env=development module=bridge_registry
+2026-01-02T12:05:56.238403+00:00 [debug    ] score_adjusted_for_entity      address=0x28C6c06298d514 adjusted_score=4.065999999999999 app=chainshield entity='Binance Hot Wallet' env=development module=entity_reputation raw_score=40.66 trust=0.9
+RISK ANALYSIS:
+--------------------------------------------------------------------------------
+  Risk Score:    4.1/100
+  Risk Level:    LOW
+  Confidence:    60%
+
+LAYER BREAKDOWN:
+--------------------------------------------------------------------------------
+  Rules:         0.0
+  Heuristics:    17.3
+  ML:            55.0
+  Anomaly:       15.0
+
+RISK FACTORS DETECTED:
+--------------------------------------------------------------------------------
+  [entity_reputation] Known entity: Binance Hot Wallet (trust: 90%) (+36.6)
+  [      ml       ] ML feature: age_hours (+25.0)
+  [      ml       ] ML feature: active_hours_entropy (+15.0)
+  [      ml       ] Low time entropy: 0.00 (bot-like) (+15.0)
+  [   heuristic   ] Very new account (0.0 hours) (+8.7)
+
+NLP SUMMARY:
+--------------------------------------------------------------------------------
+** CRITICAL ALERT **: Wallet 0x28C6c062... - This wallet shows extremely high activity with 14,858,997 transactions, which is unusual for a personal wallet and may indicate automated trading, exchange operations, or potential laundering activity.
+
+KEY FACTORS:
+  - No specific high-risk factors identified.
+
+RECOMMENDATION: Monitor this wallet for additional suspicious activity.
+
+FULL ANALYST REPORT:
+--------------------------------------------------------------------------------
++====================================================================+
+|                 CHAINSHIELD RISK ASSESSMENT REPORT                 |
++====================================================================+
+
+OVERVIEW
+----------------------------------------
+  Risk Score:     4.1 / 100
+  Risk Level:     LOW
+  Confidence:     High
+
+WALLET DATA
+----------------------------------------
+  Address:        0x28C6c06298d514Db089934071355...
+  Chain:          Ethereum
+  Balance:        0.0000
+  Transactions:   14,858,997
+  Account Age:    2083 days
+
+ANALYSIS SUMMARY
+----------------------------------------
+  ** CRITICAL ALERT **: Wallet 0x28C6c062... - This wallet shows
+  extremely high activity with 14,858,997 transactions, which is
+  unusual for a personal wallet and may indicate automated trading,
+  exchange operations, or potential laundering activity.
+
+KEY RISK FACTORS
+----------------------------------------
+  1. No specific high-risk factors identified.
+
+RECOMMENDATION
+----------------------------------------
+  Monitor this wallet for additional suspicious activity.
+
+======================================================================
+  Report generated by ChainShield Risk Engine
+======================================================================
+
+================================================================================
+  ADDRESS: USDC Contract
+  Chain: ETHEREUM
+  Address: 0xA0b86991c6218b36c1d19D4a2e9E...
+================================================================================
+
+2026-01-02T12:05:57.791282+00:00 [debug    ] score_adjusted_for_entity      address=0xA0b86991c6218b adjusted_score=0.8132000000000007 app=chainshield entity=USDC env=development module=entity_reputation raw_score=40.66 trust=0.98
+RISK ANALYSIS:
+--------------------------------------------------------------------------------
+  Risk Score:    0.8/100
+  Risk Level:    LOW
+  Confidence:    60%
+
+LAYER BREAKDOWN:
+--------------------------------------------------------------------------------
+  Rules:         0.0
+  Heuristics:    17.3
+  ML:            55.0
+  Anomaly:       15.0
+
+RISK FACTORS DETECTED:
+--------------------------------------------------------------------------------
+  [entity_reputation] Known entity: USDC (trust: 98%) (+39.8)
+  [      ml       ] ML feature: age_hours (+25.0)
+  [      ml       ] ML feature: active_hours_entropy (+15.0)
+  [      ml       ] Low time entropy: 0.00 (bot-like) (+15.0)
+  [   heuristic   ] Very new account (0.0 hours) (+8.7)
+
+NLP SUMMARY:
+--------------------------------------------------------------------------------
+ALERT: Wallet 0xA0b86991... has critical risk indicators. Risk score: 1/100. Immediate action required.
+
+KEY FACTORS:
+  - No specific high-risk factors identified.
+
+RECOMMENDATION: Monitor this wallet for additional suspicious activity.
+
+FULL ANALYST REPORT:
+--------------------------------------------------------------------------------
++====================================================================+
+|                 CHAINSHIELD RISK ASSESSMENT REPORT                 |
++====================================================================+
+
+OVERVIEW
+----------------------------------------
+  Risk Score:     0.8 / 100
+  Risk Level:     LOW
+  Confidence:     High
+
+WALLET DATA
+----------------------------------------
+  Address:        0xA0b86991c6218b36c1d19D4a2e9E...
+  Chain:          Ethereum
+  Balance:        0.0000
+  Transactions:   1
+  Account Age:    2083 days
+
+ANALYSIS SUMMARY
+----------------------------------------
+  ALERT: Wallet 0xA0b86991... has critical risk indicators. Risk
+  score: 1/100. Immediate action required.
+
+KEY RISK FACTORS
+----------------------------------------
+  1. No specific high-risk factors identified.
+
+RECOMMENDATION
+----------------------------------------
+  Monitor this wallet for additional suspicious activity.
+
+======================================================================
+  Report generated by ChainShield Risk Engine
+======================================================================
+
+================================================================================
+  ADDRESS: BestChange (Aggregator)
+  Chain: BITCOIN
+  Address: 1BESTCHANGEuX2oUwodgvJqB52kTsr...
+================================================================================
+
+RISK ANALYSIS:
+--------------------------------------------------------------------------------
+  Risk Score:    51.2/100
+  Risk Level:    MEDIUM
+  Confidence:    60%
+
+LAYER BREAKDOWN:
+--------------------------------------------------------------------------------
+  Rules:         0.0
+  Heuristics:    38.3
+  ML:            55.0
+  Anomaly:       15.0
+
+RISK FACTORS DETECTED:
+--------------------------------------------------------------------------------
+  [      ml       ] ML feature: age_hours (+25.0)
+  [      ml       ] ML feature: active_hours_entropy (+15.0)
+  [      ml       ] Low time entropy: 0.00 (bot-like) (+15.0)
+  [   heuristic   ] Very new account (0.0 hours) (+9.6)
+  [   heuristic   ] Very low outflow: only 0% sent (+9.6)
+
+NLP SUMMARY:
+--------------------------------------------------------------------------------
+** CRITICAL ALERT **: Wallet 1BESTCHANG... - This wallet has processed 3,736 transactions, indicating significant activity that warrants monitoring. The wallet received 58.93 units but only 0.0000 remains. Over 95% of funds were moved out, which is a classic pass-through/laundering pattern.
+
+KEY FACTORS:
+  - Pass-through pattern: 100.0% of funds moved out, only 0.0000% retained
+  - Very low outflow: only 0% sent
+
+RECOMMENDATION: Monitor this wallet for additional suspicious activity.
+
+FULL ANALYST REPORT:
+--------------------------------------------------------------------------------
++====================================================================+
+|                 CHAINSHIELD RISK ASSESSMENT REPORT                 |
++====================================================================+
+
+OVERVIEW
+----------------------------------------
+  Risk Score:     51.2 / 100
+  Risk Level:     MEDIUM
+  Confidence:     High
+
+WALLET DATA
+----------------------------------------
+  Address:        1BESTCHANGEuX2oUwodgvJqB52kTsr...
+  Chain:          Bitcoin
+  Balance:        0.0000
+  Transactions:   3,736
+  Total Received: 58.9350
+  Total Sent:     58.9350
+  Pass-Through:   100.00%
+  ** WARNING: 100.0% of funds passed through! **
+  Account Age:    2083 days
+
+ANALYSIS SUMMARY
+----------------------------------------
+  ** CRITICAL ALERT **: Wallet 1BESTCHANG... - This wallet has
+  processed 3,736 transactions, indicating significant activity that
+  warrants monitoring. The wallet received 58.93 units but only
+  0.0000 remains. Over 95% of funds were moved out, which is a
+  classic pass-through/laundering pattern.
+
+KEY RISK FACTORS
+----------------------------------------
+  1. Pass-through pattern: 100.0% of funds moved out, only
+     0.0000% retained
+  2. Very low outflow: only 0% sent
+
+RECOMMENDATION
+----------------------------------------
+  Monitor this wallet for additional suspicious activity.
+
+======================================================================
+  Report generated by ChainShield Risk Engine
+======================================================================
+
+================================================================================
+  ADDRESS: SatoshiDice Gambling
+  Chain: BITCOIN
+  Address: 1dice8EMZmqKvrGE4Qc9bUFf9PX3xa...
+================================================================================
+
+RISK ANALYSIS:
+--------------------------------------------------------------------------------
+  Risk Score:    51.2/100
+  Risk Level:    MEDIUM
+  Confidence:    60%
+
+LAYER BREAKDOWN:
+--------------------------------------------------------------------------------
+  Rules:         0.0
+  Heuristics:    38.3
+  ML:            55.0
+  Anomaly:       15.0
+
+RISK FACTORS DETECTED:
+--------------------------------------------------------------------------------
+  [      ml       ] ML feature: age_hours (+25.0)
+  [      ml       ] ML feature: active_hours_entropy (+15.0)
+  [      ml       ] Low time entropy: 0.00 (bot-like) (+15.0)
+  [   heuristic   ] Very new account (0.0 hours) (+9.6)
+  [   heuristic   ] Very low outflow: only 0% sent (+9.6)
+
+NLP SUMMARY:
+--------------------------------------------------------------------------------
+** CRITICAL ALERT **: Wallet 1dice8EMZm... - This wallet shows extremely high activity with 3,201,501 transactions, which is unusual for a personal wallet and may indicate automated trading, exchange operations, or potential laundering activity. The wallet received 1020333.62 units but only 0.1158 remains. Over 95% of funds were moved out, which is a classic pass-through/laundering pattern.
+
+KEY FACTORS:
+  - Pass-through pattern: 100.0% of funds moved out, only 0.0000% retained
+  - Very low outflow: only 0% sent
+
+RECOMMENDATION: Monitor this wallet for additional suspicious activity.
+
+FULL ANALYST REPORT:
+--------------------------------------------------------------------------------
++====================================================================+
+|                 CHAINSHIELD RISK ASSESSMENT REPORT                 |
++====================================================================+
+
+OVERVIEW
+----------------------------------------
+  Risk Score:     51.2 / 100
+  Risk Level:     MEDIUM
+  Confidence:     High
+
+WALLET DATA
+----------------------------------------
+  Address:        1dice8EMZmqKvrGE4Qc9bUFf9PX3xaYDp
+  Chain:          Bitcoin
+  Balance:        0.1158
+  Transactions:   3,201,501
+  Total Received: 1,020,333.6209
+  Total Sent:     1,020,333.5051
+  Pass-Through:   100.00%
+  ** WARNING: 100.0% of funds passed through! **
+  Account Age:    2083 days
+
+ANALYSIS SUMMARY
+----------------------------------------
+  ** CRITICAL ALERT **: Wallet 1dice8EMZm... - This wallet shows
+  extremely high activity with 3,201,501 transactions, which is
+  unusual for a personal wallet and may indicate automated trading,
+  exchange operations, or potential laundering activity. The wallet
+  received 1020333.62 units but only 0.1158 remains. Over 95% of
+  funds were moved out, which is a classic pass-through/laundering
+  pattern.
+
+KEY RISK FACTORS
+----------------------------------------
+  1. Pass-through pattern: 100.0% of funds moved out, only
+     0.0000% retained
+  2. Very low outflow: only 0% sent
+
+RECOMMENDATION
+----------------------------------------
+  Monitor this wallet for additional suspicious activity.
+
+======================================================================
+  Report generated by ChainShield Risk Engine
+======================================================================
+
+================================================================================
+  END OF DEMO
+================================================================================

@@ -117,8 +117,20 @@ class RiskClassifier:
     ) -> Tuple[float, List[Tuple[str, float]]]:
         """Predict using trained model."""
         try:
-            # Convert to array
-            X = self.preprocessor.transform(features.features, self.feature_names)
+            # Check if model expects Kaggle features (45)
+            n_features_model = getattr(self.model, 'n_features_in_', None)
+            
+            if n_features_model == 45:
+                # Use Kaggle adapter for trained ensemble model
+                from app.services.risk.ml.kaggle_adapter import get_kaggle_adapter
+                adapter = get_kaggle_adapter()
+                X = adapter.transform(features.features)
+                self.logger.debug("using_kaggle_adapter_classifier",
+                                 input_features=len(features.features),
+                                 output_features=45)
+            else:
+                # Use standard preprocessor
+                X = self.preprocessor.transform(features.features, self.feature_names)
             
             # Get probability
             proba = self.model.predict_proba([X])[0]
@@ -151,42 +163,60 @@ class RiskClassifier:
         """
         Fallback prediction using simple heuristics.
         
-        Used when ML model is unavailable.
+        CALIBRATED: Start at a conservative 15, only increase for real signals.
+        This prevents inflating scores when ML model is unavailable.
+        Default behavior: LOW risk unless actual suspicious patterns detected.
         """
-        score = risk_config.ml_config.fallback_score
+        # Start at LOW risk baseline (conservative approach)
+        score = 15.0
         top_factors = []
         
         f = features.features
         
-        # Age penalty
-        age_hours = f.get("age_hours", 0)
+        # Age penalty - new accounts are suspicious
+        age_hours = f.get("age_hours", 1000)  # Default to old if unknown
         if age_hours < 24:
-            age_penalty = 20 * (1 - age_hours / 24)
+            age_penalty = 25 * (1 - age_hours / 24)  # Max 25 points
+            score += age_penalty
+            top_factors.append(("age_hours", age_penalty))
+        elif age_hours < 168:  # Less than 1 week
+            age_penalty = 10 * (1 - age_hours / 168)
             score += age_penalty
             top_factors.append(("age_hours", age_penalty))
         
-        # Mixer interaction penalty
+        # Mixer interaction is a strong signal
         mixer_count = f.get("mixer_interaction_count", 0)
         if mixer_count > 0:
-            mixer_penalty = min(mixer_count * 15, 40)
+            mixer_penalty = min(mixer_count * 20, 50)  # Strong penalty
             score += mixer_penalty
             top_factors.append(("mixer_interaction_count", mixer_penalty))
         
-        # High velocity penalty
+        # High velocity is suspicious
         tx_per_hour = f.get("tx_per_hour_avg", 0)
         if tx_per_hour > 10:
-            velocity_penalty = min(tx_per_hour * 2, 30)
+            velocity_penalty = min((tx_per_hour - 10) * 2, 20)
             score += velocity_penalty
             top_factors.append(("tx_per_hour_avg", velocity_penalty))
         
-        # Low entropy (bot behavior) penalty
+        # Bot-like behavior (low entropy)
         entropy = f.get("active_hours_entropy", 0.5)
-        if entropy < 0.3:
-            entropy_penalty = (0.3 - entropy) * 50
+        if entropy < 0.2:  # Very low = very bot-like
+            entropy_penalty = 15
+            score += entropy_penalty
+            top_factors.append(("active_hours_entropy", entropy_penalty))
+        elif entropy < 0.3:
+            entropy_penalty = 8
             score += entropy_penalty
             top_factors.append(("active_hours_entropy", entropy_penalty))
         
-        # Cap score
+        # Self-transfer ratio (wash trading)
+        self_ratio = f.get("self_transfer_ratio", 0)
+        if self_ratio > 0.2:
+            wash_penalty = min(self_ratio * 30, 20)
+            score += wash_penalty
+            top_factors.append(("self_transfer_ratio", wash_penalty))
+        
+        # Cap score at 100
         score = min(score, 100)
         
         return score, sorted(top_factors, key=lambda x: x[1], reverse=True)[:5]

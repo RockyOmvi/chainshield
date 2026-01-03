@@ -31,6 +31,9 @@ class Chain(str, Enum):
     BSC = "bsc"
     OPTIMISM = "optimism"
     BASE = "base"
+    AVALANCHE = "avalanche"
+    FANTOM = "fantom"
+    ZKSYNC = "zksync"
     
     @property
     def chain_id(self) -> int:
@@ -42,6 +45,9 @@ class Chain(str, Enum):
             Chain.BSC: 56,
             Chain.OPTIMISM: 10,
             Chain.BASE: 8453,
+            Chain.AVALANCHE: 43114,
+            Chain.FANTOM: 250,
+            Chain.ZKSYNC: 324,
         }.get(self, 1)
     
     @property
@@ -54,6 +60,9 @@ class Chain(str, Enum):
             Chain.BSC: "https://bscscan.com",
             Chain.OPTIMISM: "https://optimistic.etherscan.io",
             Chain.BASE: "https://basescan.org",
+            Chain.AVALANCHE: "https://snowtrace.io",
+            Chain.FANTOM: "https://ftmscan.com",
+            Chain.ZKSYNC: "https://explorer.zksync.io",
         }.get(self, "https://etherscan.io")
 
 
@@ -117,6 +126,18 @@ class MultiChainProvider:
         Chain.BASE: [
             "https://mainnet.base.org",
             "https://base.publicnode.com",
+        ],
+        Chain.AVALANCHE: [
+            "https://api.avax.network/ext/bc/C/rpc",
+            "https://rpc.ankr.com/avalanche",
+        ],
+        Chain.FANTOM: [
+            "https://rpc.ftm.tools",
+            "https://rpc.ankr.com/fantom",
+        ],
+        Chain.ZKSYNC: [
+            "https://mainnet.era.zksync.io",
+            "https://zksync-era.blockpi.network/v1/rpc/public",
         ],
     }
     

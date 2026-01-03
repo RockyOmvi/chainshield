@@ -1,0 +1,34 @@
+﻿2026-01-02T14:47:55.911535+00:00 [info     ] sanctions_db_loaded            app=chainshield env=development lazarus=6 module=sanctions_db tornado_cash=27 total_addresses=37
+2026-01-02T14:47:55.912422+00:00 [info     ] ofac_sanctions_loaded          app=chainshield count=37 env=development rule=blacklist_check
+2026-01-02T14:47:55.912638+00:00 [info     ] blacklist_initialized          address_count=38 app=chainshield env=development rule=blacklist_check
+2026-01-02T14:47:55.913033+00:00 [info     ] rule_registered                app=chainshield enabled=True env=development module=rule_registry rule=blacklist_check
+2026-01-02T14:47:55.913244+00:00 [info     ] rule_registered                app=chainshield enabled=True env=development module=rule_registry rule=velocity_check
+2026-01-02T14:47:55.913432+00:00 [info     ] rule_registered                app=chainshield enabled=True env=development module=rule_registry rule=pattern_check
+2026-01-02T14:47:55.913615+00:00 [info     ] rule_registered                app=chainshield enabled=True env=development module=rule_registry rule=honeypot_check
+2026-01-02T14:47:55.913800+00:00 [info     ] default_rules_initialized      app=chainshield env=development module=rule_registry rule_count=4
+2026-01-02T14:47:55.914066+00:00 [warning  ] model_file_not_found           app=chainshield env=development module=risk_classifier path=app/services/risk/models/risk_classifier_v1.pkl using_fallback=True
+2026-01-02T14:47:55.914266+00:00 [info     ] fallback_model_initialized     app=chainshield env=development module=risk_classifier
+2026-01-02T14:47:55.914488+00:00 [warning  ] anomaly_model_not_found        app=chainshield env=development module=anomaly_detector path=app/services/risk/models/isolation_forest_v1.pkl using_fallback=True
+2026-01-02T14:47:55.914759+00:00 [info     ] entity_reputation_loaded       app=chainshield count=71 env=development module=entity_reputation
+2026-01-02T14:47:55.914918+00:00 [info     ] risk_engine_initialized        app=chainshield env=development module=risk_engine
+2026-01-02T14:47:55.923037+00:00 [info     ] bridges_loaded                 app=chainshield count=5 env=development module=bridge_registry
+Legitimate Long-term Holder           LOW ->      LOW ( 27.3) PASS
+2026-01-02T14:47:55.923711+00:00 [debug    ] score_adjusted_for_entity      address=0x28C6c06298d514 adjusted_score=3.1789999999999994 app=chainshield entity='Binance Hot Wallet' env=development module=entity_reputation raw_score=31.79 trust=0.9
+Known Exchange (Binance)              LOW ->      LOW (  3.2) PASS
+2026-01-02T14:47:55.924272+00:00 [debug    ] score_adjusted_for_entity      address=0xA0b86991c6218b adjusted_score=0.6378000000000006 app=chainshield entity=USDC env=development module=entity_reputation raw_score=31.89 trust=0.98
+Stablecoin Contract (USDC)            LOW ->      LOW (  0.6) PASS
+Pass-through Pattern               MEDIUM ->      LOW ( 31.9) FAIL
+High Volume Unknown Wallet         MEDIUM ->      LOW ( 31.9) FAIL
+New Account + High Volume            HIGH ->     HIGH ( 74.5) PASS
+Tornado Cash User                    HIGH ->     HIGH ( 79.0) PASS
+2026-01-02T14:47:55.925400+00:00 [warning  ] blocking_rule_triggered        app=chainshield env=development module=rule_registry rule=blacklist_check severity=critical
+Multiple Mixer Interactions          HIGH -> CRITICAL (100.0) PASS
+2026-01-02T14:47:55.926009+00:00 [warning  ] blocking_rule_triggered        app=chainshield env=development module=rule_registry rule=blacklist_check severity=critical
+Sanctioned Address (Tornado Ca   CRITICAL -> CRITICAL (100.0) PASS
+2026-01-02T14:47:55.926517+00:00 [warning  ] blocking_rule_triggered        app=chainshield env=development module=rule_registry rule=blacklist_check severity=critical
+Lazarus Group (North Korea)      CRITICAL -> CRITICAL (100.0) PASS
+2026-01-02T14:47:55.927838+00:00 [warning  ] networkx_not_available         app=chainshield env=development module=graph_builder
+2026-01-02T14:47:55.928046+00:00 [info     ] graph_built                    app=chainshield edges=3 env=development module=graph_builder nodes=3
+New + Pass-through + Mixer       CRITICAL ->     HIGH ( 86.2) PASS
+
+ACCURACY: 9/11 (81%)

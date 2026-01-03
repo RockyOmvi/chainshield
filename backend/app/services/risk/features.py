@@ -163,18 +163,24 @@ class WalletFeatureExtractor:
         """Extract basic wallet metrics."""
         features = {}
         
-        # Age calculation
-        first_seen = data.get("first_seen")
-        if first_seen:
-            if isinstance(first_seen, str):
-                first_seen = datetime.fromisoformat(first_seen.replace("Z", "+00:00"))
-            age = datetime.utcnow() - first_seen.replace(tzinfo=None)
-            features["age_hours"] = age.total_seconds() / 3600
-            features["age_days"] = age.days
+        # Age calculation - check for pre-calculated age first (from test data or API)
+        pre_age_hours = data.get("age_hours")
+        if pre_age_hours is not None and pre_age_hours > 0:
+            features["age_hours"] = float(pre_age_hours)
+            features["age_days"] = float(pre_age_hours) / 24.0
         else:
-            features["age_hours"] = 0.0
-            features["age_days"] = 0.0
-            missing.append("age_hours")
+            # Calculate from first_seen timestamp
+            first_seen = data.get("first_seen")
+            if first_seen:
+                if isinstance(first_seen, str):
+                    first_seen = datetime.fromisoformat(first_seen.replace("Z", "+00:00"))
+                age = datetime.utcnow() - first_seen.replace(tzinfo=None)
+                features["age_hours"] = age.total_seconds() / 3600
+                features["age_days"] = age.days
+            else:
+                features["age_hours"] = 0.0
+                features["age_days"] = 0.0
+                missing.append("age_hours")
         
         # Balance
         balance = float(data.get("balance", 0))

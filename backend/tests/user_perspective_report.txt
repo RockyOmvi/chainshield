@@ -1,0 +1,59 @@
+CHAINSHIELD USER PERSPECTIVE E2E REPORT
+==================================================
+Date: 2026-01-03 23:14:08
+
+
+[REGISTRATION]
+  [PASS] Create account with email/password
+  [PASS] Email verification sent
+  [PASS] Login with credentials
+  [PASS] JWT access token received
+  [PASS] API key generated: cs_ea2684c31d670a5eb...
+
+[ANALYSIS]
+  [PASS] Check API quota
+  [PASS] Ethereum wallet analyzed - Score: 45.2
+  [PASS] Risk level: MEDIUM
+  [PASS] Usage recorded for billing
+  [PASS] Risk factors: 2 identified
+
+[MULTICHAIN]
+  [PASS] Available EVM chains: 9
+  [PASS] Bitcoin client ready
+  [PASS] Solana client ready
+  [PASS] Chain ethereum (ID: 1)
+  [PASS] Chain polygon (ID: 137)
+  [PASS] Chain arbitrum (ID: 42161)
+  [PASS] Chain avalanche (ID: 43114)
+
+[THREATS]
+  [PASS] Tornado Cash detected - Blocked: True
+  [PASS] Risk Level: CRITICAL
+  [PASS] Binance recognized - Score: 4.3
+  [PASS] Risk Level: LOW
+  [PASS] New whale flagged - Score: 56.7
+  [PASS] Risk Level: MEDIUM
+  [PASS] Normal wallet - Score: 46.7
+  [PASS] Risk Level: MEDIUM
+
+[ALERTS]
+  [PASS] Webhook registered for HIGH_RISK alerts
+  [PASS] Alert created: critical_risk
+  [PASS] Metrics tracking - Uptime: 0s
+  [PASS] SLA status checked
+
+[ADMIN]
+  [PASS] System stats retrieved - 1.0 requests
+  [PASS] Entity database: 71 known entities
+  [PASS] Audit events: 9
+  [PASS] SLA dashboard - Healthy: True
+
+[BILLING]
+  [PASS] Free tier: 1000/month
+  [PASS] Pro tier: 100000/month
+  [PASS] Enterprise: 10000000/month
+  [PASS] Usage: 1 today
+  [PASS] Pro features - Webhooks: True
+
+
+SUMMARY: 38/38 passed

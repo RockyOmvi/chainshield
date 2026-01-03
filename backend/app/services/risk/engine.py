@@ -42,6 +42,7 @@ from app.services.risk.rules import rule_registry
 from app.services.risk.ml.model import RiskClassifier
 from app.services.risk.ml.anomaly import AnomalyDetector
 from app.services.risk.heuristics import HeuristicsAggregator
+from app.services.risk.entity_reputation import get_entity_reputation
 
 logger = structlog.get_logger()
 
@@ -147,6 +148,9 @@ class RiskEngine:
         
         # Initialize heuristics aggregator (Layer 2)
         self.heuristics = HeuristicsAggregator()
+        
+        # Initialize entity reputation database
+        self.entity_reputation = get_entity_reputation()
         
         self.logger.info("risk_engine_initialized")
     
@@ -319,7 +323,21 @@ class RiskEngine:
                 crosschain_score=crosschain_score
             )
             
-            # Step 6: Determine risk level
+            # Step 9: Apply entity reputation adjustment
+            address = wallet_data.get("address", "")
+            entity = self.entity_reputation.get_entity(address)
+            if entity:
+                original_score = final_score
+                final_score = self.entity_reputation.adjust_score(address, final_score)
+                layers_evaluated.append("entity_reputation")
+                risk_factors.append(RiskFactor(
+                    name="trusted_entity",
+                    description=f"Known entity: {entity.name} (trust: {entity.trust_score:.0%})",
+                    score_contribution=original_score - final_score,  # Negative contribution
+                    source="entity_reputation"
+                ))
+            
+            # Step 10: Determine risk level
             risk_level = self.config.thresholds.get_level(final_score)
             
             # Step 7: Generate summary
@@ -443,12 +461,29 @@ class RiskEngine:
         """
         Aggregate layer scores into final score.
         
+        Strategy:
+        - Use weighted average as base
+        - BUT: If any layer has HIGH confidence signal (>80), 
+          use MAX approach to prevent dilution
+        
         Returns:
             Tuple of (final_score, confidence)
         """
         weights = self.config.layer_weights
         
-        # Calculate weighted score
+        # Check for high-confidence critical signals
+        # If ML or rules say >80, don't let weighted average dilute it
+        critical_threshold = 80.0
+        max_critical_score = 0.0
+        
+        if rule_score >= critical_threshold:
+            max_critical_score = max(max_critical_score, rule_score)
+        if ml_score >= critical_threshold:
+            max_critical_score = max(max_critical_score, ml_score)
+        if heuristic_score >= critical_threshold:
+            max_critical_score = max(max_critical_score, heuristic_score)
+        
+        # Calculate weighted score for non-critical cases
         total_weight = 0.0
         weighted_sum = 0.0
         
@@ -477,6 +512,29 @@ class RiskEngine:
             base_score = weighted_sum / total_weight
         else:
             base_score = (rule_score + ml_score) / 2
+        
+        # === EXPONENTIAL COMBINATION FOR STACKED RED FLAGS ===
+        # Count high-risk signals (score > 30 indicates significant concern)
+        high_risk_signals = sum(1 for s in [rule_score, heuristic_score, ml_score] if s > 30)
+        
+        # When multiple layers detect issues, escalate exponentially
+        if high_risk_signals >= 3:
+            # All 3 layers agree = definitely suspicious → minimum CRITICAL
+            base_score = max(base_score, 90.0)
+        elif high_risk_signals >= 2:
+            # 2 layers agree = boost toward HIGH
+            base_score = max(base_score * 1.4, base_score + 20, 70.0)
+        
+        # New account + any suspicious signal = minimum HIGH
+        # (Catches "New Account + High Volume" scenario)
+        if heuristic_score > 20 and (ml_score > 40 or rule_score > 30):
+            base_score = max(base_score, 70.0)
+        
+        # Final score: use MAX of weighted average or critical signal
+        # This prevents high-confidence signals from being diluted
+        if max_critical_score > 0:
+            # Blend: 70% critical signal + 30% weighted to preserve some context
+            base_score = max(base_score, max_critical_score * 0.7 + base_score * 0.3)
         
         final_score = min(base_score + anomaly_boost + graph_boost + crosschain_boost, 100)
         

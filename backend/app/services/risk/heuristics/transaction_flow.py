@@ -57,16 +57,25 @@ class TransactionFlowHeuristic:
         total_sent = features.get("total_sent_eth", 0)
         balance = features.get("balance_eth", 0)
         
+        # Calculate pass-through ratio from pre-calculated totals
+        # This is total_sent / total_received which shows what % of funds moved out
+        pass_through_ratio = 0.0
+        if total_received > 0:
+            pass_through_ratio = total_sent / total_received
+        
         details["in_out_ratio"] = in_out_ratio
         details["total_received"] = total_received
         details["total_sent"] = total_sent
+        details["pass_through_ratio"] = pass_through_ratio
         
-        # Check 1: Rug pull pattern (high outflow ratio)
-        if in_out_ratio > 0.85 and total_sent > 10:
-            penalty = min(30, (in_out_ratio - 0.5) * 60)
+        # Check 1: Pass-through pattern detection
+        # If most received funds have been sent out, this is classic laundering
+        if pass_through_ratio > 0.90 and total_received > 5:
+            # Near-100% pass through = very suspicious
+            penalty = min(60, pass_through_ratio * 60)  # Strong penalty
             score += penalty
-            factors.append(f"High outflow ratio: {in_out_ratio:.0%} sent")
-            details["outflow_penalty"] = penalty
+            factors.append(f"Pass-through: {pass_through_ratio:.0%} of received funds moved out")
+            details["pass_through_penalty"] = penalty
         
         # Check 2: Honeypot pattern (almost no outflow)
         if in_out_ratio < 0.1 and total_received > 5:
@@ -102,13 +111,15 @@ class TransactionFlowHeuristic:
             factors.append(f"Many senders ({unique_senders}), few receivers ({unique_receivers})")
             details["sender_receiver_imbalance"] = penalty
         
-        # Check 6: Rapid divestment (balance much lower than received)
+        # Check 6: Rapid divestment / Pass-through pattern (balance much lower than received)
+        # Classic laundering: receive funds and immediately move them out
         if total_received > 0:
             retention_ratio = balance / total_received
-            if retention_ratio < 0.05 and total_received > 10:
-                penalty = min(20, (1 - retention_ratio) * 20)
+            if retention_ratio < 0.10 and total_received > 5:  # Less than 10% retained
+                # Strong penalty for pass-through - this is classic laundering
+                penalty = min(40, (1 - retention_ratio) * 40)
                 score += penalty
-                factors.append(f"Low retention: only {retention_ratio:.1%} of received funds remaining")
+                factors.append(f"Pass-through pattern: {(1-retention_ratio)*100:.0f}% moved out, only {retention_ratio*100:.2f}% retained")
                 details["divestment_penalty"] = penalty
         
         # Cap score

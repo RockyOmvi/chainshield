@@ -1,0 +1,101 @@
+{
+  "version": "1.0",
+  "description": "ChainShield Known Entities Configuration",
+  "updated_at": "2026-01-02T00:00:00Z",
+  "entities": [
+    {
+      "name": "Binance",
+      "category": "exchange",
+      "trust_score": 0.90,
+      "chain": "ethereum",
+      "verified": true,
+      "notes": "Major centralized exchange",
+      "addresses": [
+        "0x28c6c06298d514db089934071355e5743bf21d60",
+        "0x21a31ee1afc51d94c2efccaa2092ad1028285549",
+        "0xdfd5293d8e347dfe59e90efd55b2956a1343963d"
+      ]
+    },
+    {
+      "name": "Coinbase",
+      "category": "exchange",
+      "trust_score": 0.92,
+      "chain": "ethereum",
+      "verified": true,
+      "notes": "US-regulated exchange",
+      "addresses": [
+        "0x71660c4005ba85c37ccec55d0c4493e66fe775d3",
+        "0x503828976d22510aad0201ac7ec88293211d23da",
+        "0xddfabcdc4d8ffc6d5beaf154f18b778f892a0740"
+      ]
+    },
+    {
+      "name": "Kraken",
+      "category": "exchange",
+      "trust_score": 0.88,
+      "chain": "ethereum",
+      "verified": true,
+      "notes": "Established exchange",
+      "addresses": [
+        "0x2910543af39aba0cd09dbb2d50200b3e800a63d2",
+        "0x0a869d79a7052c7f1b55a8ebabbea3420f0d1e13"
+      ]
+    },
+    {
+      "name": "USDC",
+      "category": "stablecoin",
+      "trust_score": 0.98,
+      "chain": "ethereum",
+      "verified": true,
+      "notes": "Circle USD stablecoin",
+      "addresses": [
+        "0xa0b86991c6218b36c1d19d4a2e9eb0ce3606eb48"
+      ]
+    },
+    {
+      "name": "USDT",
+      "category": "stablecoin",
+      "trust_score": 0.95,
+      "chain": "ethereum",
+      "verified": true,
+      "notes": "Tether stablecoin",
+      "addresses": [
+        "0xdac17f958d2ee523a2206206994597c13d831ec7"
+      ]
+    },
+    {
+      "name": "Uniswap",
+      "category": "defi",
+      "trust_score": 0.85,
+      "chain": "ethereum",
+      "verified": true,
+      "notes": "Leading DEX protocol",
+      "addresses": [
+        "0x7a250d5630b4cf539739df2c5dacb4c659f2488d",
+        "0x68b3465833fb72a70ecdf485e0e4c7bd8665fc45"
+      ]
+    },
+    {
+      "name": "Aave",
+      "category": "defi",
+      "trust_score": 0.85,
+      "chain": "ethereum",
+      "verified": true,
+      "notes": "Leading lending protocol",
+      "addresses": [
+        "0x7d2768de32b0b80b7a3454c06bdac94a69ddc7a9"
+      ]
+    },
+    {
+      "name": "OpenSea",
+      "category": "nft",
+      "trust_score": 0.80,
+      "chain": "ethereum",
+      "verified": true,
+      "notes": "NFT marketplace",
+      "addresses": [
+        "0x00000000006c3852cbef3e08e8df289169ede581"
+      ]
+    }
+  ]
+}

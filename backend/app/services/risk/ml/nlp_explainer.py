@@ -201,14 +201,14 @@ class NaturalLanguageExplainer:
         # Build narrative summary based on behavior patterns
         narrative_parts = []
         
-        # 1. Transaction Volume Analysis
-        if tx_count_total > 10000:
+        # 1. Transaction Volume Analysis (only flag for HIGH/CRITICAL, not known entities at LOW)
+        if tx_count_total > 10000 and risk_level in ["high", "critical", "HIGH", "CRITICAL"]:
             narrative_parts.append(
                 f"This wallet shows extremely high activity with {tx_count_total:,} transactions, "
                 "which is unusual for a personal wallet and may indicate automated trading, "
                 "exchange operations, or potential laundering activity"
             )
-        elif tx_count_total > 1000:
+        elif tx_count_total > 1000 and risk_level in ["high", "critical", "HIGH", "CRITICAL"]:
             narrative_parts.append(
                 f"This wallet has processed {tx_count_total:,} transactions, "
                 "indicating significant activity that warrants monitoring"
@@ -230,8 +230,13 @@ class NaturalLanguageExplainer:
         
         if risk_factors:
             for factor in risk_factors:
-                factor_name = str(factor.get("name", "")).lower()
-                factor_source = str(factor.get("source", "")).lower()
+                if isinstance(factor, dict):
+                    factor_name = str(factor.get("name", "")).lower()
+                    factor_source = str(factor.get("source", "")).lower()
+                else:
+                    # Handle object with attributes
+                    factor_name = str(getattr(factor, "name", "")).lower()
+                    factor_source = str(getattr(factor, "source", "")).lower()
                 
                 if "bridge" in factor_name or factor_source == "crosschain":
                     bridge_detected = True
@@ -249,7 +254,7 @@ class NaturalLanguageExplainer:
         
         if mixer_detected:
             narrative_parts.append(
-                "⚠️ CRITICAL: This wallet has interacted with known mixer/tumbler services "
+                "** CRITICAL **: This wallet has interacted with known mixer/tumbler services "
                 "(like Tornado Cash), which are commonly used for money laundering"
             )
         
@@ -260,7 +265,8 @@ class NaturalLanguageExplainer:
             )
         
         # Build final summary
-        if risk_level == "low":
+        risk_level_lower = risk_level.lower()
+        if risk_level_lower == "low":
             summary = (
                 f"Wallet {address} shows normal activity patterns. "
                 f"Risk score: {risk_score:.0f}/100. "
@@ -268,7 +274,7 @@ class NaturalLanguageExplainer:
             )
             confidence = "High"
         
-        elif risk_level == "medium":
+        elif risk_level_lower == "medium":
             if narrative_parts:
                 summary = f"Wallet {address} has concerning indicators. " + ". ".join(narrative_parts[:2]) + "."
             else:
@@ -279,9 +285,9 @@ class NaturalLanguageExplainer:
                 )
             confidence = "Medium"
         
-        elif risk_level == "high":
+        elif risk_level_lower == "high":
             if narrative_parts:
-                summary = f"⚠️ HIGH RISK: Wallet {address} - " + ". ".join(narrative_parts[:3]) + "."
+                summary = f"** HIGH RISK **: Wallet {address} - " + ". ".join(narrative_parts[:3]) + "."
             else:
                 summary = (
                     f"Wallet {address} shows multiple high-risk patterns. "
@@ -292,7 +298,7 @@ class NaturalLanguageExplainer:
         
         else:  # critical
             if narrative_parts:
-                summary = f"🚨 CRITICAL ALERT: Wallet {address} - " + ". ".join(narrative_parts) + "."
+                summary = f"** CRITICAL ALERT **: Wallet {address} - " + ". ".join(narrative_parts) + "."
             else:
                 summary = (
                     f"ALERT: Wallet {address} has critical risk indicators. "
@@ -323,6 +329,14 @@ class NaturalLanguageExplainer:
                 self.RISK_FACTOR_TEMPLATES["low_balance"].format(balance=balance)
             )
         
+        # Add pass-through detection
+        if total_received > 0:
+            retention = balance / total_received
+            if retention < 0.01:  # Less than 1% retained
+                key_factors.append(
+                    f"Pass-through pattern: {(1-retention)*100:.1f}% of funds moved out, only {retention*100:.4f}% retained"
+                )
+        
         # Add cross-chain narrative factors
         if bridge_detected:
             key_factors.append(
@@ -334,19 +348,33 @@ class NaturalLanguageExplainer:
                 "Connected to mixer/tumbler services - high probability of laundering"
             )
         
-        # Add from risk_factors if provided
+        # Add from risk_factors if provided (lower threshold to include more)
         if risk_factors:
-            for factor in risk_factors[:3]:
-                factor_name = factor.get("factor_name", factor.get("name", ""))
-                score = factor.get("score", factor.get("score_contribution", 0))
-                if score > 20:
+            seen_factors = set()
+            for factor in risk_factors[:5]:
+                if isinstance(factor, dict):
+                    factor_name = factor.get("factor_name", factor.get("name", ""))
+                    score = factor.get("score", factor.get("score_contribution", 0))
                     desc = factor.get("description", factor_name.replace("_", " "))
-                    key_factors.append(f"{desc} (impact: {score:.0f})")
+                else:
+                    factor_name = getattr(factor, "factor_name", getattr(factor, "name", ""))
+                    score = getattr(factor, "score", getattr(factor, "score_contribution", 0))
+                    desc = getattr(factor, "description", factor_name.replace("_", " "))
+
+                # Skip if similar factor already seen
+                if any(sf in desc or desc in sf for sf in seen_factors) or any(exist in desc or desc in exist for exist in key_factors):
+                     continue
+
+                # Include if score > 5 or if description mentions key patterns
+                if score > 5 or any(kw in desc.lower() for kw in ["retention", "outflow", "laundering", "mixer"]):
+                    if "No specific" not in desc:
+                        key_factors.append(f"{desc}")
+                        seen_factors.add(desc)
         
         if not key_factors:
             key_factors = ["No specific high-risk factors identified."]
         
-        recommendation = self.RECOMMENDATIONS.get(risk_level, self.RECOMMENDATIONS["medium"])
+        recommendation = self.RECOMMENDATIONS.get(risk_level_lower, self.RECOMMENDATIONS["medium"])
         
         return RiskExplanation(
             summary=summary,
@@ -367,21 +395,13 @@ class NaturalLanguageExplainer:
         """
         Generate a comprehensive explanation report for analysts.
         
-        Includes:
-        - Summary narrative with proper grammar
-        - Data tables with wallet information
-        - Risk factors breakdown
-        - SHAP feature impact
-        - Recommendations
-        
-        Returns:
-            Multi-line formatted explanation string
+        Uses ASCII characters for Windows compatibility.
         """
         explanation = self.generate_summary(
             risk_score, risk_level, wallet_data, risk_factors
         )
         
-        # Extract wallet data for tables
+        # Extract wallet data
         address = wallet_data.get("address", "Unknown")
         balance = float(wallet_data.get("balance", 0))
         tx_count = wallet_data.get("tx_count_total", len(wallet_data.get("transactions", [])))
@@ -390,148 +410,110 @@ class NaturalLanguageExplainer:
         age_hours = wallet_data.get("age_hours", 0)
         chain = wallet_data.get("chain", "ethereum")
         
-        # Build the report
+        # Build ASCII report
         lines = [
-            "╔" + "═" * 68 + "╗",
-            "║" + " CHAINSHIELD RISK ASSESSMENT REPORT ".center(68) + "║",
-            "╚" + "═" * 68 + "╝",
+            "+" + "=" * 68 + "+",
+            "|" + " CHAINSHIELD RISK ASSESSMENT REPORT ".center(68) + "|",
+            "+" + "=" * 68 + "+",
             "",
+            "OVERVIEW",
+            "-" * 40,
         ]
         
-        # Section 1: Overview
-        lines.extend([
-            "┌" + "─" * 68 + "┐",
-            "│ 📊 OVERVIEW" + " " * 56 + "│",
-            "├" + "─" * 68 + "┤",
-        ])
-        
-        # Risk level with color indicator
+        # Risk level indicator
         risk_indicator = {
-            "low": "🟢 LOW",
-            "medium": "🟡 MEDIUM", 
-            "high": "🟠 HIGH",
-            "critical": "🔴 CRITICAL"
+            "low": "[LOW]",
+            "medium": "[MEDIUM]", 
+            "high": "[HIGH]",
+            "critical": "[CRITICAL]"
         }.get(risk_level, risk_level.upper())
         
         lines.extend([
-            f"│  Risk Score:      {risk_score:.1f} / 100" + " " * (48 - len(f"{risk_score:.1f}")) + "│",
-            f"│  Risk Level:      {risk_indicator}" + " " * (52 - len(risk_indicator)) + "│",
-            f"│  Confidence:      {explanation.confidence}" + " " * (49 - len(explanation.confidence)) + "│",
-            "└" + "─" * 68 + "┘",
+            f"  Risk Score:     {risk_score:.1f} / 100",
+            f"  Risk Level:     {risk_indicator}",
+            f"  Confidence:     {explanation.confidence}",
             "",
+            "WALLET DATA",
+            "-" * 40,
         ])
         
-        # Section 2: Wallet Data Table
-        lines.extend([
-            "┌" + "─" * 68 + "┐",
-            "│ 📁 WALLET DATA" + " " * 53 + "│",
-            "├" + "─" * 34 + "┬" + "─" * 33 + "┤",
-            "│  Field" + " " * 27 + "│  Value" + " " * 26 + "│",
-            "├" + "─" * 34 + "┼" + "─" * 33 + "┤",
-        ])
-        
-        # Format address (truncate if needed)
-        addr_display = address[:20] + "..." if len(address) > 23 else address
-        lines.append(f"│  Address" + " " * 25 + f"│  {addr_display}" + " " * (31 - len(addr_display)) + "│")
-        lines.append(f"│  Chain" + " " * 27 + f"│  {chain.capitalize()}" + " " * (31 - len(chain)) + "│")
-        lines.append(f"│  Current Balance" + " " * 17 + f"│  {balance:,.4f}" + " " * (31 - len(f"{balance:,.4f}")) + "│")
-        lines.append(f"│  Total Transactions" + " " * 14 + f"│  {tx_count:,}" + " " * (31 - len(f"{tx_count:,}")) + "│")
+        # Wallet info
+        addr_display = address[:30] + "..." if len(address) > 33 else address
+        lines.append(f"  Address:        {addr_display}")
+        lines.append(f"  Chain:          {chain.capitalize()}")
+        lines.append(f"  Balance:        {balance:,.4f}")
+        lines.append(f"  Transactions:   {tx_count:,}")
         
         if total_received > 0:
-            lines.append(f"│  Total Received" + " " * 18 + f"│  {total_received:,.4f}" + " " * (31 - len(f"{total_received:,.4f}")) + "│")
+            lines.append(f"  Total Received: {total_received:,.4f}")
         if total_sent > 0:
-            lines.append(f"│  Total Sent" + " " * 22 + f"│  {total_sent:,.4f}" + " " * (31 - len(f"{total_sent:,.4f}")) + "│")
+            lines.append(f"  Total Sent:     {total_sent:,.4f}")
+            
+        # Calculate pass-through
+        if total_received > 0:
+            retention = balance / total_received * 100
+            pass_through = 100 - retention
+            lines.append(f"  Pass-Through:   {pass_through:.2f}%")
+            if pass_through > 95:
+                lines.append(f"  ** WARNING: {pass_through:.1f}% of funds passed through! **")
+        
         if age_hours > 0:
             age_display = f"{age_hours:.0f} hours" if age_hours < 48 else f"{age_hours/24:.0f} days"
-            lines.append(f"│  Account Age" + " " * 21 + f"│  {age_display}" + " " * (31 - len(age_display)) + "│")
+            lines.append(f"  Account Age:    {age_display}")
         
         lines.extend([
-            "└" + "─" * 34 + "┴" + "─" * 33 + "┘",
             "",
+            "ANALYSIS SUMMARY",
+            "-" * 40,
         ])
         
-        # Section 3: Narrative Summary
-        lines.extend([
-            "┌" + "─" * 68 + "┐",
-            "│ 📝 ANALYSIS SUMMARY" + " " * 48 + "│",
-            "├" + "─" * 68 + "┤",
-        ])
-        
-        # Wrap summary text properly
-        summary_text = explanation.summary
-        wrapped_lines = self._wrap_text(summary_text, 66)
-        for line in wrapped_lines:
-            lines.append(f"│ {line}" + " " * (67 - len(line)) + "│")
+        # Wrap summary
+        wrapped = self._wrap_text(explanation.summary, 66)
+        for line in wrapped:
+            lines.append(f"  {line}")
         
         lines.extend([
-            "└" + "─" * 68 + "┘",
             "",
-        ])
-        
-        # Section 4: Risk Factors Table
-        lines.extend([
-            "┌" + "─" * 68 + "┐",
-            "│ 🔍 KEY RISK FACTORS" + " " * 48 + "│",
-            "├" + "─" * 68 + "┤",
+            "KEY RISK FACTORS",
+            "-" * 40,
         ])
         
         for i, factor in enumerate(explanation.key_factors, 1):
-            # Wrap long factors
-            factor_wrapped = self._wrap_text(f"{i}. {factor}", 66)
-            for j, line in enumerate(factor_wrapped):
-                prefix = "│ " if j == 0 else "│   "
-                lines.append(prefix + line + " " * (68 - len(prefix) - len(line)) + "│")
+            factor_wrapped = self._wrap_text(factor, 60)
+            for j, fline in enumerate(factor_wrapped):
+                prefix = f"  {i}. " if j == 0 else "     "
+                lines.append(prefix + fline)
         
-        lines.extend([
-            "└" + "─" * 68 + "┘",
-            "",
-        ])
-        
-        # Section 5: SHAP Feature Impact (if available)
+        # SHAP if available
         if shap_values:
             lines.extend([
-                "┌" + "─" * 68 + "┐",
-                "│ 📉 FEATURE IMPACT ANALYSIS (SHAP)" + " " * 33 + "│",
-                "├" + "─" * 40 + "┬" + "─" * 12 + "┬" + "─" * 14 + "┤",
-                "│  Feature" + " " * 31 + "│  Impact" + " " * 4 + "│  Direction" + " " * 3 + "│",
-                "├" + "─" * 40 + "┼" + "─" * 12 + "┼" + "─" * 14 + "┤",
+                "",
+                "FEATURE IMPACT (SHAP)",
+                "-" * 40,
             ])
-            
             sorted_shap = sorted(shap_values.items(), key=lambda x: abs(x[1]), reverse=True)[:5]
             for feature, value in sorted_shap:
                 if abs(value) < 0.01:
                     continue
-                desc = self._get_feature_description(feature)[:36]
-                direction = "↑ Higher" if value > 0 else "↓ Lower"
-                impact_str = f"{abs(value):.3f}"
-                lines.append(
-                    f"│  {desc}" + " " * (38 - len(desc)) + 
-                    f"│  {impact_str}" + " " * (10 - len(impact_str)) + 
-                    f"│  {direction}" + " " * (12 - len(direction)) + "│"
-                )
-            
-            lines.extend([
-                "└" + "─" * 40 + "┴" + "─" * 12 + "┴" + "─" * 14 + "┘",
-                "",
-            ])
+                desc = self._get_feature_description(feature)[:30]
+                direction = "Higher Risk" if value > 0 else "Lower Risk"
+                lines.append(f"  {desc}: {abs(value):.3f} ({direction})")
         
-        # Section 6: Recommendation
         lines.extend([
-            "┌" + "─" * 68 + "┐",
-            "│ 💡 RECOMMENDATION" + " " * 50 + "│",
-            "├" + "─" * 68 + "┤",
+            "",
+            "RECOMMENDATION",
+            "-" * 40,
         ])
         
         rec_wrapped = self._wrap_text(explanation.recommendation, 66)
         for line in rec_wrapped:
-            lines.append(f"│ {line}" + " " * (67 - len(line)) + "│")
+            lines.append(f"  {line}")
         
         lines.extend([
-            "└" + "─" * 68 + "┘",
             "",
-            "═" * 70,
+            "=" * 70,
             "  Report generated by ChainShield Risk Engine",
-            "═" * 70,
+            "=" * 70,
         ])
         
         return "\n".join(lines)
