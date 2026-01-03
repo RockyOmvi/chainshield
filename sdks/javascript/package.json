@@ -1,0 +1,48 @@
+{
+    "name": "chainshield",
+    "version": "1.0.0",
+    "description": "Official JavaScript/TypeScript SDK for ChainShield Risk Assessment API",
+    "main": "dist/index.js",
+    "types": "dist/index.d.ts",
+    "module": "dist/index.mjs",
+    "files": [
+        "dist"
+    ],
+    "scripts": {
+        "build": "tsup src/index.ts --format cjs,esm --dts",
+        "test": "vitest",
+        "lint": "eslint src/",
+        "prepublishOnly": "npm run build"
+    },
+    "keywords": [
+        "blockchain",
+        "crypto",
+        "risk",
+        "assessment",
+        "aml",
+        "sanctions",
+        "fraud",
+        "ethereum",
+        "bitcoin",
+        "solana"
+    ],
+    "author": "ChainShield Team <support@chainshield.io>",
+    "license": "MIT",
+    "repository": {
+        "type": "git",
+        "url": "https://github.com/chainshield/chainshield-js"
+    },
+    "homepage": "https://chainshield.io",
+    "bugs": {
+        "url": "https://github.com/chainshield/chainshield-js/issues"
+    },
+    "engines": {
+        "node": ">=16.0.0"
+    },
+    "devDependencies": {
+        "@types/node": "^20.0.0",
+        "tsup": "^8.0.0",
+        "typescript": "^5.0.0",
+        "vitest": "^1.0.0"
+    }
+}
