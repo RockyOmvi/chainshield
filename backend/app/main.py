@@ -39,8 +39,20 @@ async def lifespan(app: FastAPI):
         debug=settings.debug
     )
     
-    # Initialize database
-    await init_db()
+    # Initialize database (graceful fallback if not available)
+    db_connected = False
+    try:
+        await init_db()
+        db_connected = True
+        logger.info("database_connected")
+    except Exception as e:
+        logger.warning(
+            "database_connection_failed",
+            error=str(e),
+            fallback="in_memory_mode"
+        )
+    
+    app.state.db_connected = db_connected
     
     # Initialize Redis for cache and rate limiting
     redis_client = None
