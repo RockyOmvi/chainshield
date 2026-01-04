@@ -1,6 +1,6 @@
 CHAINSHIELD USER PERSPECTIVE E2E REPORT
 ==================================================
-Date: 2026-01-03 23:14:08
+Date: 2026-01-04 11:35:43
 
 
 [REGISTRATION]
@@ -8,7 +8,7 @@ Date: 2026-01-03 23:14:08
   [PASS] Email verification sent
   [PASS] Login with credentials
   [PASS] JWT access token received
-  [PASS] API key generated: cs_ea2684c31d670a5eb...
+  [PASS] API key generated: cs_d60908e3c2203eea1...
 
 [ANALYSIS]
   [PASS] Check API quota
@@ -45,7 +45,7 @@ Date: 2026-01-03 23:14:08
 [ADMIN]
   [PASS] System stats retrieved - 1.0 requests
   [PASS] Entity database: 71 known entities
-  [PASS] Audit events: 9
+  [PASS] Audit events: 0
   [PASS] SLA dashboard - Healthy: True
 
 [BILLING]

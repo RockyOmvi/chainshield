@@ -1,8 +1,8 @@
 CHAINSHIELD INTEGRATION TEST REPORT
 ==================================================
-Date: 2026-01-03 23:04:43
-Passed: 60
-Failed: 1
+Date: 2026-01-04 11:36:01
+Passed: 65
+Failed: 0
 
 [PASS] Risk engine loads
 [PASS] ML classifier available
@@ -27,8 +27,11 @@ Failed: 1
 [PASS] Binance entity found
 [PASS] Entity category correct
 [PASS] Password hashing works
-[FAIL] Authentication system
-       Error: cannot access local variable 'hashed' where it is not associated with a value
+[PASS] Password verification
+[PASS] JWT token creation
+[PASS] JWT token verification
+[PASS] API key generation
+[PASS] API key verification
 [PASS] Free tier defined
 [PASS] Pro tier defined
 [PASS] Enterprise tier defined
@@ -65,4 +68,4 @@ Failed: 1
 [PASS] All services initialized
 [PASS] Quota check in flow
 [PASS] Full E2E flow completed
-[PASS] E2E response time (78ms)
+[PASS] E2E response time (58ms)

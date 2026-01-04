@@ -1,0 +1,141 @@
+﻿============================================================
+  CHAINSHIELD FULL INTEGRATION TEST SUITE
+============================================================
+  Started: 2026-01-04 06:05:59
+
+=== Risk Engine Initialization ===
+2026-01-04T06:06:00.108707+00:00 [info     ] sanctions_db_loaded            app=chainshield env=development lazarus=6 module=sanctions_db tornado_cash=27 total_addresses=37
+2026-01-04T06:06:00.109076+00:00 [info     ] ofac_sanctions_loaded          app=chainshield count=37 env=development rule=blacklist_check
+2026-01-04T06:06:00.109169+00:00 [info     ] blacklist_initialized          address_count=38 app=chainshield env=development rule=blacklist_check
+2026-01-04T06:06:00.109358+00:00 [info     ] rule_registered                app=chainshield enabled=True env=development module=rule_registry rule=blacklist_check
+2026-01-04T06:06:00.109450+00:00 [info     ] rule_registered                app=chainshield enabled=True env=development module=rule_registry rule=velocity_check
+2026-01-04T06:06:00.109625+00:00 [info     ] rule_registered                app=chainshield enabled=True env=development module=rule_registry rule=pattern_check
+2026-01-04T06:06:00.109754+00:00 [info     ] rule_registered                app=chainshield enabled=True env=development module=rule_registry rule=honeypot_check
+2026-01-04T06:06:00.109840+00:00 [info     ] default_rules_initialized      app=chainshield env=development module=rule_registry rule_count=4
+2026-01-04T06:06:01.015501+00:00 [info     ] model_loaded                   app=chainshield env=development module=risk_classifier path=models/ensemble_v2.pkl
+2026-01-04T06:06:01.047040+00:00 [info     ] anomaly_model_loaded           app=chainshield env=development module=anomaly_detector path=models/isolation_forest_v2.pkl
+2026-01-04T06:06:01.047260+00:00 [info     ] entity_reputation_loaded       app=chainshield count=71 env=development module=entity_reputation
+2026-01-04T06:06:01.047372+00:00 [info     ] risk_engine_initialized        app=chainshield env=development module=risk_engine
+  [PASS] Risk engine loads
+  [PASS] ML classifier available
+  [PASS] Rules loaded (4 rules)
+
+=== Multi-Chain Support ===
+  [PASS] EVM chains count (9)
+  [PASS] Chain: ethereum
+  [PASS] Chain: polygon
+  [PASS] Chain: arbitrum
+  [PASS] Chain: bsc
+  [PASS] Chain: optimism
+  [PASS] Chain: base
+  [PASS] Chain: avalanche
+  [PASS] Chain: fantom
+  [PASS] Chain: zksync
+  [PASS] Bitcoin client
+  [PASS] Solana client
+
+=== Sanctions/Blocklist ===
+  [PASS] Sanctioned addresses (0)
+  [PASS] Mixer contracts (6)
+2026-01-04T06:06:01.051935+00:00 [info     ] ofac_sanctions_loaded          app=chainshield count=37 env=development rule=blacklist_check
+2026-01-04T06:06:01.052094+00:00 [info     ] blacklist_initialized          address_count=38 app=chainshield env=development rule=blacklist_check
+  [PASS] Tornado Cash detected
+  [PASS] Clean address passes
+
+=== Entity Reputation ===
+  [PASS] Entities loaded (71)
+  [PASS] Binance entity found
+  [PASS] Entity category correct
+
+=== Authentication System ===
+  [PASS] Password hashing works
+  [PASS] Password verification
+  [PASS] JWT token creation
+  [PASS] JWT token verification
+  [PASS] API key generation
+  [PASS] API key verification
+
+=== Billing/Quotas ===
+  [PASS] Free tier defined
+  [PASS] Pro tier defined
+  [PASS] Enterprise tier defined
+  [PASS] Quota check works
+  [PASS] Usage recording
+  [PASS] Usage summary
+
+=== Monitoring/Metrics ===
+  [PASS] Request metric recorded
+  [PASS] Assessment metric recorded
+  [PASS] Counter increment
+  [PASS] Gauge set
+  [PASS] Prometheus export
+  [PASS] Metrics summary
+
+=== SLA Monitoring ===
+2026-01-04T06:06:01.209015+00:00 [info     ] sla_monitor_initialized        app=chainshield env=development module=sla_monitor targets=['uptime', 'response_time_p95', 'error_rate', 'assessment_accuracy']
+  [PASS] Uptime SLA tracking
+  [PASS] Response time SLA tracking
+  [PASS] Error rate SLA tracking
+  [PASS] SLA summary
+
+=== Webhook/Alerts ===
+2026-01-04T06:06:01.271403+00:00 [info     ] webhook_registered             app=chainshield env=development events=['high_risk', 'blocked'] module=webhook_manager webhook_id=test_webhook
+  [PASS] Webhook registration
+  [PASS] Webhook listing
+  [PASS] Alert creation for high risk
+  [PASS] No alert for low risk
+
+=== Audit Logging ===
+2026-01-04T06:06:01.277855+00:00 [info     ] wallet_assessed                address=0xtest123 app=chainshield blocked=False env=development module=audit_logger risk_score=45.0 severity=info
+  [PASS] Assessment logging
+2026-01-04T06:06:01.279976+00:00 [info     ] sanctions_hit                  address=0xsanctioned app=chainshield blocked=True env=development module=audit_logger risk_score=None severity=critical
+  [PASS] Sanctions hit logging
+  [PASS] Hash chain enabled
+  [PASS] Audit stats
+
+=== Email Service ===
+  [PASS] Email service initialized
+  [PASS] Verification template
+  [PASS] Password reset template
+  [PASS] Risk alert template
+  [PASS] Usage warning template
+
+=== Threat Scenarios ===
+  Testing Tornado Cash scenario...
+2026-01-04T06:06:01.281288+00:00 [warning  ] blocking_rule_triggered        app=chainshield env=development module=rule_registry rule=blacklist_check severity=critical
+  [PASS] Tornado Cash blocked
+  Testing new high-balance wallet...
+2026-01-04T06:06:01.281858+00:00 [debug    ] using_kaggle_adapter_classifier app=chainshield env=development input_features=36 module=risk_classifier output_features=45
+2026-01-04T06:06:01.313848+00:00 [debug    ] using_kaggle_adapter           app=chainshield env=development input_features=36 module=anomaly_detector output_features=45
+2026-01-04T06:06:01.334032+00:00 [info     ] bridges_loaded                 app=chainshield count=5 env=development module=bridge_registry
+  [PASS] New whale flagged
+  Testing known exchange...
+2026-01-04T06:06:01.334618+00:00 [debug    ] using_kaggle_adapter_classifier app=chainshield env=development input_features=36 module=risk_classifier output_features=45
+2026-01-04T06:06:01.378025+00:00 [debug    ] using_kaggle_adapter           app=chainshield env=development input_features=36 module=anomaly_detector output_features=45
+2026-01-04T06:06:01.388571+00:00 [debug    ] score_adjusted_for_entity      address=0x28C6c06298d514 adjusted_score=np.float64(4.2669999999999995) app=chainshield entity='Binance Hot Wallet' env=development module=entity_reputation raw_score=np.float64(42.67) trust=0.9
+  [PASS] Known exchange low risk
+  Testing normal user wallet...
+2026-01-04T06:06:01.389121+00:00 [debug    ] using_kaggle_adapter_classifier app=chainshield env=development input_features=36 module=risk_classifier output_features=45
+2026-01-04T06:06:01.435693+00:00 [debug    ] using_kaggle_adapter           app=chainshield env=development input_features=36 module=anomaly_detector output_features=45
+  [PASS] Normal wallet acceptable
+
+=== End-to-End Flow ===
+  [PASS] All services initialized
+  [PASS] Quota check in flow
+2026-01-04T06:06:01.447665+00:00 [debug    ] using_kaggle_adapter_classifier app=chainshield env=development input_features=36 module=risk_classifier output_features=45
+2026-01-04T06:06:01.494712+00:00 [debug    ] using_kaggle_adapter           app=chainshield env=development input_features=36 module=anomaly_detector output_features=45
+2026-01-04T06:06:01.506724+00:00 [info     ] wallet_assessed                address=0xTestE2E1234567 app=chainshield blocked=False env=development module=audit_logger risk_score=np.float64(63.82) severity=info
+  [PASS] Full E2E flow completed
+  [PASS] E2E response time (58ms)
+
+============================================================
+  TEST SUMMARY
+============================================================
+  Total Tests:  65
+  Passed:       65
+  Failed:       0
+  Success Rate: 100.0%
+  Duration:     1.90s
+============================================================
+
+Report saved to: tests/integration_test_report.txt
