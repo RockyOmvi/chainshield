@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChainShield - Blockchain Risk Intelligence API</title>
+    <meta name="description" content="Real-time blockchain risk assessment for exchanges, DeFi protocols, and financial institutions. OFAC sanctions screening, fraud detection, and AML compliance.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="/" class="logo">
+                <span class="logo-icon">🛡️</span>
+                <span>ChainShield</span>
+            </a>
+            <div class="nav-links">
+                <a href="#features">Features</a>
+                <a href="#pricing">Pricing</a>
+                <a href="#sdk">SDKs</a>
+                <a href="/api/v1/docs" target="_blank">API Docs</a>
+            </div>
+            <div class="nav-cta">
+                <a href="#pricing" class="btn btn-outline">Get API Key</a>
+                <a href="/api/v1/docs" class="btn btn-primary">Try Free</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-badge">🚀 Now supporting 11 blockchains</div>
+            <h1>Blockchain Risk Intelligence<br><span class="gradient-text">For the Modern Web3 Era</span></h1>
+            <p class="hero-subtitle">
+                Real-time wallet risk assessment, OFAC sanctions screening, and fraud detection.<br>
+                One API. All major chains. Sub-100ms response times.
+            </p>
+            <div class="hero-cta">
+                <a href="#pricing" class="btn btn-primary btn-lg">Start Free →</a>
+                <a href="/api/v1/docs" class="btn btn-outline btn-lg">View API Docs</a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat">
+                    <span class="stat-value">11</span>
+                    <span class="stat-label">Chains Supported</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">&lt;100ms</span>
+                    <span class="stat-label">Response Time</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">99.9%</span>
+                    <span class="stat-label">Uptime SLA</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-value">OFAC</span>
+                    <span class="stat-label">Compliant</span>
+                </div>
+            </div>
+        </div>
+        <div class="hero-code">
+            <pre><code><span class="code-comment"># One line of code</span>
+<span class="code-keyword">from</span> chainshield <span class="code-keyword">import</span> ChainShield
+
+client = ChainShield(<span class="code-string">"cs_your_api_key"</span>)
+result = client.analyze(<span class="code-string">"0x742d35Cc..."</span>)
+
+<span class="code-keyword">if</span> result.blocked:
+    <span class="code-builtin">print</span>(<span class="code-string">"🚫 Sanctioned address blocked!"</span>)
+<span class="code-keyword">elif</span> result.is_high_risk:
+    <span class="code-builtin">print</span>(<span class="code-string">f"⚠️ High risk: {result.risk_score}"</span>)</code></pre>
+        </div>
+    </section>
+
+    <!-- Chains Section -->
+    <section class="chains">
+        <div class="container">
+            <h3>Supporting All Major Chains</h3>
+            <div class="chain-logos">
+                <div class="chain">Ethereum</div>
+                <div class="chain">Polygon</div>
+                <div class="chain">Arbitrum</div>
+                <div class="chain">BSC</div>
+                <div class="chain">Optimism</div>
+                <div class="chain">Base</div>
+                <div class="chain">Avalanche</div>
+                <div class="chain">Fantom</div>
+                <div class="chain">zkSync</div>
+                <div class="chain">Bitcoin</div>
+                <div class="chain">Solana</div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features">
+        <div class="container">
+            <h2>Enterprise-Grade Risk Intelligence</h2>
+            <p class="section-subtitle">Everything you need for blockchain compliance and fraud prevention</p>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">🎯</div>
+                    <h3>Real-Time Risk Scoring</h3>
+                    <p>Instant wallet risk assessment with ML-powered analysis. Get risk scores, factors, and recommendations in under 100ms.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🚫</div>
+                    <h3>OFAC Sanctions Screening</h3>
+                    <p>Automatic blocking of OFAC-sanctioned addresses including Tornado Cash, Lazarus Group, and other designated entities.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🔗</div>
+                    <h3>11 Blockchain Networks</h3>
+                    <p>One API for Ethereum, Bitcoin, Solana, Polygon, Arbitrum, BSC, Optimism, Base, Avalanche, Fantom, and zkSync.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">🔔</div>
+                    <h3>Real-Time Webhooks</h3>
+                    <p>Get instant alerts for high-risk transactions. HMAC-signed payloads with retry logic and delivery guarantees.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📊</div>
+                    <h3>Prometheus Metrics</h3>
+                    <p>Built-in observability with Prometheus-compatible metrics. Monitor uptime, latency, and assessment volume.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">📝</div>
+                    <h3>Audit Logging</h3>
+                    <p>Tamper-proof audit trails with hash chain verification. Perfect for compliance and regulatory requirements.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Pricing Section -->
+    <section id="pricing" class="pricing">
+        <div class="container">
+            <h2>Simple, Transparent Pricing</h2>
+            <p class="section-subtitle">Start free, scale as you grow</p>
+            
+            <div class="pricing-grid">
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3>Free</h3>
+                        <div class="price">$0<span>/mo</span></div>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>✓ 1,000 requests/month</li>
+                        <li>✓ All 11 chains</li>
+                        <li>✓ Risk scoring</li>
+                        <li>✓ Sanctions screening</li>
+                        <li>✓ Email support</li>
+                    </ul>
+                    <a href="/api/v1/docs" class="btn btn-outline btn-block">Get Started</a>
+                </div>
+                
+                <div class="pricing-card popular">
+                    <div class="popular-badge">Most Popular</div>
+                    <div class="pricing-header">
+                        <h3>Pro</h3>
+                        <div class="price">$99<span>/mo</span></div>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>✓ 100,000 requests/month</li>
+                        <li>✓ Everything in Free</li>
+                        <li>✓ Webhook alerts</li>
+                        <li>✓ Batch analysis</li>
+                        <li>✓ Priority support</li>
+                    </ul>
+                    <a href="#" class="btn btn-primary btn-block">Start Pro Trial</a>
+                </div>
+                
+                <div class="pricing-card">
+                    <div class="pricing-header">
+                        <h3>Enterprise</h3>
+                        <div class="price">Custom</div>
+                    </div>
+                    <ul class="pricing-features">
+                        <li>✓ Unlimited requests</li>
+                        <li>✓ Everything in Pro</li>
+                        <li>✓ Custom SLA</li>
+                        <li>✓ On-premise option</li>
+                        <li>✓ Dedicated support</li>
+                    </ul>
+                    <a href="mailto:sales@chainshield.io" class="btn btn-outline btn-block">Contact Sales</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SDK Section -->
+    <section id="sdk" class="sdk">
+        <div class="container">
+            <h2>SDKs for Every Language</h2>
+            <p class="section-subtitle">Get started in minutes with our official SDKs</p>
+            
+            <div class="sdk-tabs">
+                <button class="sdk-tab active" data-lang="python">Python</button>
+                <button class="sdk-tab" data-lang="javascript">JavaScript</button>
+                <button class="sdk-tab" data-lang="go">Go</button>
+                <button class="sdk-tab" data-lang="rust">Rust</button>
+            </div>
+            
+            <div class="sdk-content">
+                <div class="sdk-panel active" id="python">
+                    <pre><code><span class="code-comment"># pip install chainshield</span>
+<span class="code-keyword">from</span> chainshield <span class="code-keyword">import</span> ChainShield
+
+client = ChainShield(<span class="code-string">"cs_your_api_key"</span>)
+
+<span class="code-comment"># Analyze a wallet</span>
+result = client.analyze(<span class="code-string">"0x742d35Cc..."</span>)
+
+<span class="code-builtin">print</span>(<span class="code-string">f"Risk Score: </span>{result.risk_score}<span class="code-string">"</span>)
+<span class="code-builtin">print</span>(<span class="code-string">f"Risk Level: </span>{result.risk_level}<span class="code-string">"</span>)
+
+<span class="code-keyword">if</span> result.is_sanctioned:
+    <span class="code-builtin">print</span>(<span class="code-string">"🚫 Blocked!"</span>)</code></pre>
+                </div>
+                
+                <div class="sdk-panel" id="javascript">
+                    <pre><code><span class="code-comment">// npm install chainshield</span>
+<span class="code-keyword">import</span> { ChainShield } <span class="code-keyword">from</span> <span class="code-string">'chainshield'</span>;
+
+<span class="code-keyword">const</span> client = <span class="code-keyword">new</span> ChainShield(<span class="code-string">'cs_your_api_key'</span>);
+
+<span class="code-comment">// Analyze a wallet</span>
+<span class="code-keyword">const</span> result = <span class="code-keyword">await</span> client.analyze(<span class="code-string">'0x742d35Cc...'</span>);
+
+console.log(<span class="code-string">`Risk Score: </span>${result.riskScore}<span class="code-string">`</span>);
+console.log(<span class="code-string">`Risk Level: </span>${result.riskLevel}<span class="code-string">`</span>);
+
+<span class="code-keyword">if</span> (result.blocked) {
+    console.log(<span class="code-string">'🚫 Blocked!'</span>);
+}</code></pre>
+                </div>
+                
+                <div class="sdk-panel" id="go">
+                    <pre><code><span class="code-comment">// go get github.com/chainshield/chainshield-go</span>
+<span class="code-keyword">import</span> <span class="code-string">"github.com/chainshield/chainshield-go"</span>
+
+client := chainshield.New(<span class="code-string">"cs_your_api_key"</span>)
+
+<span class="code-comment">// Analyze a wallet</span>
+result, _ := client.Analyze(ctx, <span class="code-string">"0x742d35Cc..."</span>)
+
+fmt.Printf(<span class="code-string">"Risk Score: %.1f\n"</span>, result.RiskScore)
+fmt.Printf(<span class="code-string">"Risk Level: %s\n"</span>, result.RiskLevel)
+
+<span class="code-keyword">if</span> result.Blocked {
+    fmt.Println(<span class="code-string">"🚫 Blocked!"</span>)
+}</code></pre>
+                </div>
+                
+                <div class="sdk-panel" id="rust">
+                    <pre><code><span class="code-comment">// cargo add chainshield</span>
+<span class="code-keyword">use</span> chainshield::ChainShield;
+
+<span class="code-keyword">let</span> client = ChainShield::new(<span class="code-string">"cs_your_api_key"</span>);
+
+<span class="code-comment">// Analyze a wallet</span>
+<span class="code-keyword">let</span> result = client.analyze(<span class="code-string">"0x742d35Cc..."</span>).<span class="code-keyword">await</span>?;
+
+println!(<span class="code-string">"Risk Score: {}"</span>, result.risk_score);
+println!(<span class="code-string">"Risk Level: {:?}"</span>, result.risk_level);
+
+<span class="code-keyword">if</span> result.blocked {
+    println!(<span class="code-string">"🚫 Blocked!"</span>);
+}</code></pre>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- CTA Section -->
+    <section class="cta">
+        <div class="container">
+            <h2>Ready to Secure Your Platform?</h2>
+            <p>Start with 1,000 free API calls. No credit card required.</p>
+            <a href="#pricing" class="btn btn-primary btn-lg">Get Your API Key →</a>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="logo">
+                        <span class="logo-icon">🛡️</span>
+                        <span>ChainShield</span>
+                    </div>
+                    <p>Blockchain risk intelligence for the modern Web3 era.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Product</h4>
+                    <a href="#features">Features</a>
+                    <a href="#pricing">Pricing</a>
+                    <a href="/api/v1/docs">API Docs</a>
+                    <a href="#sdk">SDKs</a>
+                </div>
+                <div class="footer-links">
+                    <h4>Company</h4>
+                    <a href="#">About</a>
+                    <a href="#">Blog</a>
+                    <a href="#">Careers</a>
+                    <a href="mailto:contact@chainshield.io">Contact</a>
+                </div>
+                <div class="footer-links">
+                    <h4>Legal</h4>
+                    <a href="#">Privacy Policy</a>
+                    <a href="#">Terms of Service</a>
+                    <a href="#">Security</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>© 2026 ChainShield. All rights reserved.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // SDK tab switching
+        document.querySelectorAll('.sdk-tab').forEach(tab => {
+            tab.addEventListener('click', () => {
+                document.querySelectorAll('.sdk-tab').forEach(t => t.classList.remove('active'));
+                document.querySelectorAll('.sdk-panel').forEach(p => p.classList.remove('active'));
+                
+                tab.classList.add('active');
+                document.getElementById(tab.dataset.lang).classList.add('active');
+            });
+        });
+    </script>
+</body>
+</html>

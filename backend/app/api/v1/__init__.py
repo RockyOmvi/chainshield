@@ -12,6 +12,7 @@ from app.api.v1.explain import router as explain_router
 from app.api.v1.risk import router as risk_router
 from app.api.v1.auth import router as auth_router
 from app.api.v1.admin import router as admin_router
+from app.api.v1.payments import router as payments_router
 
 # Create main v1 router
 api_v1_router = APIRouter()
@@ -23,7 +24,9 @@ api_v1_router.include_router(explain_router)
 api_v1_router.include_router(risk_router)
 api_v1_router.include_router(auth_router)
 api_v1_router.include_router(admin_router)
+api_v1_router.include_router(payments_router)
 
 __all__ = ["api_v1_router"]
+
 
 
