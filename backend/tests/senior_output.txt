@@ -1,0 +1,119 @@
+﻿======================================================================
+  CHAINSHIELD COMPLETE E2E TEST - SENIOR DEV EXAMINATION
+======================================================================
+  Date: 2026-01-04 12:34:34
+
+
+----------------------------------------------------------------------
+  PHASE 1: BACKEND CORE SERVICES
+----------------------------------------------------------------------
+  [PASS] FastAPI app loads
+2026-01-04T07:04:35.448417+00:00 [info     ] sanctions_db_loaded            app=chainshield env=development lazarus=6 module=sanctions_db tornado_cash=27 total_addresses=37
+2026-01-04T07:04:35.448848+00:00 [info     ] ofac_sanctions_loaded          app=chainshield count=37 env=development rule=blacklist_check
+2026-01-04T07:04:35.448956+00:00 [info     ] blacklist_initialized          address_count=38 app=chainshield env=development rule=blacklist_check
+2026-01-04T07:04:35.449162+00:00 [info     ] rule_registered                app=chainshield enabled=True env=development module=rule_registry rule=blacklist_check
+2026-01-04T07:04:35.449261+00:00 [info     ] rule_registered                app=chainshield enabled=True env=development module=rule_registry rule=velocity_check
+2026-01-04T07:04:35.449351+00:00 [info     ] rule_registered                app=chainshield enabled=True env=development module=rule_registry rule=pattern_check
+2026-01-04T07:04:35.449441+00:00 [info     ] rule_registered                app=chainshield enabled=True env=development module=rule_registry rule=honeypot_check
+2026-01-04T07:04:35.449525+00:00 [info     ] default_rules_initialized      app=chainshield env=development module=rule_registry rule_count=4
+2026-01-04T07:04:36.587843+00:00 [info     ] model_loaded                   app=chainshield env=development module=risk_classifier path=models/ensemble_v2.pkl
+2026-01-04T07:04:36.624960+00:00 [info     ] anomaly_model_loaded           app=chainshield env=development module=anomaly_detector path=models/isolation_forest_v2.pkl
+2026-01-04T07:04:36.625287+00:00 [info     ] entity_reputation_loaded       app=chainshield count=71 env=development module=entity_reputation
+2026-01-04T07:04:36.625709+00:00 [info     ] risk_engine_initialized        app=chainshield env=development module=risk_engine
+  [PASS] Risk engine initializes
+  [PASS] Auth service (hash/verify/JWT)
+  [PASS] Billing service initializes
+  [PASS] Stripe service initializes
+        Configured: False
+
+----------------------------------------------------------------------
+  PHASE 2: RISK ASSESSMENT (Real Wallets)
+----------------------------------------------------------------------
+2026-01-04T07:04:36.769527+00:00 [debug    ] using_kaggle_adapter_classifier app=chainshield env=development input_features=36 module=risk_classifier output_features=45
+2026-01-04T07:04:36.803586+00:00 [debug    ] using_kaggle_adapter           app=chainshield env=development input_features=36 module=anomaly_detector output_features=45
+2026-01-04T07:04:36.821756+00:00 [info     ] bridges_loaded                 app=chainshield count=5 env=development module=bridge_registry
+2026-01-04T07:04:36.822073+00:00 [debug    ] score_adjusted_for_entity      address=0x28C6c06298d514 adjusted_score=np.float64(4.2669999999999995) app=chainshield entity='Binance Hot Wallet' env=development module=entity_reputation raw_score=np.float64(42.67) trust=0.9
+  [PASS] Binance Hot Wallet: Score 4.3
+        Level: LOW
+2026-01-04T07:04:36.822521+00:00 [warning  ] blocking_rule_triggered        app=chainshield env=development module=rule_registry rule=blacklist_check severity=critical
+  [PASS] Tornado Cash: Blocked=True
+        Level: CRITICAL
+2026-01-04T07:04:36.822914+00:00 [debug    ] using_kaggle_adapter_classifier app=chainshield env=development input_features=36 module=risk_classifier output_features=45
+2026-01-04T07:04:36.874541+00:00 [debug    ] using_kaggle_adapter           app=chainshield env=development input_features=36 module=anomaly_detector output_features=45
+  [PASS] Normal Wallet: Score 46.7
+        Level: MEDIUM
+
+----------------------------------------------------------------------
+  PHASE 3: MULTI-CHAIN SUPPORT
+----------------------------------------------------------------------
+2026-01-04T07:04:36.888054+00:00 [info     ] multichain_initialized_with_retry app=chainshield chains=['ethereum', 'polygon', 'arbitrum', 'bsc', 'optimism', 'base', 'avalanche', 'fantom', 'zksync'] env=development module=multichain
+  [PASS] EVM Chains available: 9
+  [PASS]   Chain: ethereum (ID: 1)
+  [PASS]   Chain: polygon (ID: 137)
+  [PASS]   Chain: arbitrum (ID: 42161)
+
+----------------------------------------------------------------------
+  PHASE 4: DATABASE MODELS
+----------------------------------------------------------------------
+  [PASS] SQLAlchemy tables: 6
+  [PASS]   Table: users
+  [PASS]   Table: api_keys
+  [PASS]   Table: assessments
+
+----------------------------------------------------------------------
+  PHASE 5: MIDDLEWARE
+----------------------------------------------------------------------
+  [PASS] Rate limiter imports
+  [PASS] Request tracing imports
+  [PASS] Security headers imports
+
+----------------------------------------------------------------------
+  PHASE 6: API ROUTES
+----------------------------------------------------------------------
+  [PASS] API v1 routes: 29
+  [PASS]   Endpoint: /wallet
+  [PASS]   Endpoint: /auth
+  [PASS]   Endpoint: /admin
+  [PASS]   Endpoint: /payments
+
+----------------------------------------------------------------------
+  PHASE 7: FRONTEND FILES
+----------------------------------------------------------------------
+  [PASS] Frontend: Landing page
+  [PASS] Frontend: Landing CSS
+  [PASS] Frontend: React entry point
+  [PASS] Frontend: Dashboard component
+  [PASS] Frontend: Vite entry point
+  [PASS] Frontend: NPM config
+  [PASS] Frontend: TypeScript config
+
+----------------------------------------------------------------------
+  PHASE 8: SDKs
+----------------------------------------------------------------------
+  [PASS] SDK: Python SDK
+  [PASS] SDK: JavaScript SDK
+  [PASS] SDK: Go SDK
+  [PASS] SDK: Rust SDK
+
+----------------------------------------------------------------------
+  PHASE 9: CI/CD & DEVOPS
+----------------------------------------------------------------------
+  [PASS] DevOps: GitHub Actions CI
+  [PASS] DevOps: Backend Dockerfile
+  [PASS] DevOps: DB Migration
+
+======================================================================
+  SUMMARY
+======================================================================
+
+  Total Tests: 38
+  Passed: 38
+  Failed: 0
+  Success Rate: 100.0%
+
+======================================================================
+  SENIOR DEV VERDICT: READY FOR PRODUCTION
+======================================================================
+
+Report saved: tests/senior_dev_report.txt
+
