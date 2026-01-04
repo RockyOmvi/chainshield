@@ -6,8 +6,8 @@ import React, { useState, useEffect } from 'react';
  * Main dashboard component for authenticated users.
  */
 
-// API Base URL
-const API_BASE = process.env.REACT_APP_API_URL || 'http://localhost:8000/api/v1';
+// API Base URL (Vite uses import.meta.env instead of process.env)
+const API_BASE = (import.meta.env.VITE_API_URL as string) || 'http://localhost:8000/api/v1';
 
 // Types
 interface RiskAssessment {
