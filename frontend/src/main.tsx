@@ -5,6 +5,7 @@ import './index.css'
 
 // Components
 import ErrorBoundary from './components/ErrorBoundary'
+import AuthGuard from './components/AuthGuard'
 import Dashboard from './components/Dashboard'
 
 // Pages
@@ -27,10 +28,18 @@ const App: React.FC = () => {
         <ErrorBoundary>
             <BrowserRouter>
                 <Routes>
-                    <Route path="/" element={<Dashboard />} />
                     <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
-                    <Route path="/dashboard" element={<Dashboard />} />
+                    <Route path="/" element={
+                        <AuthGuard>
+                            <Dashboard />
+                        </AuthGuard>
+                    } />
+                    <Route path="/dashboard" element={
+                        <AuthGuard>
+                            <Dashboard />
+                        </AuthGuard>
+                    } />
                     <Route path="*" element={<NotFound />} />
                 </Routes>
             </BrowserRouter>

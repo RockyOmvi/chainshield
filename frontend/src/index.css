@@ -146,16 +146,106 @@ button:disabled {
     animation: spin 0.8s linear infinite;
 }
 
-/* Responsive */
+/* Responsive - Mobile First */
 @media (max-width: 768px) {
     html {
         font-size: 14px;
+    }
+
+    /* Layout adjustments */
+    .grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Card adjustments */
+    .card {
+        padding: 16px;
+        border-radius: 12px;
+    }
+
+    /* Form adjustments */
+    input,
+    button {
+        width: 100%;
+        padding: 14px 16px;
+    }
+
+    /* Dashboard specific */
+    header {
+        padding: 12px 16px !important;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    main {
+        padding: 16px !important;
+    }
+
+    /* Table responsive */
+    table {
+        display: block;
+        overflow-x: auto;
+        white-space: nowrap;
+    }
+
+    th,
+    td {
+        padding: 10px 12px !important;
+        font-size: 13px;
+    }
+
+    /* Stats cards */
+    .stats-grid {
+        grid-template-columns: 1fr 1fr !important;
+    }
+
+    /* Search box */
+    .search-box {
+        flex-direction: column !important;
+    }
+
+    .search-box input {
+        margin-bottom: 12px;
+    }
+
+    .search-box button {
+        margin-left: 0 !important;
     }
 }
 
 @media (max-width: 480px) {
     html {
         font-size: 13px;
+    }
+
+    /* Single column on very small screens */
+    .stats-grid {
+        grid-template-columns: 1fr !important;
+    }
+
+    /* Logo smaller */
+    .logo {
+        font-size: 20px !important;
+    }
+
+    /* Badges smaller */
+    .badge-low,
+    .badge-medium,
+    .badge-high,
+    .badge-critical {
+        padding: 3px 8px;
+        font-size: 10px;
+    }
+
+    /* Auth forms */
+    .auth-card {
+        padding: 24px 16px !important;
+        margin: 0 8px;
+    }
+
+    /* 404 page */
+    .error-code {
+        font-size: 80px !important;
     }
 }
 
