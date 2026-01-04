@@ -232,12 +232,22 @@ const Dashboard: React.FC = () => {
                     <span>🛡️</span>
                     <span>ChainShield</span>
                 </div>
-                <div>
-                    <span style={{ marginRight: '20px', color: '#94a3b8' }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '24px' }}>
+                    <a href="/dashboard" style={{ color: '#8b5cf6', textDecoration: 'none', fontSize: '14px' }}>Dashboard</a>
+                    <a href="/settings" style={{ color: '#94a3b8', textDecoration: 'none', fontSize: '14px' }}>Settings</a>
+                    <a href="/profile" style={{ color: '#94a3b8', textDecoration: 'none', fontSize: '14px' }}>Profile</a>
+                    <span style={{ color: '#94a3b8', fontSize: '14px' }}>
                         {state.usage?.tier.toUpperCase()} Plan
                     </span>
-                    <button style={{ ...styles.button, padding: '8px 16px', fontSize: '14px' }}>
-                        Upgrade
+                    <button
+                        style={{ ...styles.button, padding: '8px 16px', fontSize: '14px' }}
+                        onClick={() => {
+                            localStorage.removeItem('token');
+                            localStorage.removeItem('refreshToken');
+                            window.location.href = '/login';
+                        }}
+                    >
+                        Logout
                     </button>
                 </div>
             </header>
