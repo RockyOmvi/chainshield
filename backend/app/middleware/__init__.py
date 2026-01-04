@@ -2,9 +2,20 @@
 ChainShield Middleware Package
 """
 
-from app.middleware.tracing import RequestTracingMiddleware, SecurityHeadersMiddleware
+from app.middleware.rate_limit import (
+    RateLimiter,
+    RateLimitMiddleware,
+    RateLimitTier,
+    RateLimitConfig,
+    RATE_LIMITS,
+    get_rate_limiter,
+)
 
 __all__ = [
-    "RequestTracingMiddleware",
-    "SecurityHeadersMiddleware",
+    "RateLimiter",
+    "RateLimitMiddleware",
+    "RateLimitTier",
+    "RateLimitConfig",
+    "RATE_LIMITS",
+    "get_rate_limiter",
 ]
