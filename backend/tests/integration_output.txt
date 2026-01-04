@@ -1,0 +1,100 @@
+﻿============================================================
+  FRONTEND-BACKEND INTEGRATION TEST
+============================================================
+
+1. RISK ENGINE API
+2026-01-04T06:42:53.430200+00:00 [info     ] sanctions_db_loaded            app=chainshield env=development lazarus=6 module=sanctions_db tornado_cash=27 total_addresses=37
+2026-01-04T06:42:53.430619+00:00 [info     ] ofac_sanctions_loaded          app=chainshield count=37 env=development rule=blacklist_check
+2026-01-04T06:42:53.430708+00:00 [info     ] blacklist_initialized          address_count=38 app=chainshield env=development rule=blacklist_check
+2026-01-04T06:42:53.430902+00:00 [info     ] rule_registered                app=chainshield enabled=True env=development module=rule_registry rule=blacklist_check
+2026-01-04T06:42:53.430983+00:00 [info     ] rule_registered                app=chainshield enabled=True env=development module=rule_registry rule=velocity_check
+2026-01-04T06:42:53.431081+00:00 [info     ] rule_registered                app=chainshield enabled=True env=development module=rule_registry rule=pattern_check
+2026-01-04T06:42:53.431148+00:00 [info     ] rule_registered                app=chainshield enabled=True env=development module=rule_registry rule=honeypot_check
+2026-01-04T06:42:53.431225+00:00 [info     ] default_rules_initialized      app=chainshield env=development module=rule_registry rule_count=4
+2026-01-04T06:42:54.632361+00:00 [info     ] model_loaded                   app=chainshield env=development module=risk_classifier path=models/ensemble_v2.pkl
+2026-01-04T06:42:54.672567+00:00 [info     ] anomaly_model_loaded           app=chainshield env=development module=anomaly_detector path=models/isolation_forest_v2.pkl
+2026-01-04T06:42:54.672986+00:00 [info     ] entity_reputation_loaded       app=chainshield count=71 env=development module=entity_reputation
+2026-01-04T06:42:54.673172+00:00 [info     ] risk_engine_initialized        app=chainshield env=development module=risk_engine
+2026-01-04T06:42:54.674236+00:00 [error    ] feature_extraction_failed      app=chainshield env=development error="'str' object has no attribute 'get'" module=feature_extractor
+   ERROR: 'str' object has no attribute 'get'
+
+2. AUTH API
+   Password verified: True
+   JWT token: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJ1c...
+
+3. BILLING API
+   Quota allowed: (True, None)
+   ERROR: 'coroutine' object has no attribute 'requests_today'
+
+4. PAYMENTS API (Stripe)
+   Checkout response: {'error': 'Stripe not configured', 'demo_mode': True, 'checkout_url': '/demo/checkout?tier=pro'}
+
+5. WEBHOOKS API
+   ERROR: WebhookManager.register_webhook() got an unexpected keyword argument 'user_id'
+
+6. MULTI-CHAIN API
+   ERROR: cannot import name 'MultiChainClient' from 'app.blockchain.multichain' (d:\project/chainshield/backend\app\blockchain\multichain.py)
+
+7. MONITORING API
+   ERROR: cannot import name 'get_metrics' from 'app.services.monitoring' (d:\project/chainshield/backend\app\services\monitoring\__init__.py)
+
+============================================================
+  INTEGRATION SUMMARY
+============================================================
+   [FAIL] Risk API
+   [PASS] Auth API
+   [FAIL] Billing API
+   [PASS] Payments API
+   [FAIL] Webhooks API
+   [FAIL] MultiChain API
+   [FAIL] Monitoring API
+
+   Total: 2/7 APIs working
+============================================================
+
+  FRONTEND COMPATIBILITY
+------------------------------------------------------------
+   Landing page: file:///d:/project/chainshield/frontend/landing/index.html
+   API Base URL: http://localhost:8000/api/v1
+   API Docs: http://localhost:8000/api/v1/docs
+   
+   Frontend can call these endpoints:
+     POST /api/v1/wallet/analyze
+     POST /api/v1/auth/register
+     POST /api/v1/auth/login
+     POST /api/v1/payments/checkout
+     GET  /api/v1/account/usage
+------------------------------------------------------------
+python : D:\project\c
+hainshield\backend\te
+sts\frontend_backend_
+integration.py:198: 
+RuntimeWarning: 
+coroutine 'QuotaManag
+er.get_usage' was 
+never awaited
+At line:1 char:1
++ python tests/fronte
+nd_backend_integratio
+n.py 2>&1 | Out-File 
+-FilePat ...
++ ~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~
+    + CategoryInfo   
+           : NotSpe  
+  cified: (D:\proj   
+ ect\chai...s nev    
+er awaited:Strin    
+g) [], RemoteExc    
+eption
+    + FullyQualified 
+   ErrorId : Native  
+  CommandError
+ 
+  success = 
+test_api_endpoints()
+RuntimeWarning: 
+Enable tracemalloc 
+to get the object 
+allocation traceback

@@ -1,0 +1,251 @@
+﻿python : Traceback 
+(most recent call 
+last):
+At line:1 char:1
++ python -c "from 
+app.main import app" 
+2>&1 | Out-File 
+-FilePath main_e ...
++ ~~~~~~~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~~~~~
+~
+    + CategoryInfo   
+           : NotSpe  
+  cified: (Traceba   
+ ck (most recent     
+call last)::Stri    
+ng) [], RemoteEx    
+ception
+    + FullyQualified 
+   ErrorId : Native  
+  CommandError
+ 
+  File "C:\Users\puru
+s\AppData\Local\Progr
+ams\Python\Python314\
+Lib\site-packages\pyd
+antic\networks.py", 
+line 949, in import_e
+mail_validator
+    import 
+email_validator
+ModuleNotFoundError: 
+No module named 
+'email_validator'
+
+The above exception 
+was the direct cause 
+of the following 
+exception:
+
+Traceback (most 
+recent call last):
+  File "<string>", 
+line 1, in <module>
+    from app.main 
+import app
+  File "D:\project\ch
+ainshield\backend\app
+\main.py", line 17, 
+in <module>
+    from app.api.v1 
+import api_v1_router
+  File "D:\project\ch
+ainshield\backend\app
+\api\v1\__init__.py",
+ line 13, in <module>
+    from 
+app.api.v1.auth 
+import router as 
+auth_router
+  File "D:\project\ch
+ainshield\backend\app
+\api\v1\auth.py", 
+line 37, in <module>
+    class UserRegiste
+r(BaseModel):
+    ...<4 lines>...
+        company: 
+Optional[str] = None
+  File "C:\Users\puru
+s\AppData\Local\Progr
+ams\Python\Python314\
+Lib\site-packages\pyd
+antic\_internal\_mode
+l_construction.py", 
+line 255, in __new__
+    
+complete_model_class(
+    
+~~~~~~~~~~~~~~~~~~~~^
+        cls,
+        ^^^^
+    ...<3 lines>...
+        create_model_
+module=_create_model_
+module,
+        ^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^^^^^^^
+^^^^^^^
+    )
+    ^
+  File "C:\Users\puru
+s\AppData\Local\Progr
+ams\Python\Python314\
+Lib\site-packages\pyd
+antic\_internal\_mode
+l_construction.py", 
+line 648, in 
+complete_model_class
+    schema = gen_sche
+ma.generate_schema(cl
+s)
+  File "C:\Users\puru
+s\AppData\Local\Progr
+ams\Python\Python314\
+Lib\site-packages\pyd
+antic\_internal\_gene
+rate_schema.py", 
+line 729, in 
+generate_schema
+    schema = self._ge
+nerate_schema_inner(o
+bj)
+  File "C:\Users\puru
+s\AppData\Local\Progr
+ams\Python\Python314\
+Lib\site-packages\pyd
+antic\_internal\_gene
+rate_schema.py", 
+line 1023, in _genera
+te_schema_inner
+    return self._mode
+l_schema(obj)
+           ~~~~~~~~~~
+~~~~~~~~^^^^^
+  File "C:\Users\puru
+s\AppData\Local\Progr
+ams\Python\Python314\
+Lib\site-packages\pyd
+antic\_internal\_gene
+rate_schema.py", 
+line 856, in 
+_model_schema
+    {k: self._generat
+e_md_field_schema(k, 
+v, decorators) for 
+k, v in 
+fields.items()},
+        ~~~~~~~~~~~~~
+~~~~~~~~~~~~~~~~~^^^^
+^^^^^^^^^^^^^^
+  File "C:\Users\puru
+s\AppData\Local\Progr
+ams\Python\Python314\
+Lib\site-packages\pyd
+antic\_internal\_gene
+rate_schema.py", 
+line 1228, in _genera
+te_md_field_schema
+    schema, metadata 
+= self._common_field_
+schema(name, 
+field_info, 
+decorators)
+                     
+  ~~~~~~~~~~~~~~~~~~~
+~~~~~~^^^^^^^^^^^^^^^
+^^^^^^^^^^^^^^^
+  File "C:\Users\puru
+s\AppData\Local\Progr
+ams\Python\Python314\
+Lib\site-packages\pyd
+antic\_internal\_gene
+rate_schema.py", 
+line 1282, in 
+_common_field_schema
+    schema = self._ap
+ply_annotations(
+        source_type,
+        annotations 
++ validators_from_dec
+orators,
+    )
+  File "C:\Users\puru
+s\AppData\Local\Progr
+ams\Python\Python314\
+Lib\site-packages\pyd
+antic\_internal\_gene
+rate_schema.py", 
+line 2227, in 
+_apply_annotations
+    schema = get_inne
+r_schema(source_type)
+  File "C:\Users\puru
+s\AppData\Local\Progr
+ams\Python\Python314\
+Lib\site-packages\pyd
+antic\_internal\_sche
+ma_generation_shared.
+py", line 83, in 
+__call__
+    schema = self._ha
+ndler(source_type)
+  File "C:\Users\puru
+s\AppData\Local\Progr
+ams\Python\Python314\
+Lib\site-packages\pyd
+antic\_internal\_gene
+rate_schema.py", 
+line 2203, in 
+inner_handler
+    schema = self._ge
+nerate_schema_from_ge
+t_schema_method(obj, 
+source_type)
+  File "C:\Users\puru
+s\AppData\Local\Progr
+ams\Python\Python314\
+Lib\site-packages\pyd
+antic\_internal\_gene
+rate_schema.py", 
+line 919, in _generat
+e_schema_from_get_sch
+ema_method
+    schema = 
+get_schema(
+        source, Callb
+ackGetCoreSchemaHandl
+er(self._generate_sch
+ema_inner, self, 
+ref_mode=ref_mode)
+    )
+  File "C:\Users\puru
+s\AppData\Local\Progr
+ams\Python\Python314\
+Lib\site-packages\pyd
+antic\networks.py", 
+line 989, in __get_py
+dantic_core_schema__
+    import_email_vali
+dator()
+    ~~~~~~~~~~~~~~~~~
+~~~~~^^
+  File "C:\Users\puru
+s\AppData\Local\Progr
+ams\Python\Python314\
+Lib\site-packages\pyd
+antic\networks.py", 
+line 951, in import_e
+mail_validator
+    raise ImportError
+("email-validator is 
+not installed, run 
+`pip install 
+'pydantic[email]'`") 
+from e
+ImportError: 
+email-validator is 
+not installed, run 
+`pip install 
+'pydantic[email]'`

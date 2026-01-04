@@ -1,0 +1,116 @@
+﻿
+============================================================
+  CHAINSHIELD USER PERSPECTIVE E2E TEST
+============================================================
+  Started: 2026-01-04 12:26:27
+
+============================================================
+  FLOW 1: USER REGISTRATION
+============================================================
+  [OK] Create account with email/password
+  [OK] Email verification sent
+  [OK] Login with credentials
+  [OK] JWT access token received
+  [OK] API key generated: cs_d95f8d333ab5e7f2c...
+
+============================================================
+  FLOW 2: WALLET ANALYSIS
+============================================================
+2026-01-04T06:56:27.992829+00:00 [info     ] sanctions_db_loaded            app=chainshield env=development lazarus=6 module=sanctions_db tornado_cash=27 total_addresses=37
+2026-01-04T06:56:27.993318+00:00 [info     ] ofac_sanctions_loaded          app=chainshield count=37 env=development rule=blacklist_check
+2026-01-04T06:56:27.993421+00:00 [info     ] blacklist_initialized          address_count=38 app=chainshield env=development rule=blacklist_check
+2026-01-04T06:56:27.993654+00:00 [info     ] rule_registered                app=chainshield enabled=True env=development module=rule_registry rule=blacklist_check
+2026-01-04T06:56:27.993776+00:00 [info     ] rule_registered                app=chainshield enabled=True env=development module=rule_registry rule=velocity_check
+2026-01-04T06:56:27.993873+00:00 [info     ] rule_registered                app=chainshield enabled=True env=development module=rule_registry rule=pattern_check
+2026-01-04T06:56:27.993965+00:00 [info     ] rule_registered                app=chainshield enabled=True env=development module=rule_registry rule=honeypot_check
+2026-01-04T06:56:27.994059+00:00 [info     ] default_rules_initialized      app=chainshield env=development module=rule_registry rule_count=4
+2026-01-04T06:56:29.329670+00:00 [info     ] model_loaded                   app=chainshield env=development module=risk_classifier path=models/ensemble_v2.pkl
+2026-01-04T06:56:29.370529+00:00 [info     ] anomaly_model_loaded           app=chainshield env=development module=anomaly_detector path=models/isolation_forest_v2.pkl
+2026-01-04T06:56:29.370883+00:00 [info     ] entity_reputation_loaded       app=chainshield count=71 env=development module=entity_reputation
+2026-01-04T06:56:29.371045+00:00 [info     ] risk_engine_initialized        app=chainshield env=development module=risk_engine
+  [OK] Check API quota
+2026-01-04T06:56:29.372216+00:00 [debug    ] using_kaggle_adapter_classifier app=chainshield env=development input_features=36 module=risk_classifier output_features=45
+2026-01-04T06:56:29.431486+00:00 [debug    ] using_kaggle_adapter           app=chainshield env=development input_features=36 module=anomaly_detector output_features=45
+2026-01-04T06:56:29.451028+00:00 [info     ] bridges_loaded                 app=chainshield count=5 env=development module=bridge_registry
+  [OK] Ethereum wallet analyzed - Score: 45.2
+  [OK] Risk level: MEDIUM
+  [OK] Usage recorded for billing
+  [OK] Risk factors: 2 identified
+
+============================================================
+  FLOW 3: MULTI-CHAIN ANALYSIS
+============================================================
+2026-01-04T06:56:29.453405+00:00 [info     ] multichain_initialized_with_retry app=chainshield chains=['ethereum', 'polygon', 'arbitrum', 'bsc', 'optimism', 'base', 'avalanche', 'fantom', 'zksync'] env=development module=multichain
+  [OK] Available EVM chains: 9
+  [OK] Bitcoin client ready
+  [OK] Solana client ready
+  [OK] Chain ethereum (ID: 1)
+  [OK] Chain polygon (ID: 137)
+  [OK] Chain arbitrum (ID: 42161)
+  [OK] Chain avalanche (ID: 43114)
+
+============================================================
+  FLOW 4: THREAT DETECTION
+============================================================
+
+  [Scenario: Tornado Cash Address]
+2026-01-04T06:56:29.453947+00:00 [warning  ] blocking_rule_triggered        app=chainshield env=development module=rule_registry rule=blacklist_check severity=critical
+  [OK] Tornado Cash detected - Blocked: True
+  [OK] Risk Level: CRITICAL
+
+  [Scenario: Binance Exchange]
+2026-01-04T06:56:29.454387+00:00 [debug    ] using_kaggle_adapter_classifier app=chainshield env=development input_features=36 module=risk_classifier output_features=45
+2026-01-04T06:56:29.501438+00:00 [debug    ] using_kaggle_adapter           app=chainshield env=development input_features=36 module=anomaly_detector output_features=45
+2026-01-04T06:56:29.513633+00:00 [debug    ] score_adjusted_for_entity      address=0x28C6c06298d514 adjusted_score=np.float64(4.2669999999999995) app=chainshield entity='Binance Hot Wallet' env=development module=entity_reputation raw_score=np.float64(42.67) trust=0.9
+  [OK] Binance recognized - Score: 4.3
+  [OK] Risk Level: LOW
+
+  [Scenario: Suspicious New Whale]
+2026-01-04T06:56:29.514422+00:00 [debug    ] using_kaggle_adapter_classifier app=chainshield env=development input_features=36 module=risk_classifier output_features=45
+2026-01-04T06:56:29.564220+00:00 [debug    ] using_kaggle_adapter           app=chainshield env=development input_features=36 module=anomaly_detector output_features=45
+  [OK] New whale flagged - Score: 56.7
+  [OK] Risk Level: MEDIUM
+
+  [Scenario: Normal User Wallet]
+2026-01-04T06:56:29.578703+00:00 [debug    ] using_kaggle_adapter_classifier app=chainshield env=development input_features=36 module=risk_classifier output_features=45
+2026-01-04T06:56:29.624510+00:00 [debug    ] using_kaggle_adapter           app=chainshield env=development input_features=36 module=anomaly_detector output_features=45
+  [OK] Normal wallet - Score: 46.7
+  [OK] Risk Level: MEDIUM
+
+============================================================
+  FLOW 5: ALERTS & MONITORING
+============================================================
+2026-01-04T06:56:29.745305+00:00 [info     ] webhook_registered             app=chainshield env=development events=['high_risk', 'blocked'] module=webhook_manager webhook_id=user_webhook
+  [OK] Webhook registered for HIGH_RISK alerts
+  [OK] Alert created: critical_risk
+  [OK] Metrics tracking - Uptime: 0s
+2026-01-04T06:56:29.745578+00:00 [info     ] sla_monitor_initialized        app=chainshield env=development module=sla_monitor targets=['uptime', 'response_time_p95', 'error_rate', 'assessment_accuracy']
+  [OK] SLA status checked
+
+============================================================
+  FLOW 6: ADMIN OPERATIONS
+============================================================
+  [OK] System stats retrieved - 1.0 requests
+  [OK] Entity database: 71 known entities
+  [OK] Audit events: 3
+  [OK] SLA dashboard - Healthy: True
+
+============================================================
+  FLOW 7: BILLING & QUOTAS
+============================================================
+  [OK] Free tier: 1000/month
+  [OK] Pro tier: 100000/month
+  [OK] Enterprise: 10000000/month
+  [OK] Usage: 1 today
+  [OK] Pro features - Webhooks: True
+
+============================================================
+  FINAL SUMMARY
+============================================================
+  Total Steps: 38
+  Passed:      38
+  Failed:      0
+  Success:     100.0%
+============================================================
+
+Report: tests/user_perspective_report.txt

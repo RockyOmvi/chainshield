@@ -11,6 +11,11 @@ from app.middleware.rate_limit import (
     get_rate_limiter,
 )
 
+from app.middleware.tracing import (
+    RequestTracingMiddleware,
+    SecurityHeadersMiddleware,
+)
+
 __all__ = [
     "RateLimiter",
     "RateLimitMiddleware",
@@ -18,4 +23,7 @@ __all__ = [
     "RateLimitConfig",
     "RATE_LIMITS",
     "get_rate_limiter",
+    "RequestTracingMiddleware",
+    "SecurityHeadersMiddleware",
 ]
+
