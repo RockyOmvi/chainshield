@@ -7,59 +7,83 @@ import './index.css'
 import ErrorBoundary from './components/ErrorBoundary'
 import AuthGuard from './components/AuthGuard'
 import { ToastProvider } from './components/Toast'
+import { ThemeProvider } from './components/ThemeProvider'
 import Dashboard from './components/Dashboard'
 
 // Pages
 import Login from './pages/Login'
 import Register from './pages/Register'
+import ForgotPassword from './pages/ForgotPassword'
+import ResetPassword from './pages/ResetPassword'
+import VerifyEmail from './pages/VerifyEmail'
 import Profile from './pages/Profile'
 import Settings from './pages/Settings'
+import Webhooks from './pages/Webhooks'
+import AdminDashboard from './pages/AdminDashboard'
 import NotFound from './pages/NotFound'
 
 /**
- * ChainShield React App
+ * ChainShield React App - V2.0
  * 
- * Routes:
- * - /login - Login page
- * - /register - Registration page
- * - /dashboard - Main dashboard (auth required)
- * - /profile - User profile (auth required)
- * - /settings - User settings (auth required)
- * - /* - Not found
+ * Public Routes:
+ * - /login, /register, /forgot-password, /reset-password, /verify-email
+ * 
+ * Protected Routes:
+ * - /dashboard, /profile, /settings, /webhooks, /admin
  */
 
 const App: React.FC = () => {
     return (
         <ErrorBoundary>
-            <ToastProvider>
-                <BrowserRouter>
-                    <Routes>
-                        <Route path="/login" element={<Login />} />
-                        <Route path="/register" element={<Register />} />
-                        <Route path="/" element={
-                            <AuthGuard>
-                                <Dashboard />
-                            </AuthGuard>
-                        } />
-                        <Route path="/dashboard" element={
-                            <AuthGuard>
-                                <Dashboard />
-                            </AuthGuard>
-                        } />
-                        <Route path="/profile" element={
-                            <AuthGuard>
-                                <Profile />
-                            </AuthGuard>
-                        } />
-                        <Route path="/settings" element={
-                            <AuthGuard>
-                                <Settings />
-                            </AuthGuard>
-                        } />
-                        <Route path="*" element={<NotFound />} />
-                    </Routes>
-                </BrowserRouter>
-            </ToastProvider>
+            <ThemeProvider>
+                <ToastProvider>
+                    <BrowserRouter>
+                        <Routes>
+                            {/* Public Routes */}
+                            <Route path="/login" element={<Login />} />
+                            <Route path="/register" element={<Register />} />
+                            <Route path="/forgot-password" element={<ForgotPassword />} />
+                            <Route path="/reset-password" element={<ResetPassword />} />
+                            <Route path="/verify-email" element={<VerifyEmail />} />
+
+                            {/* Protected Routes */}
+                            <Route path="/" element={
+                                <AuthGuard>
+                                    <Dashboard />
+                                </AuthGuard>
+                            } />
+                            <Route path="/dashboard" element={
+                                <AuthGuard>
+                                    <Dashboard />
+                                </AuthGuard>
+                            } />
+                            <Route path="/profile" element={
+                                <AuthGuard>
+                                    <Profile />
+                                </AuthGuard>
+                            } />
+                            <Route path="/settings" element={
+                                <AuthGuard>
+                                    <Settings />
+                                </AuthGuard>
+                            } />
+                            <Route path="/webhooks" element={
+                                <AuthGuard>
+                                    <Webhooks />
+                                </AuthGuard>
+                            } />
+                            <Route path="/admin" element={
+                                <AuthGuard>
+                                    <AdminDashboard />
+                                </AuthGuard>
+                            } />
+
+                            {/* 404 */}
+                            <Route path="*" element={<NotFound />} />
+                        </Routes>
+                    </BrowserRouter>
+                </ToastProvider>
+            </ThemeProvider>
         </ErrorBoundary>
     )
 }
@@ -69,3 +93,4 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
         <App />
     </React.StrictMode>,
 )
+
