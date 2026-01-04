@@ -75,8 +75,8 @@ class RateLimiter:
     def __init__(self):
         self._redis = None
         self._memory_store: Dict[str, list] = {}
-        self._init_redis()
         self.logger = logger.bind(component="rate_limiter")
+        self._init_redis()
     
     def _init_redis(self):
         """Initialize Redis connection if available."""
