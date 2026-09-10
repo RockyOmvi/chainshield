@@ -186,8 +186,10 @@ docker compose exec backend python scripts/seed_database.py
 ```
 
 > **Default Seed Credentials:**
-> - Admin: `admin@chainshield.io` / `Admin123!`
+> - Admin: `admin@chainshield.io` / `ChainShield2024!`
 > - Analyst: `analyst@chainshield.io` / `Analyst123!`
+> - Regular User: `user@chainshield.io` / `User123!`
+> - Enterprise: `enterprise@chainshield.io` / `Enterprise123!`
 
 ---
 
