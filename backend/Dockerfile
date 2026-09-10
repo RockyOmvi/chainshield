@@ -53,8 +53,12 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 COPY --from=builder /wheels /wheels
 RUN pip install --no-cache-dir /wheels/* && rm -rf /wheels
 
-# Copy application code
+# Copy application code and database resources
 COPY --chown=appuser:appgroup ./app /app/app
+COPY --chown=appuser:appgroup ./models /app/models
+COPY --chown=appuser:appgroup ./alembic /app/alembic
+COPY --chown=appuser:appgroup ./alembic.ini /app/alembic.ini
+COPY --chown=appuser:appgroup ./scripts /app/scripts
 
 # Switch to non-root user
 USER appuser

@@ -132,6 +132,23 @@ services:
     networks:
       - chainshield-network
 
+  # ===========================================================================
+  # ChainShield Frontend UI
+  # ===========================================================================
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: chainshield-frontend
+    restart: unless-stopped
+    depends_on:
+      backend:
+        condition: service_healthy
+    ports:
+      - "5173:80"
+    networks:
+      - chainshield-network
+
 # =============================================================================
 # Volumes
 # =============================================================================
