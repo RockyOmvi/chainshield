@@ -20,6 +20,7 @@ import Profile from './pages/Profile'
 import Settings from './pages/Settings'
 import Webhooks from './pages/Webhooks'
 import AdminDashboard from './pages/AdminDashboard'
+import Landing from './pages/Landing'
 import NotFound from './pages/NotFound'
 
 /**
@@ -46,12 +47,8 @@ const App: React.FC = () => {
                             <Route path="/reset-password" element={<ResetPassword />} />
                             <Route path="/verify-email" element={<VerifyEmail />} />
 
-                            {/* Protected Routes */}
-                            <Route path="/" element={
-                                <AuthGuard>
-                                    <Dashboard />
-                                </AuthGuard>
-                            } />
+                            {/* Landing Page */}
+                            <Route path="/" element={<Landing />} />
                             <Route path="/dashboard" element={
                                 <AuthGuard>
                                     <Dashboard />

@@ -112,11 +112,22 @@ class CircuitBreaker:
     
     def __init__(
         self,
-        name: str,
-        config: Optional[CircuitBreakerConfig] = None
+        name: str = "default",
+        config: Optional[CircuitBreakerConfig] = None,
+        failure_threshold: Optional[int] = None,
+        recovery_timeout: Optional[float] = None,
+        half_open_requests: Optional[int] = None,
+        **kwargs
     ):
         self.name = name
-        self.config = config or CircuitBreakerConfig()
+        if config:
+            self.config = config
+        else:
+            self.config = CircuitBreakerConfig(
+                failure_threshold=failure_threshold if failure_threshold is not None else 5,
+                recovery_timeout=recovery_timeout if recovery_timeout is not None else 30.0,
+                half_open_requests=half_open_requests if half_open_requests is not None else 2,
+            )
         self.state = CircuitState.CLOSED
         self.failure_count = 0
         self.success_count = 0

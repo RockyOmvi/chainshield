@@ -8,7 +8,7 @@ Connected to real blockchain data via service layer.
 from fastapi import APIRouter, Depends, Query, Request
 from sqlalchemy.ext.asyncio import AsyncSession
 
-from app.api.deps import get_db, get_api_key_user
+from app.api.deps import get_db, get_authenticated_user
 from app.core.logging import get_logger
 from app.schemas import (
     WalletAnalyzeRequest,
@@ -37,7 +37,7 @@ async def analyze_wallet(
     request: Request,
     body: WalletAnalyzeRequest,
     db: AsyncSession = Depends(get_db),
-    user: dict = Depends(get_api_key_user),
+    user: dict = Depends(get_authenticated_user),
 ):
     """
     Analyze a wallet for risk factors.
@@ -59,6 +59,26 @@ async def analyze_wallet(
     # Call the wallet service for real blockchain analysis
     response_data = await wallet_service.analyze_wallet(body)
     
+    # Track user usage count in database
+    user_id = user.get("user_id") if isinstance(user, dict) else getattr(user, "id", None)
+    if user_id:
+        try:
+            from datetime import datetime, timezone
+            from sqlalchemy import update
+            from app.models.user import User
+            await db.execute(
+                update(User)
+                .where(User.id == int(user_id))
+                .values(
+                    api_calls_today=User.api_calls_today + 1,
+                    api_calls_month=User.api_calls_month + 1,
+                    last_api_call_at=datetime.now(timezone.utc),
+                )
+            )
+            await db.commit()
+        except Exception as e:
+            logger.warning("user_usage_increment_failed", user_id=user_id, error=str(e))
+
     logger.info(
         "wallet_analyze_completed",
         address=body.address[:10] + "...",
@@ -88,7 +108,7 @@ async def get_wallet(
     address: str,
     chain: Chain = Query(default=Chain.ETHEREUM),
     db: AsyncSession = Depends(get_db),
-    user: dict = Depends(get_api_key_user),
+    user: dict = Depends(get_authenticated_user),
 ):
     """Get wallet profile by address with real blockchain data."""
     correlation_id = getattr(request.state, "correlation_id", None)
@@ -128,7 +148,7 @@ async def get_wallet_risk(
     address: str,
     chain: Chain = Query(default=Chain.ETHEREUM),
     db: AsyncSession = Depends(get_db),
-    user: dict = Depends(get_api_key_user),
+    user: dict = Depends(get_authenticated_user),
 ):
     """Get wallet risk score from blockchain analysis."""
     correlation_id = getattr(request.state, "correlation_id", None)

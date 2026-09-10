@@ -115,6 +115,9 @@ services:
       # Risk Engine
       RISK_HIGH_THRESHOLD: 70
       RISK_MEDIUM_THRESHOLD: 40
+
+      # Blockchain
+      PUBLIC_RPC_URL: "https://ethereum-rpc.publicnode.com"
     ports:
       - "8000:8000"
     # Volume mount disabled for initial testing - can re-enable for hot reload in dev

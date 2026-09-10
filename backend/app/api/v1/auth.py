@@ -86,29 +86,18 @@ class MessageResponse(BaseModel):
 # Database-backed user store (Production Ready)
 # =============================================================================
 
-from typing import TYPE_CHECKING
 from sqlalchemy import select
 from sqlalchemy.ext.asyncio import AsyncSession
-
-# Import models (created in schemas)
-if TYPE_CHECKING:
-    from app.models.user import User
+from app.models.user import User
+from app.api.deps import get_db, get_current_user
 
 # In-memory fallback for tokens (Redis in production)
 _verification_tokens: dict = {}
 _reset_tokens: dict = {}
 
 
-async def get_db_session():
-    """Get database session - use dependency injection in production."""
-    from app.core.database import async_session_maker
-    async with async_session_maker() as session:
-        yield session
-
-
 async def get_user_by_email_db(session: AsyncSession, email: str):
     """Get user from database by email."""
-    from app.models.user import User
     result = await session.execute(
         select(User).where(User.email == email.lower())
     )
@@ -120,17 +109,19 @@ async def create_user_db(
     email: str,
     password_hash: str,
     name: str,
-    company: str = None
+    company: str = None,
+    is_verified: bool = False,
 ):
     """Create a new user in the database."""
-    from app.models.user import User
     user = User(
         email=email.lower(),
-        password_hash=password_hash,
+        hashed_password=password_hash,
         name=name,
         company=company,
-        is_verified=False,
-        tier="free"
+        role="user",
+        plan="free",
+        is_active=True,
+        is_verified=is_verified,
     )
     session.add(user)
     await session.commit()
@@ -247,48 +238,72 @@ async def send_password_reset_email(email: str, token: str):
 @router.post("/register", response_model=MessageResponse, status_code=status.HTTP_201_CREATED)
 async def register(
     data: UserRegister,
-    background_tasks: BackgroundTasks
+    background_tasks: BackgroundTasks,
+    db: AsyncSession = Depends(get_db)
 ):
     """
     Register a new user account.
-    
-    An email verification link will be sent.
     """
-    # Check if user exists
-    if get_user_by_email(data.email):
+    # Check if user exists in DB
+    existing_user = None
+    try:
+        existing_user = await get_user_by_email_db(db, data.email)
+    except Exception as e:
+        logger.warning("db_check_failed", error=str(e))
+    
+    if not existing_user and get_user_by_email(data.email):
+        existing_user = True
+
+    if existing_user:
         raise HTTPException(
             status_code=status.HTTP_409_CONFLICT,
             detail="Email already registered"
         )
-    
-    # Create user
+
+    # In development mode or when SendGrid is not configured, auto-verify account
+    auto_verify = settings.app_env == "development" or settings.debug or not SENDGRID_API_KEY
     password_hash = get_password_hash(data.password)
-    user = create_user(
-        email=data.email,
-        password_hash=password_hash,
-        name=data.name,
-        company=data.company
-    )
-    
-    # Generate verification token
-    token = secrets.token_urlsafe(32)
-    _verification_tokens[token] = {
-        "email": data.email,
-        "expires": datetime.now(timezone.utc) + timedelta(hours=24)
-    }
-    
-    # Send verification email
-    background_tasks.add_task(send_verification_email, data.email, token)
-    
+
+    try:
+        await create_user_db(
+            db,
+            email=data.email,
+            password_hash=password_hash,
+            name=data.name,
+            company=data.company,
+            is_verified=auto_verify,
+        )
+    except Exception as e:
+        logger.warning("db_create_failed_fallback_memory", error=str(e))
+        mem_user = create_user(
+            email=data.email,
+            password_hash=password_hash,
+            name=data.name,
+            company=data.company
+        )
+        if auto_verify:
+            mem_user["is_verified"] = True
+
+    if not auto_verify and SENDGRID_API_KEY:
+        token = secrets.token_urlsafe(32)
+        _verification_tokens[token] = {
+            "email": data.email,
+            "expires": datetime.now(timezone.utc) + timedelta(hours=24)
+        }
+        background_tasks.add_task(send_verification_email, data.email, token)
+        msg = "Registration successful. Please check your email to verify your account."
+    else:
+        msg = "Registration successful. You can now log in."
+
     logger.info("user_registered", email=data.email)
-    
-    return MessageResponse(
-        message="Registration successful. Please check your email to verify your account."
-    )
+    return MessageResponse(message=msg)
 
 
 @router.get("/verify/{token}", response_model=MessageResponse)
-async def verify_email(token: str):
+async def verify_email(
+    token: str,
+    db: AsyncSession = Depends(get_db)
+):
     """
     Verify email address with token.
     """
@@ -307,27 +322,93 @@ async def verify_email(token: str):
             detail="Verification token expired"
         )
     
-    # Mark user as verified
-    user = get_user_by_email(token_data["email"])
+    email = token_data["email"]
+    try:
+        db_user = await get_user_by_email_db(db, email)
+        if db_user:
+            db_user.is_verified = True
+            await db.commit()
+    except Exception:
+        pass
+
+    user = get_user_by_email(email)
     if user:
         user["is_verified"] = True
     
     del _verification_tokens[token]
-    
-    logger.info("email_verified", email=token_data["email"])
-    
+    logger.info("email_verified", email=email)
     return MessageResponse(message="Email verified successfully. You can now log in.")
 
 
 @router.post("/login", response_model=TokenResponse)
-async def login(data: UserLogin):
+async def login(
+    data: UserLogin,
+    db: AsyncSession = Depends(get_db)
+):
     """
     Log in with email and password.
     
     Returns access and refresh tokens.
     """
+    # 1. Try PostgreSQL database
+    db_user = None
+    try:
+        db_user = await get_user_by_email_db(db, data.email)
+    except Exception as e:
+        logger.warning("db_login_lookup_failed", error=str(e))
+
+    if db_user:
+        if not verify_password(data.password, db_user.hashed_password):
+            raise HTTPException(
+                status_code=status.HTTP_401_UNAUTHORIZED,
+                detail="Invalid email or password"
+            )
+        
+        # In development, auto-verify if not verified yet
+        if not db_user.is_verified:
+            if settings.app_env == "development" or settings.debug:
+                db_user.is_verified = True
+                await db.commit()
+            else:
+                raise HTTPException(
+                    status_code=status.HTTP_403_FORBIDDEN,
+                    detail="Please verify your email before logging in"
+                )
+
+        if not db_user.is_active:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Account is deactivated"
+            )
+
+        # Update last login
+        try:
+            db_user.last_login_at = datetime.now(timezone.utc)
+            await db.commit()
+        except Exception:
+            pass
+
+        user_id = str(db_user.id)
+        access_token = create_access_token(
+            subject=user_id,
+            extra_claims={
+                "email": db_user.email,
+                "role": db_user.role,
+                "tier": db_user.plan,
+                "name": db_user.name or db_user.email.split("@")[0]
+            }
+        )
+        refresh_token = create_refresh_token(subject=user_id)
+        logger.info("user_login", user_id=user_id)
+
+        return TokenResponse(
+            access_token=access_token,
+            refresh_token=refresh_token,
+            expires_in=settings.jwt_access_token_expire_minutes * 60
+        )
+
+    # 2. Fallback to in-memory store
     user = get_user_by_email(data.email)
-    
     if not user or not verify_password(data.password, user["password_hash"]):
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -335,20 +416,27 @@ async def login(data: UserLogin):
         )
     
     if not user["is_verified"]:
-        raise HTTPException(
-            status_code=status.HTTP_403_FORBIDDEN,
-            detail="Please verify your email before logging in"
-        )
+        if settings.app_env == "development" or settings.debug:
+            user["is_verified"] = True
+        else:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="Please verify your email before logging in"
+            )
     
-    # Create tokens
+    user_id = str(user["id"])
     access_token = create_access_token(
-        subject=user["id"],
-        extra_claims={"email": user["email"], "tier": user["tier"]}
+        subject=user_id,
+        extra_claims={
+            "email": user["email"],
+            "role": user.get("role", "user"),
+            "tier": user.get("tier", "free"),
+            "name": user.get("name", user["email"].split("@")[0])
+        }
     )
-    refresh_token = create_refresh_token(subject=user["id"])
-    
-    logger.info("user_login", user_id=user["id"])
-    
+    refresh_token = create_refresh_token(subject=user_id)
+    logger.info("user_login_fallback", user_id=user_id)
+
     return TokenResponse(
         access_token=access_token,
         refresh_token=refresh_token,
@@ -357,7 +445,10 @@ async def login(data: UserLogin):
 
 
 @router.post("/refresh", response_model=TokenResponse)
-async def refresh_token(refresh_token: str):
+async def refresh_token_endpoint(
+    refresh_token: str,
+    db: AsyncSession = Depends(get_db)
+):
     """
     Refresh access token using refresh token.
     """
@@ -365,32 +456,46 @@ async def refresh_token(refresh_token: str):
         payload = verify_token(refresh_token, token_type="refresh")
         user_id = payload.get("sub")
         
-        # Find user
         user = None
-        for u in _users.values():
-            if u["id"] == user_id:
-                user = u
-                break
-        
+        is_db = False
+        try:
+            result = await db.execute(select(User).where(User.id == int(user_id)))
+            user = result.scalar_one_or_none()
+            if user:
+                is_db = True
+        except Exception:
+            pass
+
+        if not user:
+            for u in _users_fallback.values():
+                if str(u.get("id")) == str(user_id):
+                    user = u
+                    break
+
         if not user:
             raise HTTPException(
                 status_code=status.HTTP_401_UNAUTHORIZED,
                 detail="User not found"
             )
-        
-        # Create new tokens
+
+        uid = str(user.id) if is_db else str(user["id"])
+        email = user.email if is_db else user["email"]
+        role = user.role if is_db else user.get("role", "user")
+        tier = user.plan if is_db else user.get("tier", "free")
+        name = user.name if is_db else user.get("name", "")
+
         new_access_token = create_access_token(
-            subject=user["id"],
-            extra_claims={"email": user["email"], "tier": user["tier"]}
+            subject=uid,
+            extra_claims={"email": email, "role": role, "tier": tier, "name": name}
         )
-        new_refresh_token = create_refresh_token(subject=user["id"])
-        
+        new_refresh_token = create_refresh_token(subject=uid)
         return TokenResponse(
             access_token=new_access_token,
             refresh_token=new_refresh_token,
             expires_in=settings.jwt_access_token_expire_minutes * 60
         )
-        
+    except HTTPException:
+        raise
     except Exception:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -401,54 +506,82 @@ async def refresh_token(refresh_token: str):
 @router.post("/password-reset", response_model=MessageResponse)
 async def request_password_reset(
     data: PasswordReset,
-    background_tasks: BackgroundTasks
+    background_tasks: BackgroundTasks,
+    db: AsyncSession = Depends(get_db)
 ):
     """
     Request a password reset email.
     """
-    user = get_user_by_email(data.email)
-    
-    # Always return success (don't reveal if email exists)
-    if user:
+    user_exists = False
+    try:
+        db_u = await get_user_by_email_db(db, data.email)
+        if db_u:
+            user_exists = True
+    except Exception:
+        pass
+
+    if not user_exists and get_user_by_email(data.email):
+        user_exists = True
+
+    if user_exists:
         token = secrets.token_urlsafe(32)
         _reset_tokens[token] = {
             "email": data.email,
             "expires": datetime.now(timezone.utc) + timedelta(hours=1)
         }
-        background_tasks.add_task(send_password_reset_email, data.email, token)
-    
+        if SENDGRID_API_KEY:
+            background_tasks.add_task(send_password_reset_email, data.email, token)
+
     return MessageResponse(
         message="If the email exists, a password reset link has been sent."
     )
 
 
 @router.post("/password-reset/confirm", response_model=MessageResponse)
-async def confirm_password_reset(data: PasswordResetConfirm):
+async def confirm_password_reset(
+    data: PasswordResetConfirm,
+    db: AsyncSession = Depends(get_db)
+):
     """
     Reset password with token.
     """
     token_data = _reset_tokens.get(data.token)
-    
     if not token_data:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Invalid or expired reset token"
         )
-    
+
     if datetime.now(timezone.utc) > token_data["expires"]:
         del _reset_tokens[data.token]
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Reset token expired"
         )
-    
-    # Update password
-    user = get_user_by_email(token_data["email"])
+
+    new_hash = get_password_hash(data.new_password)
+    email = token_data["email"]
+
+    try:
+        db_user = await get_user_by_email_db(db, email)
+        if db_user:
+            db_user.hashed_password = new_hash
+            await db.commit()
+    except Exception:
+        pass
+
+    user = get_user_by_email(email)
     if user:
-        user["password_hash"] = get_password_hash(data.new_password)
-    
+        user["password_hash"] = new_hash
+
     del _reset_tokens[data.token]
-    
-    logger.info("password_reset", email=token_data["email"])
-    
+    logger.info("password_reset", email=email)
     return MessageResponse(message="Password reset successful. You can now log in.")
+
+
+@router.get("/me")
+async def get_me(
+    current_user: dict = Depends(get_current_user)
+):
+    """Get current authenticated user info."""
+    return current_user

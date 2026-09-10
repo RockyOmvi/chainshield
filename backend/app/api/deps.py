@@ -26,6 +26,7 @@ __all__ = [
     "get_current_user",
     "get_current_user_optional",
     "get_api_key_user",
+    "get_authenticated_user",
     "require_scopes",
 ]
 
@@ -214,6 +215,67 @@ async def get_api_key_user(
             "api_key_id": "dev_key",
             "scopes": ["read:wallet", "read:transaction", "write:wallet"],
         }
+
+
+async def get_authenticated_user(
+    request: Request,
+    credentials: Optional[HTTPAuthorizationCredentials] = Depends(bearer_scheme),
+    x_api_key: Optional[str] = Header(None, alias="X-API-Key"),
+    db: AsyncSession = Depends(get_db),
+) -> dict:
+    """
+    Flexible auth: accepts either JWT Bearer token or X-API-Key.
+    
+    Tries JWT first, then API key. Raises UnauthorizedError if neither is valid.
+    This allows the frontend dashboard (JWT) and external API clients (API key)
+    to use the same endpoints.
+    """
+    # 1. Try JWT Bearer token
+    if credentials:
+        try:
+            token = credentials.credentials
+            payload = verify_token(token, token_type="access")
+            user_id = payload.get("sub")
+            if user_id:
+                request.state.user_id = user_id
+                request.state.user_role = payload.get("role", "user")
+                
+                # Try to get fresh data from DB
+                try:
+                    from sqlalchemy import select
+                    from app.models.user import User
+                    result = await db.execute(
+                        select(User).where(User.id == int(user_id))
+                    )
+                    user = result.scalar_one_or_none()
+                    if user and user.is_active:
+                        return {
+                            "user_id": str(user.id),
+                            "email": user.email,
+                            "role": user.role,
+                            "plan": user.plan,
+                            "scopes": ["read:wallet", "write:wallet", "read:transaction", "write:transaction"],
+                        }
+                except Exception:
+                    pass
+                
+                return {
+                    "user_id": user_id,
+                    "role": payload.get("role", "user"),
+                    "email": payload.get("email"),
+                    "scopes": ["read:wallet", "read:transaction"],
+                }
+        except Exception:
+            pass  # Fall through to try API key
+    
+    # 2. Try API key
+    if x_api_key:
+        try:
+            return await get_api_key_user(request, x_api_key, db)
+        except Exception:
+            pass
+    
+    raise UnauthorizedError("Missing authentication - provide Bearer token or X-API-Key")
 
 
 def require_scopes(*required_scopes: str):

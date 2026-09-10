@@ -20,7 +20,7 @@ import httpx
 
 from app.core.config import settings
 from app.core.logging import get_logger
-from app.utils.retry import CircuitBreaker
+from app.utils.retry import CircuitBreaker, CircuitBreakerConfig
 from app.utils.cache import cached
 
 logger = get_logger(__name__)
@@ -102,8 +102,11 @@ class BlockchainProvider(ABC):
         self.api_key = api_key
         self._client: Optional[httpx.AsyncClient] = None
         self._circuit_breaker = CircuitBreaker(
-            failure_threshold=settings.circuit_breaker_failure_threshold,
-            recovery_timeout=settings.circuit_breaker_recovery_timeout,
+            name=name,
+            config=CircuitBreakerConfig(
+                failure_threshold=settings.circuit_breaker_failure_threshold,
+                recovery_timeout=settings.circuit_breaker_recovery_timeout,
+            )
         )
     
     async def _get_client(self) -> httpx.AsyncClient:

@@ -34,30 +34,54 @@ __all__ = [
     "verify_api_key",
 ]
 
-# Password hashing context
-# Using argon2 (OWASP recommended) with bcrypt fallback for verification
-pwd_context = CryptContext(
-    schemes=["argon2", "bcrypt"],
-    deprecated="auto"
-)
+import bcrypt
+
+try:
+    from argon2 import PasswordHasher
+    from argon2.exceptions import VerifyMismatchError, InvalidHashError
+    _argon2_hasher = PasswordHasher()
+except Exception:
+    _argon2_hasher = None
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    """Verify a password against its hash."""
-    # Truncate to 72 bytes for bcrypt compatibility
-    truncated = plain_password.encode('utf-8')[:72].decode('utf-8', errors='ignore')
-    return pwd_context.verify(truncated, hashed_password)
+    """Verify a password against its hash (supporting bcrypt and argon2)."""
+    if not plain_password or not hashed_password:
+        return False
+
+    # Check argon2
+    if hashed_password.startswith("$argon2"):
+        if _argon2_hasher is not None:
+            try:
+                return _argon2_hasher.verify(hashed_password, plain_password)
+            except Exception:
+                pass
+        return False
+
+    # Check bcrypt
+    try:
+        truncated = plain_password.encode('utf-8')[:72]
+        return bcrypt.checkpw(truncated, hashed_password.encode('utf-8'))
+    except Exception:
+        return False
 
 
 def get_password_hash(password: str) -> str:
-    """
-    Hash a password for storage.
-    
-    Note: bcrypt has a 72-byte limit. We truncate to handle this safely.
-    """
-    # Truncate to 72 bytes (bcrypt limit)
-    truncated = password.encode('utf-8')[:72].decode('utf-8', errors='ignore')
-    return pwd_context.hash(truncated)
+    """Hash a password for storage using bcrypt."""
+    truncated = password.encode('utf-8')[:72]
+    salt = bcrypt.gensalt()
+    return bcrypt.hashpw(truncated, salt).decode('utf-8')
+
+
+class CompatibilityPwdContext:
+    def verify(self, plain: str, hashed: str) -> bool:
+        return verify_password(plain, hashed)
+
+    def hash(self, plain: str) -> str:
+        return get_password_hash(plain)
+
+
+pwd_context = CompatibilityPwdContext()
 
 
 def create_access_token(

@@ -62,7 +62,7 @@ class Settings(BaseSettings):
     infura_network: str = Field(default="mainnet", description="Infura network")
     
     public_rpc_url: str = Field(
-        default="https://eth.llamarpc.com",
+        default="https://ethereum-rpc.publicnode.com",
         description="Public RPC fallback URL"
     )
     

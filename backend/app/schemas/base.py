@@ -92,13 +92,21 @@ TX_HASH_REGEX = re.compile(r"^0x[a-fA-F0-9]{64}$")
 
 
 def validate_ethereum_address(address: str) -> str:
-    """Validate Ethereum address format."""
-    if not ETHEREUM_ADDRESS_REGEX.match(address):
+    """Validate and normalize Ethereum address format with auto-recovery for common copy-paste mistakes."""
+    addr = address.strip()
+    # Auto-repair copy-paste cutoff (e.g. missing leading '0', starting with 'x...' and 41 chars)
+    if (addr.startswith("x") or addr.startswith("X")) and len(addr) == 41:
+        addr = "0" + addr
+    # Auto-repair missing '0x' prefix (40 raw hex characters)
+    elif not addr.startswith("0x") and not addr.startswith("0X") and len(addr) == 40:
+        addr = "0x" + addr
+
+    if not ETHEREUM_ADDRESS_REGEX.match(addr):
         raise ValueError(
             "Invalid Ethereum address format. "
             "Must be 0x followed by 40 hex characters."
         )
-    return address.lower()  # Normalize to lowercase
+    return addr.lower()  # Normalize to lowercase
 
 
 def validate_tx_hash(tx_hash: str) -> str:
@@ -185,6 +193,7 @@ class WalletRiskScore(BaseModel):
     level: RiskLevel = Field(..., description="Risk level classification")
     confidence: float = Field(..., ge=0, le=1, description="Confidence 0-1")
     tags: List[str] = Field(default_factory=list, description="Risk tags")
+    action: Optional[str] = Field(default="ALLOW", description="Recommended action: ALLOW, REVIEW, BLOCK")
 
 
 class WalletProfile(BaseModel):
@@ -211,6 +220,8 @@ class WalletAnalyzeResponse(BaseModel):
     risk: WalletRiskScore
     profile: Optional[WalletProfile] = None
     explanation: Optional[str] = None
+    blocked: bool = False
+    sanction_details: Optional[Dict[str, Any]] = None
     analyzed_at: datetime = Field(default_factory=datetime.utcnow)
 
 

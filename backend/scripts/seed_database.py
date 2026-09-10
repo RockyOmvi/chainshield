@@ -81,14 +81,17 @@ async def seed_users(session: AsyncSession) -> dict[str, User]:
     admin = result.scalar_one_or_none()
     
     if admin:
-        print(f"  ⚠️  Admin user already exists: {ADMIN_EMAIL}")
+        print(f"  🔄 Updating admin user password: {ADMIN_EMAIL}")
+        admin.hashed_password = get_password_hash(ADMIN_PASSWORD)
+        admin.is_active = True
+        admin.is_verified = True
         users["admin"] = admin
     else:
         # Create admin user
         admin = User(
             email=ADMIN_EMAIL,
             hashed_password=get_password_hash(ADMIN_PASSWORD),
-            full_name="System Administrator",
+            name="System Administrator",
             role="admin",
             plan="enterprise",
             is_active=True,
@@ -107,13 +110,16 @@ async def seed_users(session: AsyncSession) -> dict[str, User]:
         existing = result.scalar_one_or_none()
         
         if existing:
-            print(f"  ⚠️  User already exists: {user_data['email']}")
+            print(f"  🔄 Updating test user: {user_data['email']}")
+            existing.hashed_password = get_password_hash(user_data["password"])
+            existing.is_active = True
+            existing.is_verified = True
             users[user_data["role"]] = existing
         else:
             user = User(
                 email=user_data["email"],
                 hashed_password=get_password_hash(user_data["password"]),
-                full_name=user_data["full_name"],
+                name=user_data["full_name"],
                 role=user_data["role"],
                 plan=user_data["plan"],
                 is_active=True,
@@ -182,12 +188,13 @@ async def seed_api_keys(session: AsyncSession, users: dict[str, User]) -> list[d
             print(f"  ⚠️  API key already exists: {config['name']}")
         else:
             api_key = APIKey(
+                key_id=f"key_{secrets.token_hex(8)}",
                 user_id=user.id,
                 name=config["name"],
                 key_prefix=key_prefix,
                 key_hash=key_hash,
                 scopes=config["scopes"],
-                rate_limit=config["rate_limit"],
+                rate_limit_override=config["rate_limit"],
                 is_active=True,
                 expires_at=datetime.utcnow() + timedelta(days=365),
             )
@@ -215,26 +222,20 @@ async def seed_alert_rules(session: AsyncSession, users: dict[str, User]) -> Non
         {
             "name": "High Risk Wallet Alert",
             "description": "Alert when a wallet with risk score > 80 is analyzed",
-            "rule_type": "risk_threshold",
             "conditions": {"risk_score": {"gte": 80}, "target_type": "wallet"},
             "actions": [{"type": "notification", "channel": "email"}],
-            "priority": 1,
         },
         {
             "name": "Large Transaction Alert",
             "description": "Alert on transactions > 100 ETH",
-            "rule_type": "value_threshold",
             "conditions": {"value_eth": {"gte": 100}, "target_type": "transaction"},
             "actions": [{"type": "notification", "channel": "webhook"}],
-            "priority": 2,
         },
         {
             "name": "Known Scam Address Alert",
             "description": "Alert when interacting with flagged addresses",
-            "rule_type": "address_match",
             "conditions": {"tags": {"contains": "scam"}},
             "actions": [{"type": "notification", "channel": "email"}, {"type": "block"}],
-            "priority": 1,
         },
     ]
     
@@ -254,10 +255,8 @@ async def seed_alert_rules(session: AsyncSession, users: dict[str, User]) -> Non
                 user_id=admin.id,
                 name=rule_data["name"],
                 description=rule_data["description"],
-                rule_type=rule_data["rule_type"],
                 conditions=rule_data["conditions"],
                 actions=rule_data["actions"],
-                priority=rule_data["priority"],
                 is_active=True,
             )
             session.add(rule)

@@ -291,7 +291,7 @@ const AdminDashboard: React.FC = () => {
                     </div>
                     <div style={styles.statCard}>
                         <p style={styles.statLabel}>Total Requests</p>
-                        <p style={styles.statValue}>{(stats.totalRequests / 1000000).toFixed(2)}M</p>
+                        <p style={styles.statValue}>{((stats.totalRequests ?? 0) / 1000000).toFixed(2)}M</p>
                     </div>
                     <div style={styles.statCard}>
                         <p style={styles.statLabel}>Today</p>

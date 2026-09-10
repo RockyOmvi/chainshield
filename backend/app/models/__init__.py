@@ -4,7 +4,6 @@ ChainShield Database Models Package
 
 from app.models.models import (
     Base,
-    User,
     UserTier,
     UserStatus,
     ApiKey,
@@ -13,6 +12,11 @@ from app.models.models import (
     BlocklistEntry,
     WebhookSubscription,
 )
+from app.models.user import User, APIKey, RefreshToken
+from app.models.wallet import Wallet
+from app.models.transaction import Transaction, TransactionEdge
+from app.models.alert import Alert, AlertRule, AuditLog
+ApiKey = APIKey
 
 __all__ = [
     "Base",
@@ -20,8 +24,15 @@ __all__ = [
     "UserTier",
     "UserStatus",
     "ApiKey",
+    "APIKey",
     "UsageRecord",
     "Assessment",
     "BlocklistEntry",
     "WebhookSubscription",
+    "Wallet",
+    "Transaction",
+    "TransactionEdge",
+    "Alert",
+    "AlertRule",
+    "AuditLog",
 ]
